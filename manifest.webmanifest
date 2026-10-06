@@ -1,18 +1,17 @@
 {
-  "name": "회계·세법·국어·영어 학습앱",
+  "name": "회계·세법·영어·국어 학습앱",
   "short_name": "학습앱",
-  "description": "엑셀로 학습 내용을 불러오는 회계·세법·국어·영어 학습앱",
-  "start_url": "./index.html",
+  "start_url": "./dashboard.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "any",
   "background_color": "#f3f6f9",
   "theme_color": "#17324d",
-  "lang": "ko-KR",
-  "icons": [{
-    "src": "icon.svg",
-    "sizes": "any",
-    "type": "image/svg+xml",
-    "purpose": "any maskable"
-  }]
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }

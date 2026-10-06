@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17324d">
+<link rel="manifest" href="manifest.webmanifest">
+<title>학습앱</title>
+<style>
+:root{--navy:#17324d;--blue:#246bce;--bg:#f3f6f9;--line:#d8e0e8;--muted:#64748b}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:"SamsungOne","Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif;background:var(--bg);color:#1f2937}
+.top{background:#fff;padding:max(14px,env(safe-area-inset-top)) 14px 12px;border-bottom:1px solid #e8edf2;position:sticky;top:0;z-index:10}
+.brand{font-weight:900;font-size:21px;color:var(--navy)}.sub{font-size:12px;color:var(--muted);margin-top:3px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:13px}
+.tab{min-height:48px;border:1px solid var(--line);background:#fff;border-radius:13px;font-weight:900;color:var(--navy)}
+.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.hero{margin:12px 10px 10px;padding:18px 15px;border-radius:18px;background:linear-gradient(135deg,#17324d,#246bce);color:#fff;box-shadow:0 8px 24px rgba(23,50,77,.18)}
+.hero h2{font-size:22px;margin:0}.hero p{font-size:12px;line-height:1.5;opacity:.9;margin:6px 0 14px}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.q{border:0;background:#fff;color:var(--navy);border-radius:13px;min-height:70px;font-weight:900;font-size:15px}
+.q small{display:block;font-size:11px;color:var(--muted);font-weight:700;margin-top:4px}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 10px 10px}
+.tool{min-height:45px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:800}
+.frame-wrap{margin:0 10px 90px;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+iframe{display:block;width:100%;height:72vh;min-height:520px;border:0;background:#fff}
+.notice{font-size:11px;color:var(--muted);padding:0 12px 12px}
+@media(min-width:900px){.wrap{max-width:1000px;margin:auto}.quick{grid-template-columns:repeat(4,1fr)}iframe{height:75vh}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="brand">나의 학습앱</div>
+  <div class="sub">과목을 고르고 바로 퀴즈를 시작하세요.</div>
+  <div class="tabs">
+    <button class="tab active" data-sub="회계">회계</button>
+    <button class="tab" data-sub="세법">세법</button>
+    <button class="tab" data-sub="영어">영어</button>
+    <button class="tab" data-sub="국어">국어</button>
+  </div>
+</header>
+
+<section class="hero">
+  <h2 id="heroTitle">회계 퀴즈</h2>
+  <p>원하는 방식으로 바로 시작합니다. 아래 학습창에는 선택한 과목 문제만 표시됩니다.</p>
+  <div class="quick">
+    <button class="q" data-kind="전체">전체 퀴즈<small>OX·객관식 섞기</small></button>
+    <button class="q" data-kind="OX">OX 퀴즈<small>빠르게 판단하기</small></button>
+    <button class="q" data-kind="객관식">객관식<small>선택지 문제</small></button>
+    <button class="q" data-kind="단어">단어·개념<small>암기 카드</small></button>
+  </div>
+</section>
+
+<div class="tools">
+  <button class="tool" id="excelBtn">엑셀 불러오기</button>
+  <button class="tool" id="wrongBtn">오답만 보기</button>
+</div>
+
+<div class="frame-wrap">
+  <iframe id="appFrame" src="index.html" title="학습 화면"></iframe>
+</div>
+<div class="notice">기존 학습 데이터·진도·엑셀 업로드 기능은 그대로 사용됩니다.</div>
+</div>
+
+<script>
+let currentSubject='회계';
+const frame=document.getElementById('appFrame');
+
+function appDoc(){try{return frame.contentDocument||frame.contentWindow.document}catch(e){return null}}
+function dispatch(el,type='change'){if(!el)return;el.dispatchEvent(new Event(type,{bubbles:true}))}
+
+function cleanInner(){
+  const d=appDoc(); if(!d)return;
+  if(d.getElementById('dashPatch'))return;
+  const st=d.createElement('style'); st.id='dashPatch';
+  st.textContent=`
+    .top,.status{display:none!important}
+    .shell{grid-template-columns:1fr!important;padding:8px!important}
+    .side{display:none!important}
+    .card{border:none!important;box-shadow:none!important;min-height:400px!important;padding:18px 14px!important}
+    .meta{padding:6px 4px 10px!important}
+    body{background:#fff!important}
+    .nav{width:100%!important}
+  `;
+  d.head.appendChild(st);
+}
+
+function selectSubject(sub){
+  currentSubject=sub;
+  document.getElementById('heroTitle').textContent=sub+' 퀴즈';
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.sub===sub));
+  const d=appDoc(); if(!d)return;
+  const sel=d.getElementById('subject');
+  if(sel && [...sel.options].some(o=>o.value===sub)){
+    sel.value=sub; dispatch(sel);
+  }
+}
+
+function startKind(kind){
+  const d=appDoc(); if(!d)return;
+  selectSubject(currentSubject);
+  const modeBtns=[...d.querySelectorAll('[data-mode]')];
+  const kindSel=d.getElementById('kind');
+  let target=kind;
+
+  if(kind==='단어'){
+    const values=kindSel?[...kindSel.options].map(o=>o.value):[];
+    target=values.includes('단어')?'단어':(values.includes('개념')?'개념':'전체');
+    modeBtns.find(b=>b.dataset.mode==='card')?.click();
+  }else{
+    modeBtns.find(b=>b.dataset.mode==='quiz')?.click();
+  }
+  if(kindSel){
+    kindSel.value=[...kindSel.options].some(o=>o.value===target)?target:'전체';
+    dispatch(kindSel);
+  }
+  d.getElementById('shuffleBtn')?.click();
+  setTimeout(()=>document.querySelector('.frame-wrap').scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+frame.addEventListener('load',()=>{
+  cleanInner();
+  setTimeout(()=>{cleanInner();selectSubject(currentSubject)},250);
+});
+
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>selectSubject(b.dataset.sub));
+document.querySelectorAll('[data-kind]').forEach(b=>b.onclick=()=>startKind(b.dataset.kind));
+document.getElementById('excelBtn').onclick=()=>appDoc()?.getElementById('uploadBtn')?.click();
+document.getElementById('wrongBtn').onclick=()=>{
+  const d=appDoc(); const w=d?.getElementById('wrongOnly');
+  if(w){w.checked=!w.checked;dispatch(w);document.getElementById('wrongBtn').textContent=w.checked?'전체 보기':'오답만 보기'}
+};
+</script>
+</body>
+</html>
