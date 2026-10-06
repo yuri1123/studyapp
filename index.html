@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<title>나의 학습앱 v6</title>
+<title>세무직 9급 합격 메이트</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#6b7280;--line:#e3e8f0;--blue:#2563eb;--blue2:#1e40af;--blueSoft:#eaf2ff;--green:#16a34a;--greenSoft:#eaf8ef;--red:#ef4444;--redSoft:#fff1f1;--amber:#d97706;--amberSoft:#fff7e6;--graySoft:#f7f8fa;--shadow:0 10px 30px rgba(25,42,89,.08)}
@@ -136,22 +136,66 @@
   .detailItem{grid-template-columns:minmax(92px,1fr) minmax(120px,1.4fr);font-size:16px}
 }
 
+
+/* v7: 합격 메이트 + 선택영역 토글 + 현재 범위 리셋 + 카드 높이 자동 */
+.topbar{padding-bottom:10px}
+.titleRow{align-items:center}
+.brand{font-size:21px;line-height:1.2}
+.brand small{max-width:420px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.selectorToggle{flex:0 0 auto;border:1px solid #d9e2ee;background:#fff;color:#28405f;border-radius:14px;min-height:42px;padding:0 12px;font-size:12px;font-weight:950;box-shadow:0 4px 12px rgba(25,42,89,.05)}
+.selectorPanel{max-height:245px;opacity:1;overflow:hidden;transition:max-height .28s ease,opacity .22s ease,transform .28s ease,margin .28s ease;transform:translateY(0);margin-top:10px}
+.selectorPanel.collapsed{max-height:0;opacity:0;pointer-events:none;transform:translateY(-8px);margin-top:0}
+.selectorLabel{font-size:10px;font-weight:950;color:#7b8798;margin:7px 2px 5px;text-transform:uppercase;letter-spacing:.02em}
+.selectorPanel .subjectTabs{margin-top:0}
+.selectorPanel .sectionTabs{margin-top:0}
+.utilityActions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:9px}
+.utilityActions .miniBtn{width:100%;height:38px}
+.scopeHint{font-size:10px;color:#8a94a6;text-align:center;margin-top:6px}
+
+/* 카드 앞면은 뒷면 길이에 끌려가지 않도록 활성 면 높이에 맞춤 */
+.cardShell{min-height:auto!important}
+.flipWrap{position:relative!important;min-height:0!important;height:auto;transition:height .28s ease}
+.flipCard{position:relative!important;display:block!important;min-height:0!important;height:auto;transition:transform .58s ease}
+.flipCard .face{position:absolute!important;inset:0 0 auto 0!important;grid-area:auto!important;width:100%;min-height:0!important;height:auto!important;padding:26px 24px 26px!important}
+.flipCard.wordMode .face{min-height:0!important;overflow:visible!important}
+.flipCard.wordMode .frontText{margin-top:12px!important}
+.frontMeaning{margin-top:22px!important;padding-top:0!important}
+.flipCard.wordMode .flipTip{margin-top:14px!important}
+.meaningRow{padding:15px 8px!important}
+.memoryBtns{margin-top:4px!important}
+
+@media(max-width:480px){
+  .brand{font-size:18px;max-width:62vw}
+  .brand small{font-size:10px}
+  .selectorToggle{padding:0 10px;min-height:40px}
+  .selectorPanel{max-height:260px}
+  .flipCard .face{padding:22px 18px 24px!important}
+  .flipCard.wordMode .frontText{font-size:40px!important}
+  .frontMeaning{margin-top:18px!important}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
 <header class="topbar">
   <div class="titleRow">
-    <div class="brand">나의 학습앱<small id="subtitle">과목별로 집중해서 학습해요.</small></div>
-    <div class="topActions">
+    <div class="brand">세무직 9급 합격 메이트<small id="subtitle">오늘의 한 문제도 합격에 가까워지는 중</small></div>
+    <button class="selectorToggle" id="selectorToggle" aria-expanded="false">회계 · 전체 ▾</button>
+  </div>
+  <div class="selectorPanel collapsed" id="selectorPanel">
+    <div class="selectorLabel">과목</div>
+    <div class="subjectTabs" id="subjectTabs"></div>
+    <div class="selectorLabel">소제목 / 세트</div>
+    <div class="sectionTabs" id="sectionTabs"></div>
+    <div class="utilityActions">
       <input id="fileInput" type="file" accept=".xlsx,.xls,.csv" hidden>
-      <button class="miniBtn" id="resetBtn">리셋</button>
+      <button class="miniBtn" id="resetBtn">현재 리셋</button>
       <button class="miniBtn" id="templateBtn">양식</button>
       <button class="miniBtn" id="uploadBtn">엑셀</button>
     </div>
+    <div class="scopeHint" id="scopeHint">현재 선택 범위의 학습 기록만 초기화할 수 있어요.</div>
   </div>
-  <div class="subjectTabs" id="subjectTabs"></div>
-  <div class="sectionTabs" id="sectionTabs"></div>
 </header>
 <main class="content">
   <section class="screen active" id="homeScreen">
@@ -231,7 +275,7 @@
 <div class="toast" id="toast"></div>
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v6';
+const STORAGE='study_app_v7';
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.',front:'',back:'',partOfSpeech:'',pronunciation:'',synonyms:'',antonyms:'',derivatives:'',phrases:'',example:'',exampleTranslation:'',memo:'',tags:'기초'},
 {subject:'회계',kind:'객관식',subtitle:'재무회계 기초',unit:'회계원리',question:'다음 중 자산에 해당하는 것은?',answer:'A',options:['현금','매출','급여','이자수익'],explanation:'현금은 기업이 통제하는 경제적 자원으로 자산입니다.',front:'',back:'',partOfSpeech:'',pronunciation:'',synonyms:'',antonyms:'',derivatives:'',phrases:'',example:'',exampleTranslation:'',memo:'',tags:'자산'},
@@ -242,16 +286,37 @@ const SAMPLE=[
 {subject:'영어',kind:'단어',subtitle:'Day 2',unit:'Vocabulary',question:'',answer:'',options:[],explanation:'',front:'derive',back:'끌어내다, 유래하다',partOfSpeech:'verb',pronunciation:'/dɪˈraɪv/',synonyms:'obtain, originate',antonyms:'',derivatives:'derivation, derivative',phrases:'derive A from B : B에서 A를 얻다',example:'The word is derived from Latin.',exampleTranslation:'그 단어는 라틴어에서 유래했다.',memo:'수동태 be derived from도 자주 사용',tags:'영단어'},
 {subject:'영어',kind:'문법',subtitle:'Grammar Day 1',unit:'Grammar',question:'Choose the correct sentence.',answer:'B',options:['She go to school every day.','She goes to school every day.','She going to school every day.','She gone to school every day.'],explanation:'3인칭 단수 주어 she와 현재시제 일반동사에는 -s가 붙습니다.',front:'',back:'',partOfSpeech:'',pronunciation:'',synonyms:'',antonyms:'',derivatives:'',phrases:'',example:'',exampleTranslation:'',memo:'',tags:'문법'}
 ].map((x,i)=>({...x,uid:'sample_'+i}));
-const S={items:[],subject:'회계',section:'전체',screen:'home',quizMode:'all',qIndex:0,cIndex:0,answered:false,quizPool:[],cardPool:[],wrong:new Set(),memory:{},stats:{correct:0,total:0},reviewFilter:'all',filename:'샘플 데이터'};
+const S={items:[],subject:'회계',section:'전체',screen:'home',quizMode:'all',qIndex:0,cIndex:0,answered:false,quizPool:[],cardPool:[],wrong:new Set(),memory:{},stats:{correct:0,total:0},attempts:{},reviewFilter:'all',filename:'샘플 데이터',selectorsOpen:false};
 const $=id=>document.getElementById(id), $$=sel=>[...document.querySelectorAll(sel)];
 function norm(v){return String(v??'').trim()}function itemId(it){return it.uid||[it.subject,it.kind,it.unit,it.question,it.front,it.back].join('|')}
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),1600)}
-function save(){try{localStorage.setItem(STORAGE,JSON.stringify({items:S.items,wrong:[...S.wrong],memory:S.memory,stats:S.stats,filename:S.filename}))}catch(e){}}
-function load(){try{let o=JSON.parse(localStorage.getItem(STORAGE)||'null');if(!o){const prev=JSON.parse(localStorage.getItem('study_app_v5')||'null');if(prev)o=prev}if(!o){const old=JSON.parse(localStorage.getItem('study_app_v2_state')||'null');if(old)o={items:old.items,wrong:old.wrong,memory:{},stats:old.stats,filename:old.lastLoadedFile}}if(o){if(Array.isArray(o.items)&&o.items.length)S.items=o.items;if(Array.isArray(o.wrong))S.wrong=new Set(o.wrong);if(o.memory)S.memory=o.memory;if(o.stats)S.stats=o.stats;if(o.filename)S.filename=o.filename}}catch(e){}}
+function save(){try{localStorage.setItem(STORAGE,JSON.stringify({items:S.items,wrong:[...S.wrong],memory:S.memory,stats:S.stats,attempts:S.attempts,filename:S.filename}))}catch(e){}}
+function load(){try{let o=JSON.parse(localStorage.getItem(STORAGE)||'null');if(!o){for(const k of ['study_app_v6','study_app_v5','study_app_v2_state']){const cand=JSON.parse(localStorage.getItem(k)||'null');if(cand){o=cand;break}}}if(o){if(Array.isArray(o.items)&&o.items.length)S.items=o.items;if(Array.isArray(o.wrong))S.wrong=new Set(o.wrong);if(o.memory)S.memory=o.memory;if(o.stats)S.stats=o.stats;if(o.attempts)S.attempts=o.attempts;if(o.filename)S.filename=o.filename||o.lastLoadedFile}}catch(e){}}
 function isCard(it){return ['단어','개념'].includes(norm(it.kind))&&(it.front||it.back)}function isQuiz(it){return ['OX','객관식','문법'].includes(norm(it.kind))&&(it.question||it.options?.length)}function sectionOf(it){return norm(it.subtitle)||norm(it.unit)||'기타'}function sectionMatch(it){return S.section==='전체'||sectionOf(it)===S.section}
 function refreshPools(){let q=S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isQuiz(x));if(S.quizMode==='ox')q=q.filter(x=>x.kind==='OX');if(S.quizMode==='mc')q=q.filter(x=>x.kind!=='OX');S.quizPool=q;S.cardPool=S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isCard(x));S.qIndex=Math.min(S.qIndex,Math.max(0,q.length-1));S.cIndex=Math.min(S.cIndex,Math.max(0,S.cardPool.length-1))}
-function renderTabs(){$('subjectTabs').innerHTML=SUBJECTS.map(s=>`<button class="subjectTab ${s===S.subject?'active':''}" data-sub="${s}">${s}</button>`).join('');$$('[data-sub]').forEach(b=>b.onclick=()=>{S.subject=b.dataset.sub;S.section='전체';S.qIndex=0;S.cIndex=0;renderAll()});const sections=[...new Set(S.items.filter(x=>x.subject===S.subject).map(sectionOf).filter(Boolean))];if(S.section!=='전체'&&!sections.includes(S.section))S.section='전체';$('sectionTabs').innerHTML=['전체',...sections].map(s=>`<button class="sectionTab ${s===S.section?'active':''}" data-section="${s}">${s}</button>`).join('');$$('[data-section]').forEach(b=>b.onclick=()=>{S.section=b.dataset.section;S.qIndex=0;S.cIndex=0;refreshPools();renderAll()})}
-function renderHome(){const items=S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)),review=items.filter(x=>{const id=itemId(x);return S.wrong.has(id)||['confused','unknown'].includes(S.memory[id])}).length;$('heroTitle').innerHTML=`${S.subject} 학습<br>${S.section==='전체'?'바로 시작':S.section}`;$('statTotal').textContent=items.length;$('statReview').textContent=review;$('statRate').textContent=S.stats.total?Math.round(S.stats.correct/S.stats.total*100)+'%':'0%';$('subtitle').textContent=`${S.section==='전체'?'전체 세트':S.section} · 현재 파일: ${S.filename}`}
+function toggleSelectors(force){
+  S.selectorsOpen=typeof force==='boolean'?force:!S.selectorsOpen;
+  const panel=$('selectorPanel'),btn=$('selectorToggle');
+  if(panel)panel.classList.toggle('collapsed',!S.selectorsOpen);
+  if(btn){btn.setAttribute('aria-expanded',String(S.selectorsOpen));btn.textContent=`${S.subject} · ${S.section==='전체'?'전체':S.section} ${S.selectorsOpen?'▴':'▾'}`}
+}
+function currentScopeItems(){return S.items.filter(x=>x.subject===S.subject&&sectionMatch(x))}
+function currentScopeAttempts(){let correct=0,total=0;for(const it of currentScopeItems()){const a=S.attempts[itemId(it)];if(a){correct+=a.correct||0;total+=a.total||0}}return{correct,total}}
+function resetCurrentScope(){
+  const items=currentScopeItems(),ids=new Set(items.map(itemId));
+  const label=S.section==='전체'?`${S.subject} 전체`:`${S.subject} · ${S.section}`;
+  if(!confirm(`${label}의 학습 기록만 초기화할까요?\n오답, 단어 기억상태, 정답률 기록이 초기화되고 엑셀 학습내용은 유지됩니다.`))return;
+  S.wrong=new Set([...S.wrong].filter(id=>!ids.has(id)));
+  for(const id of ids){delete S.memory[id];delete S.attempts[id]}
+  S.reviewFilter='all';S.qIndex=0;S.cIndex=0;save();renderAll();toast(`${label} 기록을 초기화했어요`);
+}
+function syncFlipHeight(){
+  const card=$('flipCard'),wrap=card?.closest('.flipWrap');if(!card||!wrap)return;
+  const face=card.querySelector(card.classList.contains('flipped')?'.face.back':'.face.front');if(!face)return;
+  requestAnimationFrame(()=>{const h=Math.max(260,Math.ceil(face.scrollHeight));card.style.height=h+'px';wrap.style.height=h+'px'});
+}
+function renderTabs(){$('subjectTabs').innerHTML=SUBJECTS.map(s=>`<button class="subjectTab ${s===S.subject?'active':''}" data-sub="${s}">${s}</button>`).join('');$$('[data-sub]').forEach(b=>b.onclick=()=>{S.subject=b.dataset.sub;S.section='전체';S.qIndex=0;S.cIndex=0;renderAll();toggleSelectors(true)});const sections=[...new Set(S.items.filter(x=>x.subject===S.subject).map(sectionOf).filter(Boolean))];if(S.section!=='전체'&&!sections.includes(S.section))S.section='전체';$('sectionTabs').innerHTML=['전체',...sections].map(s=>`<button class="sectionTab ${s===S.section?'active':''}" data-section="${s}">${s}</button>`).join('');$$('[data-section]').forEach(b=>b.onclick=()=>{S.section=b.dataset.section;S.qIndex=0;S.cIndex=0;refreshPools();renderAll();toggleSelectors(false)});$('scopeHint').textContent=S.section==='전체'?`${S.subject} 전체 기록을 리셋합니다.`:`${S.subject} · ${S.section} 기록만 리셋합니다.`;toggleSelectors(S.selectorsOpen)}
+function renderHome(){const items=currentScopeItems(),review=items.filter(x=>{const id=itemId(x);return S.wrong.has(id)||['confused','unknown'].includes(S.memory[id])}).length,attempt=currentScopeAttempts();$('heroTitle').innerHTML=`${S.subject} 학습<br>${S.section==='전체'?'합격까지 한 걸음':S.section}`;$('statTotal').textContent=items.length;$('statReview').textContent=review;$('statRate').textContent=attempt.total?Math.round(attempt.correct/attempt.total*100)+'%':'0%';$('subtitle').textContent=`오늘의 한 문제도 합격에 가까워지는 중 · ${S.subject}${S.section==='전체'?'':` · ${S.section}`}`}
 function renderQuiz(){
   refreshPools();
   const list=S.quizPool,card=$('quizCard'),opts=$('optionsArea');
@@ -279,7 +344,7 @@ function renderQuiz(){
     }
   }
 }
-function grade(it,choice,clicked){if(S.answered)return;S.answered=true;const answer=norm(it.answer).toUpperCase(),ok=norm(choice).toUpperCase()===answer,id=itemId(it);S.stats.total++;if(ok)S.stats.correct++;if(ok)S.wrong.delete(id);else S.wrong.add(id);$('quizCard').classList.add(ok?'correctState':'wrongState');const letters=['A','B','C','D','E'];[...$('optionsArea').children].forEach((b,i)=>{const val=it.kind==='OX'?b.textContent.trim():letters[i];if(val===answer)b.classList.add('correct');if(b===clicked&&!ok)b.classList.add('wrong')});$('resultPill').textContent=ok?'정답이에요!':`오답이에요 · 정답 ${it.answer}`;$('resultPill').className='result '+(ok?'correct':'wrong');$('answerBox').classList.add('show');save();renderHome();renderReview();toast(ok?'정답!':'복습함에 저장했어요')}
+function grade(it,choice,clicked){if(S.answered)return;S.answered=true;const answer=norm(it.answer).toUpperCase(),ok=norm(choice).toUpperCase()===answer,id=itemId(it);S.stats.total++;if(ok)S.stats.correct++;const a=S.attempts[id]||(S.attempts[id]={correct:0,total:0});a.total++;if(ok)a.correct++;if(ok)S.wrong.delete(id);else S.wrong.add(id);$('quizCard').classList.add(ok?'correctState':'wrongState');const letters=['A','B','C','D','E'];[...$('optionsArea').children].forEach((b,i)=>{const val=it.kind==='OX'?b.textContent.trim():letters[i];if(val===answer)b.classList.add('correct');if(b===clicked&&!ok)b.classList.add('wrong')});$('resultPill').textContent=ok?'정답이에요!':`오답이에요 · 정답 ${it.answer}`;$('resultPill').className='result '+(ok?'correct':'wrong');$('answerBox').classList.add('show');save();renderHome();renderReview();toast(ok?'정답!':'복습함에 저장했어요')}
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function splitPipe(v){return norm(v)?norm(v).split(/\s*\|\s*|\r?\n|\s*;\s*/).map(x=>x.trim()).filter(Boolean):[]}
 function splitList(v){return norm(v)?norm(v).split(/\s*\|\s*|\r?\n|\s*;\s*|\s*,\s*/).map(x=>x.trim()).filter(Boolean):[]}
@@ -338,6 +403,7 @@ function renderCard(){
   }
   $('memoryBtns').style.visibility='visible'; $$('[data-memory]').forEach(b=>b.classList.toggle('active',b.dataset.memory===state));
   $('prevCardBtn').disabled=first; $('nextCardBtn').disabled=last; $('nextCardBtn').textContent=last?'마지막 카드':'다음 카드';
+  syncFlipHeight();setTimeout(syncFlipHeight,80);
 }
 function setMemory(state){if(!S.cardPool.length)return;const it=S.cardPool[S.cIndex],id=itemId(it);S.memory[id]=state;save();renderHome();renderReview();$$('[data-memory]').forEach(b=>b.classList.toggle('active',b.dataset.memory===state));toast(state==='know'?'알아요로 표시했어요':state==='confused'?'헷갈림에 모아뒀어요':'모르는 단어에 모아뒀어요')}
 function renderReview(){const area=$('reviewList');$$('[data-review]').forEach(b=>b.classList.toggle('active',b.dataset.review===S.reviewFilter));let list=[];S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)).forEach(it=>{const id=itemId(it),mem=S.memory[id];if(S.wrong.has(id))list.push({it,type:'wrong'});if(mem==='confused')list.push({it,type:'confused'});if(mem==='unknown')list.push({it,type:'unknown'})});if(S.reviewFilter!=='all')list=list.filter(x=>x.type===S.reviewFilter);area.innerHTML='';if(!list.length){area.innerHTML='<div class="empty"><strong>복습할 항목이 없어요</strong>틀린 문제나 헷갈리는 단어가 생기면 여기에 모입니다.</div>';return}list.forEach(({it,type})=>{const b=document.createElement('button');b.className='reviewItem';const label=type==='wrong'?'문제 오답':type==='confused'?'헷갈리는 단어':'모르는 단어';b.innerHTML=`<strong>${it.question||it.front||'(항목)'}</strong><span>${sectionOf(it)} · ${it.unit||''} · ${it.kind}</span><span class="stateLabel ${type}">${label}</span>`;b.onclick=()=>{S.section=sectionOf(it);refreshPools();if(isCard(it)){S.cIndex=Math.max(0,S.cardPool.findIndex(x=>itemId(x)===itemId(it)));setScreen('card')}else{S.quizMode='all';refreshPools();S.qIndex=Math.max(0,S.quizPool.findIndex(x=>itemId(x)===itemId(it)));setScreen('quiz')}};area.appendChild(b)})}
@@ -386,7 +452,8 @@ function importFile(file){
   }catch(err){console.error(err);toast('엑셀 형식을 확인해주세요')}};
   reader.readAsArrayBuffer(file)
 }
-$('uploadBtn').onclick=()=>$('fileInput').click();$('fileInput').onchange=e=>{const f=e.target.files?.[0];if(f)importFile(f);e.target.value=''};$('templateBtn').onclick=()=>{const a=document.createElement('a');a.href='./study_template.xlsx';a.download='학습앱_엑셀양식.xlsx';document.body.appendChild(a);a.click();a.remove()};$$('[data-launch]').forEach(b=>b.onclick=()=>launch(b.dataset.launch));$$('.navBtn').forEach(b=>b.onclick=()=>setScreen(b.dataset.screen));$('prevQuizBtn').onclick=()=>{if(S.qIndex>0){S.qIndex--;renderQuiz()}};$('nextQuizBtn').onclick=()=>{if(S.qIndex<S.quizPool.length-1){S.qIndex++;renderQuiz()}};$('prevCardBtn').onclick=()=>{if(S.cIndex>0){S.cIndex--;renderCard()}};$('nextCardBtn').onclick=()=>{if(S.cIndex<S.cardPool.length-1){S.cIndex++;renderCard()}};$('flipCard').onclick=()=>$('flipCard').classList.toggle('flipped');$$('[data-memory]').forEach(b=>b.onclick=e=>{e.stopPropagation();setMemory(b.dataset.memory)});$$('[data-review]').forEach(b=>b.onclick=()=>{S.reviewFilter=b.dataset.review;renderReview()});$('resetBtn').onclick=()=>{if(confirm('오답, 단어 기억상태, 정답률 기록을 모두 초기화할까요?\n불러온 엑셀 학습내용은 그대로 유지됩니다.')){S.wrong=new Set();S.memory={};S.stats={correct:0,total:0};S.reviewFilter='all';save();renderAll();toast('학습 기록을 초기화했어요')}};load();if(!S.items.length)S.items=SAMPLE;renderAll();if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
+$('uploadBtn').onclick=()=>$('fileInput').click();$('fileInput').onchange=e=>{const f=e.target.files?.[0];if(f)importFile(f);e.target.value=''};$('templateBtn').onclick=()=>{const a=document.createElement('a');a.href='./study_template.xlsx';a.download='학습앱_엑셀양식.xlsx';document.body.appendChild(a);a.click();a.remove()};$$('[data-launch]').forEach(b=>b.onclick=()=>launch(b.dataset.launch));$$('.navBtn').forEach(b=>b.onclick=()=>setScreen(b.dataset.screen));$('prevQuizBtn').onclick=()=>{if(S.qIndex>0){S.qIndex--;renderQuiz()}};$('nextQuizBtn').onclick=()=>{if(S.qIndex<S.quizPool.length-1){S.qIndex++;renderQuiz()}};$('prevCardBtn').onclick=()=>{if(S.cIndex>0){S.cIndex--;renderCard()}};$('nextCardBtn').onclick=()=>{if(S.cIndex<S.cardPool.length-1){S.cIndex++;renderCard()}};$('flipCard').onclick=()=>{const c=$('flipCard');c.classList.toggle('flipped');setTimeout(syncFlipHeight,30);setTimeout(syncFlipHeight,330)};$$('[data-memory]').forEach(b=>b.onclick=e=>{e.stopPropagation();setMemory(b.dataset.memory)});$$('[data-review]').forEach(b=>b.onclick=()=>{S.reviewFilter=b.dataset.review;renderReview()});$('resetBtn').onclick=resetCurrentScope;$('selectorToggle').onclick=()=>toggleSelectors();let lastScrollY=window.scrollY;window.addEventListener('scroll',()=>{const y=window.scrollY;if(y>90&&y>lastScrollY+14&&S.selectorsOpen)toggleSelectors(false);lastScrollY=y},{passive:true});window.addEventListener('resize',()=>setTimeout(syncFlipHeight,80));
+load();if(!S.items.length)S.items=SAMPLE;renderAll();if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
 </script>
 </body>
 </html>
