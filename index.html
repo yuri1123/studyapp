@@ -1,557 +1,146 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#1d4ed8" />
-  <title>학습앱</title>
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-  <style>
-    :root{
-      --bg:#f4f7fb; --card:#ffffff; --text:#172033; --muted:#6b7280; --line:#e3e8f0;
-      --blue:#2563eb; --blue-soft:#eaf2ff; --green:#16a34a; --green-soft:#eaf8ef;
-      --red:#ef4444; --red-soft:#fff1f1; --yellow:#f59e0b; --shadow:0 10px 30px rgba(25,42,89,.08);
-      --radius:22px;
-    }
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:"Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif}
-    button,input,select{font:inherit}
-    .app{max-width:760px;margin:0 auto;min-height:100dvh;padding-bottom:92px}
-    .topbar{position:sticky;top:0;z-index:20;background:rgba(244,247,251,.92);backdrop-filter:blur(14px);padding:max(18px,env(safe-area-inset-top)) 16px 12px;border-bottom:1px solid rgba(227,232,240,.8)}
-    .title-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .brand{font-size:24px;font-weight:900;letter-spacing:-.02em}
-    .brand small{display:block;font-size:12px;color:var(--muted);font-weight:700;margin-top:3px}
-    .icon-btn,.ghost-btn,.primary-btn,.option-btn,.mode-btn,.subject-tab,.nav-btn,.chip,.small-btn{border:none;background:#fff;border-radius:16px;box-shadow:none;cursor:pointer}
-    .icon-btn{min-width:46px;height:46px;padding:0 14px;border:1px solid var(--line);font-weight:800;background:#fff}
-    .subject-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
-    .subject-tab{height:46px;background:#fff;border:1px solid var(--line);font-weight:900;color:#355;transition:.18s}
-    .subject-tab.active{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 8px 20px rgba(37,99,235,.22)}
-    .content{padding:14px 14px 0}
-    .screen{display:none}
-    .screen.active{display:block}
-    .hero{background:linear-gradient(135deg,#2f6cf4,#1e40af);color:#fff;border-radius:28px;padding:20px 18px;box-shadow:0 12px 26px rgba(37,99,235,.24)}
-    .hero h1{margin:0;font-size:29px;line-height:1.15;letter-spacing:-.04em}
-    .hero p{margin:8px 0 0;color:rgba(255,255,255,.86);line-height:1.5;font-size:13px}
-    .quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
-    .quick-card{background:#fff;color:var(--text);padding:16px;border-radius:20px;min-height:92px;border:none;text-align:left;box-shadow:var(--shadow)}
-    .quick-card strong{display:block;font-size:16px}
-    .quick-card span{display:block;font-size:12px;color:var(--muted);margin-top:6px;line-height:1.35}
-    .panel{background:var(--card);border-radius:24px;padding:16px;box-shadow:var(--shadow);margin-top:14px}
-    .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
-    .stat{background:#f8fafc;border:1px solid var(--line);border-radius:18px;padding:12px;text-align:center}
-    .stat strong{display:block;font-size:18px}
-    .stat span{font-size:12px;color:var(--muted)}
-    .section-title{font-weight:900;font-size:18px;letter-spacing:-.02em}
-    .section-sub{font-size:12px;color:var(--muted);margin-top:2px}
-
-    .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-    .chip{padding:10px 14px;border:1px solid var(--line);background:#fff;font-weight:800;color:#465066}
-    .chip.active{background:var(--blue-soft);border-color:#bfd4ff;color:var(--blue)}
-    .primary-btn{background:var(--blue);color:#fff;padding:14px 18px;font-weight:900;border-radius:18px;box-shadow:0 10px 20px rgba(37,99,235,.24)}
-    .ghost-btn{background:#fff;padding:13px 16px;font-weight:800;border:1px solid var(--line)}
-    .small-btn{background:#fff;padding:10px 13px;border:1px solid var(--line);font-weight:800}
-
-    .quiz-shell{min-height:calc(100dvh - 232px);display:flex;flex-direction:column;gap:12px}
-    .quiz-head{display:flex;gap:10px;align-items:center;justify-content:space-between}
-    .badge{display:inline-flex;align-items:center;gap:6px;background:#eef4ff;color:var(--blue);font-weight:900;padding:8px 12px;border-radius:999px;font-size:12px}
-    .progress{font-size:13px;color:var(--muted);font-weight:800}
-    .quiz-card{background:#fff;border-radius:28px;box-shadow:var(--shadow);padding:18px;flex:1;display:flex;flex-direction:column;border:2px solid transparent;transition:.2s}
-    .quiz-card.state-correct{background:linear-gradient(180deg,#ffffff,#f3fbf6);border-color:#bce6c8}
-    .quiz-card.state-wrong{background:linear-gradient(180deg,#ffffff,#fff5f5);border-color:#ffc9c9}
-    .quiz-meta{display:flex;flex-wrap:wrap;gap:8px}
-    .question{font-size:30px;line-height:1.45;font-weight:900;letter-spacing:-.03em;margin:22px 0;white-space:pre-wrap;word-break:keep-all}
-    .options{display:grid;gap:10px;margin-top:auto}
-    .option-btn{padding:16px;border:1px solid var(--line);background:#fff;text-align:left;border-radius:18px;display:flex;gap:10px;align-items:flex-start;font-weight:800;color:var(--text)}
-    .option-btn .no{min-width:24px;color:var(--blue)}
-    .option-btn.selected{border-color:#b8c3d7;background:#f8fafc}
-    .option-btn.correct{background:var(--green-soft);border-color:#9bdbb0;color:#0a6a2d}
-    .option-btn.wrong{background:var(--red-soft);border-color:#ffb8b8;color:#a32323}
-    .ox-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .ox-row .option-btn{justify-content:center;text-align:center;font-size:30px;min-height:92px}
-    .explain{margin-top:14px;border-top:1px solid var(--line);padding-top:14px;display:none}
-    .explain.show{display:block}
-    .result-pill{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:900;font-size:13px}
-    .result-pill.correct{background:var(--green-soft);color:#0e7a34}
-    .result-pill.wrong{background:var(--red-soft);color:#b42318}
-    .explain p{margin:10px 0 0;line-height:1.65;color:#344054;font-size:14px;white-space:pre-wrap}
-    .quiz-actions{display:flex;gap:10px;margin-top:12px}
-    .quiz-actions .primary-btn,.quiz-actions .ghost-btn{flex:1}
-
-    .card-shell{min-height:calc(100dvh - 232px);display:flex;flex-direction:column;gap:12px}
-    .flip-wrap{perspective:1400px;flex:1;min-height:420px}
-    .flip-card{position:relative;width:100%;min-height:420px;transition:transform .6s;transform-style:preserve-3d}
-    .flip-card.flipped{transform:rotateY(180deg)}
-    .face{position:absolute;inset:0;backface-visibility:hidden;background:#fff;border-radius:28px;padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
-    .face.back{transform:rotateY(180deg);background:linear-gradient(180deg,#fff,#eef5ff)}
-    .card-unit{display:inline-flex;padding:8px 12px;border-radius:999px;background:var(--blue-soft);color:var(--blue);font-weight:900;font-size:12px;margin-bottom:14px}
-    .card-front{font-size:36px;font-weight:900;letter-spacing:-.03em;line-height:1.25}
-    .card-back{font-size:28px;font-weight:900;line-height:1.4;letter-spacing:-.03em}
-    .card-example{font-size:15px;color:#455063;line-height:1.65;margin-top:16px;white-space:pre-wrap}
-    .flip-tip{margin-top:10px;text-align:center;font-size:12px;color:var(--muted);font-weight:700}
-
-    .wrong-list{display:grid;gap:10px;margin-top:12px}
-    .wrong-item{background:#fff;border-radius:20px;padding:14px;border:1px solid var(--line);box-shadow:var(--shadow);cursor:pointer}
-    .wrong-item strong{display:block;font-size:15px;line-height:1.5}
-    .wrong-item span{display:block;font-size:12px;color:var(--muted);margin-top:6px}
-
-    .empty{padding:46px 18px;text-align:center;color:var(--muted)}
-    .empty strong{display:block;color:var(--text);font-size:18px;margin-bottom:6px}
-
-    .bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(760px,100%);padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:rgba(255,255,255,.96);backdrop-filter:blur(18px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);gap:6px;z-index:30}
-    .nav-btn{background:transparent;border-radius:16px;padding:10px 4px 9px;color:#667085;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:800}
-    .nav-btn strong{font-size:20px;line-height:1}
-    .nav-btn.active{background:#eef4ff;color:var(--blue)}
-
-    .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:92px;background:#111827;color:#fff;padding:12px 16px;border-radius:999px;font-size:13px;font-weight:800;display:none;z-index:50;max-width:calc(100% - 24px)}
-    .toast.show{display:block}
-
-    @media (max-width:480px){
-      .brand{font-size:22px}
-      .question{font-size:26px}
-      .card-front{font-size:32px}
-      .card-back{font-size:24px}
-      .hero h1{font-size:25px}
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2563eb">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>나의 학습앱</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#6b7280;--line:#e3e8f0;--blue:#2563eb;--blue2:#1e40af;--blueSoft:#eaf2ff;--green:#16a34a;--greenSoft:#eaf8ef;--red:#ef4444;--redSoft:#fff1f1;--amber:#d97706;--amberSoft:#fff7e6;--graySoft:#f7f8fa;--shadow:0 10px 30px rgba(25,42,89,.08)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:"Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif}button,input{font:inherit}button{cursor:pointer}.app{max-width:760px;margin:0 auto;min-height:100dvh;padding-bottom:96px}.topbar{position:sticky;top:0;z-index:20;background:rgba(244,247,251,.94);backdrop-filter:blur(14px);padding:max(16px,env(safe-area-inset-top)) 14px 12px;border-bottom:1px solid rgba(227,232,240,.8)}.titleRow{display:flex;justify-content:space-between;align-items:center;gap:10px}.brand{font-weight:950;font-size:22px;letter-spacing:-.03em}.brand small{display:block;color:var(--muted);font-size:11px;font-weight:700;margin-top:3px}.topActions{display:flex;gap:7px}.miniBtn{height:42px;border:1px solid var(--line);background:#fff;border-radius:14px;padding:0 12px;font-size:12px;font-weight:900;color:#39445a}.subjectTabs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:13px}.subjectTab{height:46px;border:1px solid var(--line);border-radius:14px;background:#fff;color:#374151;font-weight:950}.subjectTab.active{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 8px 18px rgba(37,99,235,.22)}
+.content{padding:14px}.screen{display:none}.screen.active{display:block}.hero{padding:20px 18px;border-radius:28px;background:linear-gradient(135deg,#3478f6,#1e40af);color:#fff;box-shadow:0 12px 26px rgba(37,99,235,.25)}.hero h1{margin:0;font-size:28px;line-height:1.2;letter-spacing:-.04em}.hero p{margin:8px 0 0;font-size:13px;line-height:1.55;color:rgba(255,255,255,.88)}.quickGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.quickCard{border:0;background:#fff;color:var(--text);border-radius:20px;padding:15px;text-align:left;min-height:92px;box-shadow:var(--shadow)}.quickCard strong{display:block;font-size:16px}.quickCard span{display:block;font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4}.panel{background:#fff;border-radius:24px;padding:16px;margin-top:14px;box-shadow:var(--shadow)}.sectionTitle{font-size:18px;font-weight:950;letter-spacing:-.02em}.sectionSub{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.45}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:13px}.stat{padding:12px 6px;border-radius:18px;background:#f8fafc;border:1px solid var(--line);text-align:center}.stat strong{display:block;font-size:19px}.stat span{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.headRow{display:flex;justify-content:space-between;align-items:center;gap:10px}.badge{display:inline-flex;align-items:center;background:var(--blueSoft);color:var(--blue);padding:8px 12px;border-radius:999px;font-size:12px;font-weight:900}.progress{font-size:12px;color:var(--muted);font-weight:900}.quizShell,.cardShell{min-height:calc(100dvh - 216px);display:flex;flex-direction:column;gap:11px}.quizCard{background:#fff;border:2px solid transparent;border-radius:28px;padding:18px;box-shadow:var(--shadow);flex:1;display:flex;flex-direction:column;transition:.2s}.quizCard.correctState{border-color:#afe0bf;background:linear-gradient(180deg,#fff,#f2fbf5)}.quizCard.wrongState{border-color:#ffc3c3;background:linear-gradient(180deg,#fff,#fff4f4)}.metaRow{display:flex;flex-wrap:wrap;gap:7px}.question{font-size:28px;font-weight:950;line-height:1.48;letter-spacing:-.035em;margin:22px 0;white-space:pre-wrap;word-break:keep-all}.options{display:grid;gap:10px;margin-top:auto}.option{border:1px solid var(--line);background:#fff;border-radius:18px;padding:16px;text-align:left;font-weight:850;color:var(--text);display:flex;gap:10px;align-items:flex-start}.option .letter{min-width:24px;color:var(--blue);font-weight:950}.option.correct{background:var(--greenSoft);border-color:#9bd8af;color:#08732d}.option.wrong{background:var(--redSoft);border-color:#ffb2b2;color:#ab2525}.ox{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:auto}.ox .option{justify-content:center;align-items:center;font-size:31px;min-height:94px}.answerBox{display:none;margin-top:15px;padding-top:14px;border-top:1px solid var(--line)}.answerBox.show{display:block}.result{display:inline-block;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:950}.result.correct{background:var(--greenSoft);color:#08732d}.result.wrong{background:var(--redSoft);color:#ac2020}.explain{margin:10px 0 0;font-size:14px;color:#3d4658;line-height:1.65;white-space:pre-wrap}.actions{display:flex;gap:10px}.btn{border:1px solid var(--line);border-radius:18px;padding:14px 16px;background:#fff;color:#39445a;font-weight:900;flex:1}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 8px 18px rgba(37,99,235,.2)}.btn:disabled{opacity:.5;cursor:default;box-shadow:none}.empty{padding:54px 20px;text-align:center;color:var(--muted)}.empty strong{display:block;color:var(--text);font-size:18px;margin-bottom:7px}
+.flipWrap{perspective:1400px;flex:1;min-height:410px}.flipCard{position:relative;width:100%;height:100%;min-height:410px;transform-style:preserve-3d;transition:transform .58s}.flipCard.flipped{transform:rotateY(180deg)}.face{position:absolute;inset:0;backface-visibility:hidden;background:#fff;border-radius:28px;padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.face.back{transform:rotateY(180deg);background:linear-gradient(180deg,#fff,#f1f6ff)}.unitTag{padding:8px 12px;border-radius:999px;background:var(--blueSoft);color:var(--blue);font-size:12px;font-weight:900;margin-bottom:15px}.frontText{font-size:36px;line-height:1.25;font-weight:950;letter-spacing:-.035em}.backText{font-size:28px;line-height:1.38;font-weight:950;letter-spacing:-.03em}.wordMeta{width:100%;margin-top:18px;display:grid;gap:8px;text-align:left}.wordMetaRow{display:grid;grid-template-columns:64px 1fr;gap:10px;padding:10px 12px;border-radius:14px;background:#fff;border:1px solid var(--line);font-size:13px;line-height:1.5}.wordMetaRow b{color:#556071}.example{margin-top:12px;padding:12px 14px;width:100%;background:#fff;border:1px solid var(--line);border-radius:15px;color:#4b5563;font-size:13px;line-height:1.65;text-align:left;white-space:pre-wrap}.flipTip{margin-top:12px;font-size:11px;color:var(--muted);font-weight:800}.memoryBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.memoryBtn{border:1px solid var(--line);background:#fff;border-radius:16px;padding:12px 6px;font-weight:900;font-size:13px}.memoryBtn.know{color:#08732d;background:var(--greenSoft);border-color:#b4dfc1}.memoryBtn.confused{color:#9a5c00;background:var(--amberSoft);border-color:#f3d29a}.memoryBtn.unknown{color:#ac2020;background:var(--redSoft);border-color:#ffc6c6}.memoryBtn.active{outline:3px solid rgba(37,99,235,.2)}
+.reviewFilter{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:14px}.reviewChip{border:1px solid var(--line);background:#fff;border-radius:14px;padding:11px 6px;font-size:12px;font-weight:900;color:#4b5563}.reviewChip.active{background:var(--blueSoft);color:var(--blue);border-color:#bdd3ff}.reviewList{display:grid;gap:10px;margin-top:12px}.reviewItem{border:1px solid var(--line);background:#fff;border-radius:18px;padding:14px;text-align:left;box-shadow:0 5px 18px rgba(25,42,89,.05)}.reviewItem strong{display:block;font-size:14px;line-height:1.5}.reviewItem span{display:block;font-size:11px;color:var(--muted);margin-top:5px}.stateLabel{display:inline-block!important;width:max-content;padding:5px 8px;border-radius:999px;margin-top:8px!important;font-weight:900}.stateLabel.wrong{background:var(--redSoft);color:#ac2020}.stateLabel.confused{background:var(--amberSoft);color:#9a5c00}.stateLabel.unknown{background:var(--redSoft);color:#ac2020}
+.bottomNav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(760px,100%);z-index:30;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:7px 10px calc(7px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.navBtn{border:0;background:transparent;border-radius:15px;padding:9px 4px 8px;color:#667085;font-size:11px;font-weight:850;display:flex;flex-direction:column;align-items:center;gap:3px}.navBtn b{font-size:18px}.navBtn.active{background:var(--blueSoft);color:var(--blue)}.toast{position:fixed;left:50%;bottom:94px;transform:translateX(-50%);z-index:50;background:#111827;color:#fff;border-radius:999px;padding:11px 15px;font-size:12px;font-weight:850;display:none;max-width:calc(100% - 28px)}.toast.show{display:block}@media(max-width:480px){.brand{font-size:20px}.question{font-size:25px}.frontText{font-size:32px}.backText{font-size:24px}.wordMetaRow{grid-template-columns:56px 1fr}.hero h1{font-size:25px}}
+</style>
 </head>
 <body>
 <div class="app">
-  <header class="topbar">
-    <div class="title-row">
-      <div class="brand">나의 학습앱<small id="subtitle">회계 · 세법 · 국어 · 영어를 탭으로 구분해서 학습해요.</small></div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <input id="fileInput" type="file" accept=".xlsx,.xls,.csv" hidden />
-        <button class="icon-btn" id="uploadBtn">엑셀</button>
+<header class="topbar">
+  <div class="titleRow">
+    <div class="brand">나의 학습앱<small id="subtitle">과목별로 집중해서 학습해요.</small></div>
+    <div class="topActions">
+      <input id="fileInput" type="file" accept=".xlsx,.xls,.csv" hidden>
+      <button class="miniBtn" id="templateBtn">양식</button>
+      <button class="miniBtn" id="uploadBtn">엑셀</button>
+    </div>
+  </div>
+  <div class="subjectTabs" id="subjectTabs"></div>
+</header>
+<main class="content">
+  <section class="screen active" id="homeScreen">
+    <div class="hero">
+      <h1 id="heroTitle">회계 학습<br>바로 시작</h1>
+      <p>문제를 풀거나 카드를 뒤집어 학습하세요. 틀린 문제와 헷갈리는 단어는 자동으로 복습함에 모입니다.</p>
+      <div class="quickGrid">
+        <button class="quickCard" data-launch="all"><strong>전체 퀴즈</strong><span>OX와 객관식을 섞어서</span></button>
+        <button class="quickCard" data-launch="ox"><strong>OX 퀴즈</strong><span>빠르게 판단하기</span></button>
+        <button class="quickCard" data-launch="mc"><strong>객관식</strong><span>실전처럼 선택하기</span></button>
+        <button class="quickCard" data-launch="card"><strong>카드 학습</strong><span>뒤집고 기억 상태 체크</span></button>
       </div>
     </div>
-    <div class="subject-tabs" id="subjectTabs"></div>
-  </header>
+    <div class="panel">
+      <div class="sectionTitle">학습 현황</div>
+      <div class="sectionSub">현재 선택한 과목 기준입니다.</div>
+      <div class="stats">
+        <div class="stat"><strong id="statTotal">0</strong><span>전체 항목</span></div>
+        <div class="stat"><strong id="statReview">0</strong><span>복습할 것</span></div>
+        <div class="stat"><strong id="statRate">0%</strong><span>퀴즈 정답률</span></div>
+      </div>
+    </div>
+  </section>
 
-  <main class="content">
-    <section class="screen active" id="homeScreen">
-      <div class="hero">
-        <h1 id="heroTitle">회계 퀴즈<br>바로 시작</h1>
-        <p>과목을 먼저 고르고, 원하는 방식으로 바로 문제를 풀어보세요. 정답을 맞히면 카드와 버튼 색이 바뀌고, 틀린 문제는 자동으로 오답노트에 저장됩니다.</p>
-        <div class="quick-grid">
-          <button class="quick-card" data-launch="all"><strong>전체 퀴즈</strong><span>OX + 객관식을 섞어서</span></button>
-          <button class="quick-card" data-launch="ox"><strong>OX 퀴즈</strong><span>빠르게 판단하며 복습</span></button>
-          <button class="quick-card" data-launch="mc"><strong>객관식</strong><span>선택지로 실전처럼</span></button>
-          <button class="quick-card" data-launch="card"><strong>카드 학습</strong><span>앞/뒤 뒤집어서 암기</span></button>
+  <section class="screen" id="quizScreen">
+    <div class="quizShell">
+      <div class="headRow"><div class="badge" id="quizBadge">회계 · 퀴즈</div><div class="progress" id="quizProgress">1 / 1</div></div>
+      <div class="quizCard" id="quizCard">
+        <div class="metaRow" id="quizMeta"></div>
+        <div class="question" id="questionText"></div>
+        <div class="options" id="optionsArea"></div>
+        <div class="answerBox" id="answerBox"><span class="result" id="resultPill"></span><div class="explain" id="explainText"></div></div>
+      </div>
+      <div class="actions"><button class="btn" id="prevQuizBtn">이전</button><button class="btn primary" id="nextQuizBtn">다음 문제</button></div>
+    </div>
+  </section>
+
+  <section class="screen" id="cardScreen">
+    <div class="cardShell">
+      <div class="headRow"><div class="badge" id="cardBadge">영어 · 카드</div><div class="progress" id="cardProgress">1 / 1</div></div>
+      <div class="flipWrap">
+        <div class="flipCard" id="flipCard">
+          <div class="face front"><div class="unitTag" id="frontUnit">단원</div><div class="frontText" id="frontText">앞면</div><div class="flipTip">카드를 눌러 뒤집기</div></div>
+          <div class="face back"><div class="unitTag" id="backUnit">단원</div><div class="backText" id="backText">뒷면</div><div class="wordMeta" id="wordMeta"></div><div class="example" id="exampleText"></div><div class="flipTip">다시 누르면 앞면으로 돌아가요</div></div>
         </div>
       </div>
-
-      <div class="panel">
-        <div class="row">
-          <div>
-            <div class="section-title">오늘의 학습 현황</div>
-            <div class="section-sub">선택한 과목 기준으로 계산됩니다.</div>
-          </div>
-          <button class="ghost-btn" id="templateInfoBtn">엑셀 형식 보기</button>
-        </div>
-        <div class="stats">
-          <div class="stat"><strong id="statTotal">0</strong><span>전체 문항</span></div>
-          <div class="stat"><strong id="statWrong">0</strong><span>오답 문항</span></div>
-          <div class="stat"><strong id="statRate">0%</strong><span>정답률</span></div>
-        </div>
-        <div class="toolbar">
-          <button class="chip active" id="kindAllBtn">전체</button>
-          <button class="chip" id="kindQuizBtn">퀴즈</button>
-          <button class="chip" id="kindCardBtn">카드</button>
-        </div>
+      <div class="memoryBtns" id="memoryBtns">
+        <button class="memoryBtn know" data-memory="know">알아요</button>
+        <button class="memoryBtn confused" data-memory="confused">헷갈려요</button>
+        <button class="memoryBtn unknown" data-memory="unknown">모르겠어요</button>
       </div>
-    </section>
+      <div class="actions"><button class="btn" id="prevCardBtn">이전 카드</button><button class="btn primary" id="nextCardBtn">다음 카드</button></div>
+    </div>
+  </section>
 
-    <section class="screen" id="quizScreen">
-      <div class="quiz-shell">
-        <div class="quiz-head">
-          <div class="badge" id="quizBadge">회계 · 전체</div>
-          <div class="progress" id="quizProgress">1 / 1</div>
-        </div>
-        <div class="quiz-card" id="quizCard">
-          <div class="quiz-meta" id="quizMeta"></div>
-          <div class="question" id="questionText">문제를 불러오는 중...</div>
-          <div class="options" id="optionsArea"></div>
-          <div class="explain" id="explainBox">
-            <span class="result-pill" id="resultPill">정답</span>
-            <p id="explainText"></p>
-          </div>
-        </div>
-        <div class="quiz-actions">
-          <button class="ghost-btn" id="prevQuizBtn">이전</button>
-          <button class="primary-btn" id="nextQuizBtn">다음 문제</button>
-        </div>
+  <section class="screen" id="reviewScreen">
+    <div class="panel" style="margin-top:0">
+      <div class="sectionTitle">복습함</div>
+      <div class="sectionSub">틀린 문제, 헷갈리는 단어, 모르는 단어를 한곳에서 다시 볼 수 있어요.</div>
+      <div class="reviewFilter">
+        <button class="reviewChip active" data-review="all">전체</button>
+        <button class="reviewChip" data-review="confused">헷갈림</button>
+        <button class="reviewChip" data-review="unknown">모름</button>
       </div>
-    </section>
-
-    <section class="screen" id="cardScreen">
-      <div class="card-shell">
-        <div class="quiz-head">
-          <div class="badge" id="cardBadge">영어 · 카드</div>
-          <div class="progress" id="cardProgress">1 / 1</div>
-        </div>
-        <div class="flip-wrap">
-          <div class="flip-card" id="flipCard">
-            <div class="face front">
-              <div class="card-unit" id="cardUnitFront">단원</div>
-              <div class="card-front" id="cardFrontText">앞면</div>
-              <div class="flip-tip">카드를 탭하면 뒤집혀요</div>
-            </div>
-            <div class="face back">
-              <div class="card-unit" id="cardUnitBack">단원</div>
-              <div class="card-back" id="cardBackText">뒷면</div>
-              <div class="card-example" id="cardExampleText"></div>
-              <div class="flip-tip">다시 탭하면 앞면으로 돌아가요</div>
-            </div>
-          </div>
-        </div>
-        <div class="quiz-actions">
-          <button class="ghost-btn" id="prevCardBtn">이전 카드</button>
-          <button class="primary-btn" id="nextCardBtn">다음 카드</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="screen" id="wrongScreen">
-      <div class="panel">
-        <div class="section-title">오답 노트</div>
-        <div class="section-sub">틀렸거나 헷갈린 문제를 다시 눌러서 바로 풀 수 있어요.</div>
-        <div class="wrong-list" id="wrongList"></div>
-      </div>
-    </section>
-  </main>
+      <div class="reviewList" id="reviewList"></div>
+    </div>
+  </section>
+</main>
 </div>
-
-<nav class="bottom-nav">
-  <button class="nav-btn active" data-screen="home"><strong>⌂</strong><span>홈</span></button>
-  <button class="nav-btn" data-screen="quiz"><strong>✎</strong><span>퀴즈</span></button>
-  <button class="nav-btn" data-screen="card"><strong>🂠</strong><span>카드</span></button>
-  <button class="nav-btn" data-screen="wrong"><strong>!</strong><span>오답</span></button>
+<nav class="bottomNav">
+  <button class="navBtn active" data-screen="home"><b>⌂</b><span>홈</span></button>
+  <button class="navBtn" data-screen="quiz"><b>✎</b><span>퀴즈</span></button>
+  <button class="navBtn" data-screen="card"><b>▣</b><span>카드</span></button>
+  <button class="navBtn" data-screen="review"><b>↻</b><span>복습</span></button>
 </nav>
-
 <div class="toast" id="toast"></div>
-
 <script>
-const SAMPLE_ITEMS = [
-  {subject:'회계',kind:'OX',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 정의를 확인하는 기초 문항입니다.',front:'',back:'',example:'',tags:'기초'},
-  {subject:'회계',kind:'객관식',unit:'회계원리',question:'다음 중 자산에 해당하는 것은?',answer:'A',options:['현금','매출','급여','이자수익'],explanation:'현금은 기업이 통제하는 경제적 자원으로 자산입니다.',front:'',back:'',example:'',tags:'자산'},
-  {subject:'세법',kind:'OX',unit:'부가가치세',question:'부가가치세는 일반적으로 재화나 용역의 소비에 과세되는 간접세이다.',answer:'O',options:[],explanation:'부가가치세의 기본 성격을 확인합니다.',front:'',back:'',example:'',tags:'부가세'},
-  {subject:'세법',kind:'객관식',unit:'소득세',question:'다음 중 소득세법상 소득 구분의 예로 가장 적절한 것은?',answer:'B',options:['자산','근로소득','부채','자본금'],explanation:'근로소득은 대표적인 소득세 과세소득입니다.',front:'',back:'',example:'',tags:'소득세'},
-  {subject:'국어',kind:'OX',unit:'문법',question:'\'먹었다\'의 \`었\`은 과거 시제를 나타내는 선어말 어미이다.',answer:'O',options:[],explanation:'과거 시제를 나타내는 선어말 어미 -었- 을 확인하는 문항입니다.',front:'',back:'',example:'',tags:'문법'},
-  {subject:'국어',kind:'개념',unit:'문학',question:'',answer:'',options:[],explanation:'',front:'서정 갈래',back:'개인의 정서와 감정을 운율 있는 언어로 표현하는 문학 갈래',example:'예: 시, 가사',tags:'문학'},
-  {subject:'영어',kind:'단어',unit:'Vocabulary',question:'',answer:'',options:[],explanation:'',front:'account',back:'계정, 설명하다',example:'Please check your account balance.',tags:'영단어'},
-  {subject:'영어',kind:'단어',unit:'Vocabulary',question:'',answer:'',options:[],explanation:'',front:'deduct',back:'공제하다, 빼다',example:'The company will deduct the fee from your payment.',tags:'영단어'},
-  {subject:'영어',kind:'문법',unit:'Grammar',question:'Choose the correct sentence.',answer:'B',options:['She go to school every day.','She goes to school every day.','She going to school every day.','She gone to school every day.'],explanation:'3인칭 단수 주어 she와 현재시제 일반동사에는 -s가 붙습니다.',front:'',back:'',example:'',tags:'문법'},
-  {subject:'영어',kind:'OX',unit:'Grammar',question:'In the sentence \"They are studying now,\" the present progressive expresses an action in progress.',answer:'O',options:[],explanation:'현재진행형은 현재 진행 중인 동작을 나타낼 수 있습니다.',front:'',back:'',example:'',tags:'문법'}
+const SUBJECTS=['회계','세법','국어','영어'];
+const STORAGE='study_app_v5';
+const SAMPLE=[
+{subject:'회계',kind:'OX',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.',front:'',back:'',partOfSpeech:'',synonyms:'',antonyms:'',derivatives:'',example:'',tags:'기초'},
+{subject:'회계',kind:'객관식',unit:'회계원리',question:'다음 중 자산에 해당하는 것은?',answer:'A',options:['현금','매출','급여','이자수익'],explanation:'현금은 기업이 통제하는 경제적 자원으로 자산입니다.',front:'',back:'',partOfSpeech:'',synonyms:'',antonyms:'',derivatives:'',example:'',tags:'자산'},
+{subject:'세법',kind:'OX',unit:'부가가치세',question:'부가가치세는 일반적으로 재화나 용역의 소비에 과세되는 간접세이다.',answer:'O',options:[],explanation:'부가가치세의 기본 성격을 확인합니다.',front:'',back:'',partOfSpeech:'',synonyms:'',antonyms:'',derivatives:'',example:'',tags:'부가세'},
+{subject:'국어',kind:'OX',unit:'문법',question:"'먹었다'의 '었'은 과거 시제를 나타내는 선어말 어미이다.",answer:'O',options:[],explanation:"과거 시제를 나타내는 선어말 어미 '-었-'을 확인합니다.",front:'',back:'',partOfSpeech:'',synonyms:'',antonyms:'',derivatives:'',example:'',tags:'문법'},
+{subject:'영어',kind:'단어',unit:'Vocabulary',question:'',answer:'',options:[],explanation:'',front:'account',back:'계정, 설명하다',partOfSpeech:'noun / verb',synonyms:'record, report',antonyms:'',derivatives:'accountable, accounting',example:'Please check your account balance.',tags:'영단어'},
+{subject:'영어',kind:'단어',unit:'Vocabulary',question:'',answer:'',options:[],explanation:'',front:'deduct',back:'공제하다, 빼다',partOfSpeech:'verb',synonyms:'subtract, remove',antonyms:'add',derivatives:'deduction, deductible',example:'The company will deduct the fee from your payment.',tags:'영단어'},
+{subject:'영어',kind:'문법',unit:'Grammar',question:'Choose the correct sentence.',answer:'B',options:['She go to school every day.','She goes to school every day.','She going to school every day.','She gone to school every day.'],explanation:'3인칭 단수 주어 she와 현재시제 일반동사에는 -s가 붙습니다.',front:'',back:'',partOfSpeech:'',synonyms:'',antonyms:'',derivatives:'',example:'',tags:'문법'}
 ].map((x,i)=>({...x,uid:'sample_'+i}));
-
-const SUBJECTS = ['회계','세법','국어','영어'];
-const STORAGE_KEY = 'study_app_v2_state';
-const S = {
-  items: [],
-  currentSubject: '회계',
-  screen: 'home',
-  launchKind: 'all',
-  currentIndex: 0,
-  currentCardIndex: 0,
-  answered: false,
-  wrongSet: new Set(),
-  stats: {correct:0,total:0},
-  quizPool: [],
-  cardPool: [],
-  lastLoadedFile: '샘플 데이터'
-};
-
-const $ = (id)=>document.getElementById(id);
-const $$ = (sel)=>[...document.querySelectorAll(sel)];
-
-function uid(item, idx){ return item.uid || `${item.subject}_${item.kind}_${item.unit}_${idx}`; }
-function norm(v){ return (v ?? '').toString().trim(); }
-function showToast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(showToast._t); showToast._t=setTimeout(()=>t.classList.remove('show'),1700); }
-function saveState(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({
-    wrong:[...S.wrongSet], stats:S.stats, lastLoadedFile:S.lastLoadedFile, items:S.items
-  }));
-}
-function loadState(){
-  try{ const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
-    if(saved){
-      if(Array.isArray(saved.items) && saved.items.length) S.items=saved.items;
-      if(Array.isArray(saved.wrong)) S.wrongSet=new Set(saved.wrong);
-      if(saved.stats) S.stats=saved.stats;
-      if(saved.lastLoadedFile) S.lastLoadedFile=saved.lastLoadedFile;
-    }
-  }catch(e){}
-}
-
-function cardItemsOfSubject(subject){
-  return S.items.filter(x=>x.subject===subject && ['단어','개념'].includes(x.kind) && (x.front || x.back));
-}
-function quizItemsOfSubject(subject){
-  return S.items.filter(x=>x.subject===subject && ['OX','객관식','문법'].includes(x.kind) && (x.question || x.options?.length));
-}
-function currentSubjectItems(){ return S.items.filter(x=>x.subject===S.currentSubject); }
-
-function renderSubjectTabs(){
-  $('subjectTabs').innerHTML = SUBJECTS.map(s=>`<button class="subject-tab ${s===S.currentSubject?'active':''}" data-subject="${s}">${s}</button>`).join('');
-  $$('#subjectTabs .subject-tab').forEach(btn=>btn.onclick=()=>{ S.currentSubject=btn.dataset.subject; S.currentIndex=0; S.currentCardIndex=0; refreshPools(); renderAll(); });
-}
-
-function refreshPools(){
-  const quizBase = quizItemsOfSubject(S.currentSubject);
-  if(S.launchKind==='ox') S.quizPool = quizBase.filter(x=>x.kind==='OX');
-  else if(S.launchKind==='mc') S.quizPool = quizBase.filter(x=>x.kind!=='OX');
-  else S.quizPool = [...quizBase];
-  S.cardPool = cardItemsOfSubject(S.currentSubject);
-  if(S.currentIndex>=S.quizPool.length) S.currentIndex=0;
-  if(S.currentCardIndex>=S.cardPool.length) S.currentCardIndex=0;
-}
-
-function renderHome(){
-  $('heroTitle').innerHTML = `${S.currentSubject} 학습<br>바로 시작`;
-  const subjectItems = currentSubjectItems();
-  const wrongCount = subjectItems.filter((it,idx)=>S.wrongSet.has(uid(it,idx))).length;
-  $('statTotal').textContent = subjectItems.length;
-  $('statWrong').textContent = wrongCount;
-  $('statRate').textContent = S.stats.total ? Math.round((S.stats.correct/S.stats.total)*100) + '%' : '0%';
-  $('subtitle').textContent = `${S.currentSubject} 중심으로 보고 있어요 · 현재 파일: ${S.lastLoadedFile}`;
-}
-
-function renderQuiz(){
-  refreshPools();
-  const list = S.quizPool;
-  if(!list.length){
-    $('quizBadge').textContent = `${S.currentSubject} · 퀴즈`;
-    $('quizProgress').textContent = '0 / 0';
-    $('quizCard').className='quiz-card';
-    $('quizMeta').innerHTML='';
-    $('questionText').textContent='이 과목에는 퀴즈 문항이 아직 없어요. 엑셀을 불러오거나 다른 과목 탭을 눌러보세요.';
-    $('optionsArea').innerHTML='';
-    $('explainBox').classList.remove('show');
-    return;
-  }
-
-  const item = list[S.currentIndex];
-  S.answered=false;
-  $('quizBadge').textContent = `${item.subject} · ${S.launchKind==='all'?'전체':S.launchKind==='ox'?'OX':'객관식'}`;
-  $('quizProgress').textContent = `${S.currentIndex+1} / ${list.length}`;
-  $('quizCard').className='quiz-card';
-  $('quizMeta').innerHTML = `<span class="badge">${item.unit || '단원 없음'}</span><span class="badge">${item.kind}</span>`;
-  $('questionText').textContent = item.question || '(문제 없음)';
-  $('explainBox').classList.remove('show');
-  $('explainText').textContent = item.explanation || '해설이 없습니다.';
-
-  const opts = $('optionsArea');
-  opts.innerHTML='';
-  if(item.kind==='OX'){
-    opts.className='ox-row';
-    [['O','O'],['X','X']].forEach(([label,val])=>{
-      const b=document.createElement('button');
-      b.className='option-btn';
-      b.innerHTML=`<span>${label}</span>`;
-      b.onclick=()=>answerQuestion(item,val,b);
-      opts.appendChild(b);
-    });
-  } else {
-    opts.className='options';
-    const letters=['A','B','C','D','E'];
-    (item.options||[]).forEach((op,idx)=>{
-      const b=document.createElement('button');
-      b.className='option-btn';
-      b.innerHTML=`<span class="no">${letters[idx]}</span><span>${op}</span>`;
-      b.onclick=()=>answerQuestion(item,letters[idx],b,idx);
-      opts.appendChild(b);
-    });
-  }
-}
-
-function answerQuestion(item, userAnswer, clickedBtn, idx){
-  if(S.answered) return;
-  S.answered = true;
-  const correct = norm(userAnswer).toUpperCase() === norm(item.answer).toUpperCase();
-  S.stats.total += 1;
-  if(correct) S.stats.correct += 1;
-  const itemKey = uid(item, S.currentIndex);
-  if(!correct) S.wrongSet.add(itemKey); else S.wrongSet.delete(itemKey);
-  saveState();
-  $('quizCard').classList.add(correct ? 'state-correct' : 'state-wrong');
-
-  const btns = [...$('optionsArea').querySelectorAll('.option-btn')];
-  const letters=['A','B','C','D','E'];
-  btns.forEach((b,i)=>{
-    if(item.kind==='OX'){
-      const val = b.textContent.trim();
-      if(val===norm(item.answer).toUpperCase()) b.classList.add('correct');
-      if(b===clickedBtn && !correct) b.classList.add('wrong');
-    } else {
-      const letter = letters[i];
-      if(letter===norm(item.answer).toUpperCase()) b.classList.add('correct');
-      if(b===clickedBtn && !correct) b.classList.add('wrong');
-    }
-  });
-
-  $('resultPill').textContent = correct ? '정답이에요!' : `오답이에요 · 정답 ${item.answer}`;
-  $('resultPill').className = 'result-pill ' + (correct ? 'correct' : 'wrong');
-  $('explainBox').classList.add('show');
-  renderHome();
-  renderWrong();
-  showToast(correct ? '정답!' : '오답노트에 저장했어요');
-}
-
-function renderCards(){
-  refreshPools();
-  const list = S.cardPool;
-  if(!list.length){
-    $('cardBadge').textContent = `${S.currentSubject} · 카드`;
-    $('cardProgress').textContent = '0 / 0';
-    $('cardUnitFront').textContent='카드 없음';
-    $('cardUnitBack').textContent='카드 없음';
-    $('cardFrontText').textContent='이 과목의 카드가 없어요';
-    $('cardBackText').textContent='엑셀에 단어/개념 행을 추가해보세요';
-    $('cardExampleText').textContent='';
-    $('flipCard').classList.remove('flipped');
-    return;
-  }
-  const item = list[S.currentCardIndex];
-  $('cardBadge').textContent = `${item.subject} · 카드`;
-  $('cardProgress').textContent = `${S.currentCardIndex+1} / ${list.length}`;
-  $('cardUnitFront').textContent = item.unit || '단원 없음';
-  $('cardUnitBack').textContent = item.unit || '단원 없음';
-  $('cardFrontText').textContent = item.front || item.question || '앞면 없음';
-  $('cardBackText').textContent = item.back || item.answer || '뒷면 없음';
-  $('cardExampleText').textContent = item.example || item.explanation || '';
-  $('flipCard').classList.remove('flipped');
-}
-
-function renderWrong(){
-  const all = currentSubjectItems();
-  const wrongItems = all.filter((it,idx)=>S.wrongSet.has(uid(it,idx)));
-  const area = $('wrongList');
-  area.innerHTML='';
-  if(!wrongItems.length){
-    area.innerHTML = `<div class="empty"><strong>오답이 아직 없어요</strong>정답을 틀리면 여기에 자동으로 저장됩니다.</div>`;
-    return;
-  }
-  wrongItems.forEach((item, idx)=>{
-    const div=document.createElement('button');
-    div.className='wrong-item';
-    div.innerHTML = `<strong>${item.question || item.front || '(문항)'}</strong><span>${item.unit || ''} · ${item.kind}</span>`;
-    div.onclick=()=>{
-      if(['단어','개념'].includes(item.kind)){
-        S.screen='card';
-        S.currentCardIndex = S.cardPool.findIndex(x=>uid(x,0)===uid(item,0));
-        if(S.currentCardIndex<0) S.currentCardIndex=0;
-      } else {
-        S.screen='quiz';
-        const found = S.quizPool.findIndex(x=>uid(x,0)===uid(item,0));
-        S.currentIndex = found>=0 ? found : 0;
-      }
-      renderAll();
-    };
-    area.appendChild(div);
-  });
-}
-
-function setScreen(screen){
-  S.screen=screen;
-  $$('.screen').forEach(el=>el.classList.toggle('active', el.id===screen+'Screen'));
-  $$('.nav-btn').forEach(el=>el.classList.toggle('active', el.dataset.screen===screen));
-  if(screen==='quiz') renderQuiz();
-  if(screen==='card') renderCards();
-  if(screen==='wrong') renderWrong();
-  if(screen==='home') renderHome();
-}
-
-function renderAll(){
-  renderSubjectTabs();
-  renderHome();
-  refreshPools();
-  renderQuiz();
-  renderCards();
-  renderWrong();
-  setScreen(S.screen);
-}
-
-function nextQuiz(){ if(!S.quizPool.length) return; S.currentIndex=(S.currentIndex+1)%S.quizPool.length; renderQuiz(); }
-function prevQuiz(){ if(!S.quizPool.length) return; S.currentIndex=(S.currentIndex-1+S.quizPool.length)%S.quizPool.length; renderQuiz(); }
-function nextCard(){ if(!S.cardPool.length) return; S.currentCardIndex=(S.currentCardIndex+1)%S.cardPool.length; renderCards(); }
-function prevCard(){ if(!S.cardPool.length) return; S.currentCardIndex=(S.currentCardIndex-1+S.cardPool.length)%S.cardPool.length; renderCards(); }
-
-function launch(mode){
-  if(mode==='card'){ S.screen='card'; }
-  else { S.launchKind=mode; S.screen='quiz'; }
-  renderAll();
-}
-
-function parseRows(rows){
-  const keys = {
-    subject:['subject','과목'], kind:['kind','유형','학습유형'], unit:['unit','단원'], question:['question','문제'],
-    answer:['answer','정답'], options:['options','보기'], explanation:['explanation','해설'], front:['front','앞면','단어'],
-    back:['back','뒷면','뜻','정의'], example:['example','예문'], tags:['tags','태그']
-  };
-  const get = (obj, names)=>{
-    for(const n of names){ if(obj[n] !== undefined && obj[n] !== null && String(obj[n]).trim()!=='') return String(obj[n]).trim(); }
-    return '';
-  };
-  return rows.map((row, idx)=>{
-    const optionsRaw = get(row, keys.options);
-    return {
-      subject:get(row, keys.subject), kind:get(row, keys.kind), unit:get(row, keys.unit), question:get(row, keys.question),
-      answer:get(row, keys.answer), options: optionsRaw ? optionsRaw.split(/\s*\|\s*|\s*,\s*/).filter(Boolean) : [],
-      explanation:get(row, keys.explanation), front:get(row, keys.front), back:get(row, keys.back),
-      example:get(row, keys.example), tags:get(row, keys.tags), uid:'u_'+Date.now()+'_'+idx
-    };
-  }).filter(x=>x.subject && (x.question || x.front || x.back));
-}
-
-function loadWorkbook(file){
-  const reader = new FileReader();
-  reader.onload = (e)=>{
-    try{
-      const data = new Uint8Array(e.target.result);
-      const wb = XLSX.read(data, {type:'array'});
-      const all=[];
-      wb.SheetNames.forEach(name=>{
-        const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], {defval:''});
-        all.push(...parseRows(rows));
-      });
-      if(!all.length){ showToast('읽을 수 있는 학습 행이 없어요'); return; }
-      S.items = all;
-      S.lastLoadedFile = file.name;
-      S.currentSubject = SUBJECTS.find(s=>S.items.some(x=>x.subject===s)) || S.currentSubject;
-      S.currentIndex = 0; S.currentCardIndex = 0; S.wrongSet = new Set(); S.stats = {correct:0,total:0};
-      saveState(); refreshPools(); renderAll(); showToast('엑셀을 불러왔어요');
-    }catch(err){ console.error(err); showToast('엑셀을 읽는 중 오류가 났어요'); }
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-function downloadTemplateInfo(){
-  alert('엑셀 열 이름 예시:\n과목 | 유형 | 단원 | 문제 | 정답 | 보기 | 해설 | 앞면 | 뒷면 | 예문 | 태그\n\n보기는 A|B|C|D 처럼 | 로 구분해 넣어주세요.\n카드형은 앞면/뒷면만 채워도 됩니다.');
-}
-
-$('uploadBtn').onclick = ()=>$('fileInput').click();
-$('fileInput').addEventListener('change', e=>{ const file=e.target.files?.[0]; if(file) loadWorkbook(file); });
-$('templateInfoBtn').onclick = downloadTemplateInfo;
-$('[data-launch="all"]')?.click;
-$$('[data-launch]').forEach(btn=>btn.onclick=()=>launch(btn.dataset.launch));
-$$('.nav-btn').forEach(btn=>btn.onclick=()=>{ setScreen(btn.dataset.screen); });
-$('nextQuizBtn').onclick = nextQuiz; $('prevQuizBtn').onclick = prevQuiz;
-$('nextCardBtn').onclick = nextCard; $('prevCardBtn').onclick = prevCard;
-$('flipCard').onclick = ()=>$('flipCard').classList.toggle('flipped');
-$('kindAllBtn').onclick = ()=>{ S.launchKind='all'; refreshPools(); renderAll(); showToast('전체 모드'); };
-$('kindQuizBtn').onclick = ()=>{ S.screen='quiz'; refreshPools(); renderAll(); };
-$('kindCardBtn').onclick = ()=>{ S.screen='card'; refreshPools(); renderAll(); };
-
-loadState();
-if(!S.items.length) S.items = SAMPLE_ITEMS;
-refreshPools();
-renderAll();
-if(!('serviceWorker' in navigator)){} else { window.addEventListener('load', ()=> navigator.serviceWorker.register('./service-worker.js').catch(()=>{})); }
+const S={items:[],subject:'회계',screen:'home',quizMode:'all',qIndex:0,cIndex:0,answered:false,quizPool:[],cardPool:[],wrong:new Set(),memory:{},stats:{correct:0,total:0},reviewFilter:'all',filename:'샘플 데이터'};
+const $=id=>document.getElementById(id), $$=sel=>[...document.querySelectorAll(sel)];
+function norm(v){return String(v??'').trim()}function itemId(it){return it.uid||[it.subject,it.kind,it.unit,it.question,it.front,it.back].join('|')}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),1600)}
+function save(){try{localStorage.setItem(STORAGE,JSON.stringify({items:S.items,wrong:[...S.wrong],memory:S.memory,stats:S.stats,filename:S.filename}))}catch(e){}}
+function load(){try{let o=JSON.parse(localStorage.getItem(STORAGE)||'null');if(!o){const old=JSON.parse(localStorage.getItem('study_app_v2_state')||'null');if(old)o={items:old.items,wrong:old.wrong,memory:{},stats:old.stats,filename:old.lastLoadedFile}}if(o){if(Array.isArray(o.items)&&o.items.length)S.items=o.items;if(Array.isArray(o.wrong))S.wrong=new Set(o.wrong);if(o.memory)S.memory=o.memory;if(o.stats)S.stats=o.stats;if(o.filename)S.filename=o.filename}}catch(e){}}
+function isCard(it){return ['단어','개념'].includes(norm(it.kind))&&(it.front||it.back)}function isQuiz(it){return ['OX','객관식','문법'].includes(norm(it.kind))&&(it.question||it.options?.length)}
+function refreshPools(){let q=S.items.filter(x=>x.subject===S.subject&&isQuiz(x));if(S.quizMode==='ox')q=q.filter(x=>x.kind==='OX');if(S.quizMode==='mc')q=q.filter(x=>x.kind!=='OX');S.quizPool=q;S.cardPool=S.items.filter(x=>x.subject===S.subject&&isCard(x));S.qIndex=Math.min(S.qIndex,Math.max(0,q.length-1));S.cIndex=Math.min(S.cIndex,Math.max(0,S.cardPool.length-1))}
+function renderTabs(){$('subjectTabs').innerHTML=SUBJECTS.map(s=>`<button class="subjectTab ${s===S.subject?'active':''}" data-sub="${s}">${s}</button>`).join('');$$('[data-sub]').forEach(b=>b.onclick=()=>{S.subject=b.dataset.sub;S.qIndex=0;S.cIndex=0;refreshPools();renderAll()})}
+function renderHome(){const items=S.items.filter(x=>x.subject===S.subject),review=items.filter(x=>{const id=itemId(x);return S.wrong.has(id)||['confused','unknown'].includes(S.memory[id])}).length;$('heroTitle').innerHTML=`${S.subject} 학습<br>바로 시작`;$('statTotal').textContent=items.length;$('statReview').textContent=review;$('statRate').textContent=S.stats.total?Math.round(S.stats.correct/S.stats.total*100)+'%':'0%';$('subtitle').textContent=`현재 파일: ${S.filename}`}
+function renderQuiz(){refreshPools();const list=S.quizPool,card=$('quizCard'),opts=$('optionsArea');card.className='quizCard';$('answerBox').classList.remove('show');opts.innerHTML='';if(!list.length){$('quizBadge').textContent=S.subject+' · 퀴즈';$('quizProgress').textContent='0 / 0';$('quizMeta').innerHTML='';$('questionText').innerHTML='<div class="empty"><strong>퀴즈가 아직 없어요</strong>엑셀에 OX/객관식/문법 문항을 추가해보세요.</div>';$('prevQuizBtn').disabled=true;$('nextQuizBtn').disabled=true;return}const it=list[S.qIndex],last=S.qIndex===list.length-1,first=S.qIndex===0;S.answered=false;$('quizBadge').textContent=`${it.subject} · ${S.quizMode==='all'?'전체':S.quizMode==='ox'?'OX':'객관식'}`;$('quizProgress').textContent=`${S.qIndex+1} / ${list.length}${last?' · 마지막 문제':''}`;$('quizMeta').innerHTML=`<span class="badge">${it.unit||'단원 없음'}</span><span class="badge">${it.kind}</span>`;$('questionText').textContent=it.question||'(문제 없음)';$('explainText').textContent=it.explanation||'해설이 없습니다.';$('prevQuizBtn').disabled=first;$('nextQuizBtn').disabled=last;$('nextQuizBtn').textContent=last?'마지막 문제':'다음 문제';if(it.kind==='OX'){opts.className='ox';['O','X'].forEach(v=>{const b=document.createElement('button');b.className='option';b.textContent=v;b.onclick=()=>grade(it,v,b);opts.appendChild(b)})}else{opts.className='options';const letters=['A','B','C','D','E'];(it.options||[]).forEach((o,i)=>{const b=document.createElement('button');b.className='option';b.innerHTML=`<span class="letter">${letters[i]}</span><span>${o}</span>`;b.onclick=()=>grade(it,letters[i],b);opts.appendChild(b)})}}
+function grade(it,choice,clicked){if(S.answered)return;S.answered=true;const answer=norm(it.answer).toUpperCase(),ok=norm(choice).toUpperCase()===answer,id=itemId(it);S.stats.total++;if(ok)S.stats.correct++;if(ok)S.wrong.delete(id);else S.wrong.add(id);$('quizCard').classList.add(ok?'correctState':'wrongState');const letters=['A','B','C','D','E'];[...$('optionsArea').children].forEach((b,i)=>{const val=it.kind==='OX'?b.textContent.trim():letters[i];if(val===answer)b.classList.add('correct');if(b===clicked&&!ok)b.classList.add('wrong')});$('resultPill').textContent=ok?'정답이에요!':`오답이에요 · 정답 ${it.answer}`;$('resultPill').className='result '+(ok?'correct':'wrong');$('answerBox').classList.add('show');save();renderHome();renderReview();toast(ok?'정답!':'복습함에 저장했어요')}
+function renderCard(){refreshPools();const list=S.cardPool;if(!list.length){$('cardBadge').textContent=S.subject+' · 카드';$('cardProgress').textContent='0 / 0';$('frontUnit').textContent='카드 없음';$('backUnit').textContent='카드 없음';$('frontText').textContent='카드가 아직 없어요';$('backText').textContent='엑셀에 단어/개념 행을 추가해보세요';$('wordMeta').innerHTML='';$('exampleText').textContent='';$('memoryBtns').style.visibility='hidden';$('prevCardBtn').disabled=true;$('nextCardBtn').disabled=true;return}const it=list[S.cIndex],last=S.cIndex===list.length-1,first=S.cIndex===0,id=itemId(it),state=S.memory[id]||'';$('cardBadge').textContent=`${it.subject} · ${it.kind}`;$('cardProgress').textContent=`${S.cIndex+1} / ${list.length}${last?' · 마지막 카드':''}`;$('frontUnit').textContent=it.unit||'단원 없음';$('backUnit').textContent=it.unit||'단원 없음';$('frontText').textContent=it.front||it.question||'앞면 없음';$('backText').textContent=it.back||it.answer||'뒷면 없음';const rows=[['품사',it.partOfSpeech],['동의어',it.synonyms],['반의어',it.antonyms],['파생어',it.derivatives]].filter(x=>norm(x[1]));$('wordMeta').innerHTML=rows.map(([k,v])=>`<div class="wordMetaRow"><b>${k}</b><span>${v}</span></div>`).join('');$('exampleText').style.display=(it.example||it.explanation)?'block':'none';$('exampleText').textContent=it.example||it.explanation||'';$('flipCard').classList.remove('flipped');$('memoryBtns').style.visibility='visible';$$('[data-memory]').forEach(b=>b.classList.toggle('active',b.dataset.memory===state));$('prevCardBtn').disabled=first;$('nextCardBtn').disabled=last;$('nextCardBtn').textContent=last?'마지막 카드':'다음 카드'}
+function setMemory(state){if(!S.cardPool.length)return;const it=S.cardPool[S.cIndex],id=itemId(it);S.memory[id]=state;save();renderHome();renderReview();$$('[data-memory]').forEach(b=>b.classList.toggle('active',b.dataset.memory===state));toast(state==='know'?'알아요로 표시했어요':state==='confused'?'헷갈림에 모아뒀어요':'모르는 단어에 모아뒀어요')}
+function renderReview(){const area=$('reviewList');$$('[data-review]').forEach(b=>b.classList.toggle('active',b.dataset.review===S.reviewFilter));let list=[];S.items.filter(x=>x.subject===S.subject).forEach(it=>{const id=itemId(it),mem=S.memory[id];if(S.wrong.has(id))list.push({it,type:'wrong'});if(mem==='confused')list.push({it,type:'confused'});if(mem==='unknown')list.push({it,type:'unknown'})});if(S.reviewFilter!=='all')list=list.filter(x=>x.type===S.reviewFilter);area.innerHTML='';if(!list.length){area.innerHTML='<div class="empty"><strong>복습할 항목이 없어요</strong>틀린 문제나 헷갈리는 단어가 생기면 여기에 모입니다.</div>';return}list.forEach(({it,type})=>{const b=document.createElement('button');b.className='reviewItem';const label=type==='wrong'?'문제 오답':type==='confused'?'헷갈리는 단어':'모르는 단어';b.innerHTML=`<strong>${it.question||it.front||'(항목)'}</strong><span>${it.unit||''} · ${it.kind}</span><span class="stateLabel ${type}">${label}</span>`;b.onclick=()=>{if(isCard(it)){S.cIndex=Math.max(0,S.cardPool.findIndex(x=>itemId(x)===itemId(it)));setScreen('card')}else{S.quizMode='all';refreshPools();S.qIndex=Math.max(0,S.quizPool.findIndex(x=>itemId(x)===itemId(it)));setScreen('quiz')}};area.appendChild(b)})}
+function setScreen(s){S.screen=s;$$('.screen').forEach(x=>x.classList.toggle('active',x.id===s+'Screen'));$$('.navBtn').forEach(x=>x.classList.toggle('active',x.dataset.screen===s));if(s==='quiz')renderQuiz();if(s==='card')renderCard();if(s==='review')renderReview();if(s==='home')renderHome()}
+function renderAll(){renderTabs();refreshPools();renderHome();renderQuiz();renderCard();renderReview();setScreen(S.screen)}
+function launch(mode){if(mode==='card'){S.screen='card'}else{S.quizMode=mode;S.qIndex=0;S.screen='quiz'}renderAll()}
+function parseRows(rows){const pick=(o,names)=>{for(const n of names){if(o[n]!==undefined&&norm(o[n]))return norm(o[n])}return''};return rows.map((r,i)=>{let opts=[pick(r,['보기1','option1','A']),pick(r,['보기2','option2','B']),pick(r,['보기3','option3','C']),pick(r,['보기4','option4','D'])].filter(Boolean);if(!opts.length){const raw=pick(r,['보기','options','선택지']);if(raw)opts=raw.split(/\s*\|\s*|\s*,\s*/).filter(Boolean)}return{subject:pick(r,['과목','subject']),kind:pick(r,['유형','학습유형','kind','type']),unit:pick(r,['단원','unit','chapter']),question:pick(r,['문제','question']),answer:pick(r,['정답','answer']),options:opts,explanation:pick(r,['해설','explanation','설명']),front:pick(r,['앞면','front','단어','개념명']),back:pick(r,['뒷면','back','뜻','의미','정의']),partOfSpeech:pick(r,['품사','partofspeech','pos']),synonyms:pick(r,['동의어','synonyms','synonym']),antonyms:pick(r,['반의어','antonyms','antonym']),derivatives:pick(r,['파생어','derivatives','derivative']),example:pick(r,['예문','example']),tags:pick(r,['태그','tags','tag']),uid:'u_'+Date.now()+'_'+i}}).filter(x=>x.subject&&(x.question||x.front||x.back))}
+function importFile(file){const reader=new FileReader();reader.onload=e=>{try{const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'}),all=[];wb.SheetNames.forEach(name=>{all.push(...parseRows(XLSX.utils.sheet_to_json(wb.Sheets[name],{defval:''}))) });if(!all.length)throw new Error('학습 행 없음');S.items=all;S.filename=file.name;S.subject=SUBJECTS.find(s=>all.some(x=>x.subject===s))||'회계';S.wrong=new Set();S.memory={};S.stats={correct:0,total:0};S.qIndex=0;S.cIndex=0;save();renderAll();toast('엑셀을 불러왔어요')}catch(err){console.error(err);toast('엑셀 형식을 확인해주세요')}};reader.readAsArrayBuffer(file)}
+$('uploadBtn').onclick=()=>$('fileInput').click();$('fileInput').onchange=e=>{const f=e.target.files?.[0];if(f)importFile(f);e.target.value=''};$('templateBtn').onclick=()=>{const a=document.createElement('a');a.href='./study_template.xlsx';a.download='학습앱_엑셀양식.xlsx';document.body.appendChild(a);a.click();a.remove()};$$('[data-launch]').forEach(b=>b.onclick=()=>launch(b.dataset.launch));$$('.navBtn').forEach(b=>b.onclick=()=>setScreen(b.dataset.screen));$('prevQuizBtn').onclick=()=>{if(S.qIndex>0){S.qIndex--;renderQuiz()}};$('nextQuizBtn').onclick=()=>{if(S.qIndex<S.quizPool.length-1){S.qIndex++;renderQuiz()}};$('prevCardBtn').onclick=()=>{if(S.cIndex>0){S.cIndex--;renderCard()}};$('nextCardBtn').onclick=()=>{if(S.cIndex<S.cardPool.length-1){S.cIndex++;renderCard()}};$('flipCard').onclick=()=>$('flipCard').classList.toggle('flipped');$$('[data-memory]').forEach(b=>b.onclick=e=>{e.stopPropagation();setMemory(b.dataset.memory)});$$('[data-review]').forEach(b=>b.onclick=()=>{S.reviewFilter=b.dataset.review;renderReview()});load();if(!S.items.length)S.items=SAMPLE;renderAll();if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
 </script>
 </body>
 </html>
