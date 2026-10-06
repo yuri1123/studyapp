@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <title>세무직 9급 합격 메이트</title>
-<!-- v13: all card front faces centered -->
+<!-- v15: stable card layout plus slightly larger overall text -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
@@ -279,6 +279,84 @@ body{overflow:hidden}
   justify-self:center !important;
 }
 
+
+/* v14: 뒷면 안정화 + 카드 높이 고정 */
+.face.back{
+  display:block !important;
+  overflow-y:auto !important;
+  text-align:left !important;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.face.back .flipTip{
+  display:none !important;
+}
+
+/* 카드 영역은 항상 '모르겠어요' 버튼 바로 위까지 채움 */
+.cardShell{
+  height:100% !important;
+  min-height:0 !important;
+}
+.flipWrap,
+.flipCard{
+  height:100% !important;
+  min-height:0 !important;
+}
+
+
+/* v15: 전체 글씨를 약 1px 정도 키움 */
+@media(max-width:480px){
+  .brand{font-size:17px !important}
+  .brand small{font-size:9.5px !important}
+  .selectorToggle{font-size:11.5px !important}
+  .selectorLabel{font-size:10px !important}
+  .subjectTab{font-size:12px !important}
+  .sectionTab{font-size:11.5px !important}
+  .miniBtn{font-size:11px !important}
+  .scopeHint{font-size:10px !important}
+
+  .hero h1{font-size:26px !important}
+  .hero p{font-size:13px !important}
+  .quickCard strong{font-size:15px !important}
+  .quickCard span{font-size:11px !important}
+  .sectionTitle{font-size:17px !important}
+  .sectionSub{font-size:11.5px !important}
+  .stat strong{font-size:18px !important}
+  .stat span{font-size:10.5px !important}
+
+  .badge,.subBadge{font-size:11.5px !important}
+  .progress{font-size:11.5px !important}
+  .btn{font-size:12.5px !important}
+
+  .frontText{font-size:32px !important}
+  .wordPron{font-size:12.5px !important}
+  .meaningRow{font-size:13.5px !important}
+  .posTag{font-size:10px !important}
+  .flipTip{font-size:9.5px !important}
+
+  .backWordTitle{font-size:29px !important}
+  .backText{font-size:14px !important}
+  .detailTitle{font-size:12px !important}
+  .detailIcon{font-size:12px !important}
+  .detailItem{font-size:13.5px !important}
+  .detailPlain{font-size:13.5px !important}
+  .exampleEn{font-size:14px !important}
+  .exampleKo{font-size:13px !important}
+
+  .memoryBtn{font-size:12.5px !important}
+
+  .question{font-size:22px !important}
+  .option{font-size:14px !important}
+  .result{font-size:11.5px !important}
+  .explain{font-size:13px !important}
+
+  .reviewChip{font-size:11px !important}
+  .reviewItem strong{font-size:13.5px !important}
+  .reviewItem span{font-size:10.5px !important}
+
+  .navBtn{font-size:10.5px !important}
+}
+
 </style>
 </head>
 <body>
@@ -420,7 +498,7 @@ body{overflow:hidden}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v13_compact';
+const STORAGE='study_app_v15_compact';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -783,7 +861,24 @@ $('templateBtn').onclick=()=>{const a=document.createElement('a');a.href='./stud
 $('resetBtn').onclick=resetCurrentScope;
 $$('[data-launch]').forEach(b=>b.onclick=()=>launch(b.dataset.launch));
 $$('.navBtn').forEach(b=>b.onclick=()=>setScreen(b.dataset.screen));
-$('flipCard').onclick=()=>$('flipCard').classList.toggle('flipped');
+{
+  const card=$('flipCard');
+  let px=0,py=0,moved=false;
+  card.addEventListener('pointerdown',e=>{
+    px=e.clientX;py=e.clientY;moved=false;
+  });
+  card.addEventListener('pointermove',e=>{
+    if(Math.abs(e.clientX-px)>8||Math.abs(e.clientY-py)>8)moved=true;
+  });
+  card.addEventListener('pointerup',e=>{
+    if(moved)return;
+    card.classList.toggle('flipped');
+    if(card.classList.contains('flipped')){
+      const back=card.querySelector('.face.back');
+      if(back)back.scrollTop=0;
+    }
+  });
+}
 $$('[data-memory]').forEach(b=>b.onclick=e=>{e.stopPropagation();setMemory(b.dataset.memory)});
 $('prevCardBtn').onclick=()=>{if(S.cIndex>0){S.cIndex--;renderCard()}};
 $('nextCardBtn').onclick=()=>{if(S.cIndex<S.cardPool.length-1){S.cIndex++;renderCard()}};
