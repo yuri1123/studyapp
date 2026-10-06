@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<title>나의 학습앱</title>
+<title>나의 학습앱 v6</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#6b7280;--line:#e3e8f0;--blue:#2563eb;--blue2:#1e40af;--blueSoft:#eaf2ff;--green:#16a34a;--greenSoft:#eaf8ef;--red:#ef4444;--redSoft:#fff1f1;--amber:#d97706;--amberSoft:#fff7e6;--graySoft:#f7f8fa;--shadow:0 10px 30px rgba(25,42,89,.08)}
@@ -16,34 +16,127 @@
 .content{padding:14px}.screen{display:none}.screen.active{display:block}.hero{padding:20px 18px;border-radius:28px;background:linear-gradient(135deg,#3478f6,#1e40af);color:#fff;box-shadow:0 12px 26px rgba(37,99,235,.25)}.hero h1{margin:0;font-size:28px;line-height:1.2;letter-spacing:-.04em}.hero p{margin:8px 0 0;font-size:13px;line-height:1.55;color:rgba(255,255,255,.88)}.quickGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.quickCard{border:0;background:#fff;color:var(--text);border-radius:20px;padding:15px;text-align:left;min-height:92px;box-shadow:var(--shadow)}.quickCard strong{display:block;font-size:16px}.quickCard span{display:block;font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4}.panel{background:#fff;border-radius:24px;padding:16px;margin-top:14px;box-shadow:var(--shadow)}.sectionTitle{font-size:18px;font-weight:950;letter-spacing:-.02em}.sectionSub{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.45}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:13px}.stat{padding:12px 6px;border-radius:18px;background:#f8fafc;border:1px solid var(--line);text-align:center}.stat strong{display:block;font-size:19px}.stat span{display:block;color:var(--muted);font-size:11px;margin-top:3px}
 .headRow{display:flex;justify-content:space-between;align-items:center;gap:10px}.badge{display:inline-flex;align-items:center;background:var(--blueSoft);color:var(--blue);padding:8px 12px;border-radius:999px;font-size:12px;font-weight:900}.progress{font-size:12px;color:var(--muted);font-weight:900}.quizShell,.cardShell{min-height:calc(100dvh - 216px);display:flex;flex-direction:column;gap:11px}.quizCard{background:#fff;border:2px solid transparent;border-radius:28px;padding:18px;box-shadow:var(--shadow);flex:1;display:flex;flex-direction:column;transition:.2s}.quizCard.correctState{border-color:#afe0bf;background:linear-gradient(180deg,#fff,#f2fbf5)}.quizCard.wrongState{border-color:#ffc3c3;background:linear-gradient(180deg,#fff,#fff4f4)}.metaRow{display:flex;flex-wrap:wrap;gap:7px}.question{font-size:28px;font-weight:950;line-height:1.48;letter-spacing:-.035em;margin:22px 0;white-space:pre-wrap;word-break:keep-all}.options{display:grid;gap:10px;margin-top:auto}.option{border:1px solid var(--line);background:#fff;border-radius:18px;padding:16px;text-align:left;font-weight:850;color:var(--text);display:flex;gap:10px;align-items:flex-start}.option .letter{min-width:24px;color:var(--blue);font-weight:950}.option.correct{background:var(--greenSoft);border-color:#9bd8af;color:#08732d}.option.wrong{background:var(--redSoft);border-color:#ffb2b2;color:#ab2525}.ox{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:auto}.ox .option{justify-content:center;align-items:center;font-size:31px;min-height:94px}.answerBox{display:none;margin-top:15px;padding-top:14px;border-top:1px solid var(--line)}.answerBox.show{display:block}.result{display:inline-block;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:950}.result.correct{background:var(--greenSoft);color:#08732d}.result.wrong{background:var(--redSoft);color:#ac2020}.explain{margin:10px 0 0;font-size:14px;color:#3d4658;line-height:1.65;white-space:pre-wrap}.actions{display:flex;gap:10px}.btn{border:1px solid var(--line);border-radius:18px;padding:14px 16px;background:#fff;color:#39445a;font-weight:900;flex:1}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 8px 18px rgba(37,99,235,.2)}.btn:disabled{opacity:.5;cursor:default;box-shadow:none}.empty{padding:54px 20px;text-align:center;color:var(--muted)}.empty strong{display:block;color:var(--text);font-size:18px;margin-bottom:7px}
 .flipWrap{perspective:1400px;flex:1;min-height:410px}.flipCard{position:relative;width:100%;height:100%;min-height:410px;transform-style:preserve-3d;transition:transform .58s}.flipCard.flipped{transform:rotateY(180deg)}.face{position:absolute;inset:0;backface-visibility:hidden;background:#fff;border-radius:28px;padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.face.back{transform:rotateY(180deg);background:linear-gradient(180deg,#fff,#f1f6ff)}.unitTag{padding:8px 12px;border-radius:999px;background:var(--blueSoft);color:var(--blue);font-size:12px;font-weight:900;margin-bottom:15px}.frontText{font-size:36px;line-height:1.25;font-weight:950;letter-spacing:-.035em}.backText{font-size:28px;line-height:1.38;font-weight:950;letter-spacing:-.03em}.wordMeta{width:100%;margin-top:18px;display:grid;gap:8px;text-align:left}.wordMetaRow{display:grid;grid-template-columns:64px 1fr;gap:10px;padding:10px 12px;border-radius:14px;background:#fff;border:1px solid var(--line);font-size:13px;line-height:1.5}.wordMetaRow b{color:#556071}.example{margin-top:12px;padding:12px 14px;width:100%;background:#fff;border:1px solid var(--line);border-radius:15px;color:#4b5563;font-size:13px;line-height:1.65;text-align:left;white-space:pre-wrap}.flipTip{margin-top:12px;font-size:11px;color:var(--muted);font-weight:800}.memoryBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.memoryBtn{border:1px solid var(--line);background:#fff;border-radius:16px;padding:12px 6px;font-weight:900;font-size:13px}.memoryBtn.know{color:#08732d;background:var(--greenSoft);border-color:#b4dfc1}.memoryBtn.confused{color:#9a5c00;background:var(--amberSoft);border-color:#f3d29a}.memoryBtn.unknown{color:#ac2020;background:var(--redSoft);border-color:#ffc6c6}.memoryBtn.active{outline:3px solid rgba(37,99,235,.2)}
-
-/* 영단어 카드 v7: 참고 이미지처럼 한 장 안에서 뜻/관계어를 구조화 */
-.flipWrap{min-height:520px}
-.flipCard{min-height:520px}
-.face.wordFace{background:#023442;color:#f8fbff;align-items:stretch;justify-content:flex-start;text-align:left;padding:22px;border:1px solid rgba(72,194,235,.22);overflow:hidden}
-.face.wordFace.back{background:#023442}
-.wordTop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-.wordSource{font-size:12px;color:#72c8ef;font-weight:800;line-height:1.45}.wordSource strong{display:block;color:#fff;font-size:15px;margin-bottom:3px}
-.bookmarkIcon{font-size:30px;line-height:1;color:#9aa3ab}
-.wordCenter{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:22px 0 12px}
-.wordMain{font-size:48px;font-weight:950;color:#1fb6ee;letter-spacing:-.03em;line-height:1.08}
-.wordPron{margin-top:12px;font-size:16px;color:#d8e0e5;font-weight:800}
-.wordMeanings{width:100%;margin-top:22px;border-radius:18px;background:rgba(9,86,104,.55);padding:2px 18px}
-.meaningRow{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;padding:15px 0;border-bottom:1px solid rgba(65,177,209,.22)}
-.meaningRow:last-child{border-bottom:0}.posPill{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:38px;padding:0 9px;border-radius:999px;background:#08718e;color:#fff;font-size:13px;font-weight:950}.meaningText{font-size:20px;font-weight:800;color:#fff;line-height:1.45}
-.wordFlipTip{text-align:center;color:#7ba9b5;font-size:11px;font-weight:800;margin-top:12px}
-.backWordTitle{font-size:38px;font-weight:950;color:#fff;line-height:1.1;margin:2px 0 12px}
-.detailScroll{overflow-y:auto;overscroll-behavior:contain;padding-right:4px;flex:1;scrollbar-width:thin;scrollbar-color:#67828a transparent}
-.detailSection{padding:15px 0;border-top:1px solid rgba(65,177,209,.28)}
-.detailLabel{display:flex;align-items:center;gap:8px;color:#93aab1;font-size:15px;font-weight:900;margin-bottom:10px}.detailIcon{display:inline-flex;width:28px;height:28px;border:2px solid #22b7ef;border-radius:8px;align-items:center;justify-content:center;color:#22b7ef;font-size:13px;font-weight:950}
-.detailBody{color:#fff;font-size:17px;line-height:1.6}.relationList{display:grid;gap:0}.relationRow{display:grid;grid-template-columns:minmax(110px,.9fr) minmax(0,1.25fr);gap:14px;padding:12px 0;border-bottom:1px solid rgba(65,177,209,.22);align-items:center}.relationRow:last-child{border-bottom:0}.relationTerm{font-size:20px;font-weight:950;color:#fff;word-break:break-word}.relationMeaning{font-size:17px;color:#f0f6f8;line-height:1.45}.relationMeaning .posPill{margin-right:8px;vertical-align:middle}
-.exampleBox{border-left:4px solid #138ca9;padding-left:13px;color:#aec2c7;font-size:17px;line-height:1.62}.exampleBox strong{color:#fff}.exampleTranslation{margin-top:12px;color:#b8cbd0}
-.frontMeaningFallback{font-size:20px;color:#fff;font-weight:800;line-height:1.5}
-.optionMissing{margin-top:auto;border:1px dashed #f0b7b7;background:#fff7f7;color:#a33;padding:16px;border-radius:16px;font-size:13px;line-height:1.55;font-weight:800}
-@media(max-width:480px){.flipWrap,.flipCard{min-height:500px}.face.wordFace{padding:18px}.wordMain{font-size:42px}.meaningText{font-size:18px}.backWordTitle{font-size:34px}.relationRow{grid-template-columns:minmax(95px,.85fr) 1.2fr}.relationTerm{font-size:18px}.relationMeaning{font-size:16px}}
 .reviewFilter{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:14px}.reviewChip{border:1px solid var(--line);background:#fff;border-radius:14px;padding:11px 6px;font-size:12px;font-weight:900;color:#4b5563}.reviewChip.active{background:var(--blueSoft);color:var(--blue);border-color:#bdd3ff}.reviewList{display:grid;gap:10px;margin-top:12px}.reviewItem{border:1px solid var(--line);background:#fff;border-radius:18px;padding:14px;text-align:left;box-shadow:0 5px 18px rgba(25,42,89,.05)}.reviewItem strong{display:block;font-size:14px;line-height:1.5}.reviewItem span{display:block;font-size:11px;color:var(--muted);margin-top:5px}.stateLabel{display:inline-block!important;width:max-content;padding:5px 8px;border-radius:999px;margin-top:8px!important;font-weight:900}.stateLabel.wrong{background:var(--redSoft);color:#ac2020}.stateLabel.confused{background:var(--amberSoft);color:#9a5c00}.stateLabel.unknown{background:var(--redSoft);color:#ac2020}
 .bottomNav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(760px,100%);z-index:30;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:7px 10px calc(7px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.navBtn{border:0;background:transparent;border-radius:15px;padding:9px 4px 8px;color:#667085;font-size:11px;font-weight:850;display:flex;flex-direction:column;align-items:center;gap:3px}.navBtn b{font-size:18px}.navBtn.active{background:var(--blueSoft);color:var(--blue)}.toast{position:fixed;left:50%;bottom:94px;transform:translateX(-50%);z-index:50;background:#111827;color:#fff;border-radius:999px;padding:11px 15px;font-size:12px;font-weight:850;display:none;max-width:calc(100% - 28px)}.toast.show{display:block}@media(max-width:480px){.brand{font-size:20px}.question{font-size:25px}.frontText{font-size:32px}.backText{font-size:24px}.wordMetaRow{grid-template-columns:56px 1fr}.hero h1{font-size:25px}}
-.sectionTabs{display:flex;gap:7px;margin-top:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}.sectionTabs::-webkit-scrollbar{display:none}.sectionTab{flex:0 0 auto;border:1px solid var(--line);background:#fff;color:#566074;border-radius:999px;padding:9px 13px;font-size:12px;font-weight:900}.sectionTab.active{background:#172033;color:#fff;border-color:#172033}.subBadge{display:inline-flex;align-items:center;background:#f6f0ff;color:#7047a5;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:900}.resetNote{font-size:11px;color:var(--muted);line-height:1.5;margin-top:8px}</style>
+.sectionTabs{display:flex;gap:7px;margin-top:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}.sectionTabs::-webkit-scrollbar{display:none}.sectionTab{flex:0 0 auto;border:1px solid var(--line);background:#fff;color:#566074;border-radius:999px;padding:9px 13px;font-size:12px;font-weight:900}.sectionTab.active{background:#172033;color:#fff;border-color:#172033}.subBadge{display:inline-flex;align-items:center;background:#f6f0ff;color:#7047a5;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:900}.resetNote{font-size:11px;color:var(--muted);line-height:1.5;margin-top:8px}
+/* v5 영단어 카드 상세형 */
+.flipCard.wordMode .face{background:#053742;color:#f8fbff;align-items:stretch;justify-content:flex-start;text-align:left;overflow-y:auto;border:1px solid #155769;scrollbar-width:thin;scrollbar-color:#688690 transparent}
+.flipCard.wordMode .face.back{background:#053742;color:#f8fbff}
+.flipCard.wordMode .unitTag{align-self:flex-start;background:rgba(25,185,255,.14);color:#56cdfd;border:1px solid rgba(86,205,253,.22);margin-bottom:18px}
+.flipCard.wordMode .frontText{font-size:42px;color:#24bff2;margin-top:18px;text-align:center}
+.wordPron{font-size:17px;color:#cedae0;font-weight:800;text-align:center;margin-top:12px;min-height:24px}
+.frontMeaning{width:100%;margin-top:auto;padding-top:26px;display:grid;gap:0}
+.meaningRow{display:grid;grid-template-columns:54px 1fr;gap:12px;align-items:center;padding:15px 6px;border-top:1px solid rgba(65,174,207,.25);font-size:18px;line-height:1.45}
+.meaningRow:first-child{border-top:0}.posTag{justify-self:start;min-width:40px;text-align:center;padding:7px 9px;border-radius:999px;background:#087491;color:#e9f9ff;font-weight:950;font-size:13px}
+.backWordTitle{font-size:36px;font-weight:950;color:#fff;letter-spacing:-.025em;margin:4px 0 12px}
+.flipCard.wordMode .backText{font-size:18px;color:#eaf4f7;background:rgba(7,91,111,.32);border-radius:16px;padding:12px 14px;margin-bottom:12px}
+.detailGroups{display:grid;gap:0;width:100%}
+.detailGroup{padding:14px 0;border-top:1px solid rgba(65,174,207,.28)}
+.detailGroup:first-child{border-top:0}.detailTitle{display:flex;align-items:center;gap:8px;color:#8aa7b0;font-weight:900;font-size:14px;margin-bottom:10px}.detailIcon{display:inline-grid;place-items:center;width:28px;height:28px;border:2px solid #28bff1;border-radius:8px;color:#28bff1;font-size:14px}.detailItems{display:grid;gap:8px}.detailItem{display:grid;grid-template-columns:minmax(90px,1fr) minmax(110px,1.4fr);gap:12px;align-items:start;font-size:16px;line-height:1.5}.detailItem .term{font-weight:900;color:#fff}.detailItem .desc{color:#d4e2e7}.detailPlain{font-size:16px;line-height:1.6;color:#e6f1f4;white-space:pre-wrap}.exampleBlock{border-left:4px solid #2fc2ee;padding:4px 0 4px 15px;margin-top:4px}.exampleEn{font-size:18px;line-height:1.55;color:#edf8fb}.exampleKo{font-size:16px;line-height:1.55;color:#b9cdd3;margin-top:8px}.flipCard.wordMode .flipTip{color:#8ca8b0;text-align:center;margin-top:18px}
+.optionsMissing{margin-top:auto;padding:18px;border:1px dashed #f0b9b9;background:#fff8f8;border-radius:18px;color:#9b2c2c;font-size:13px;line-height:1.55}
+
+
+/* v6 카드 UI 정리: 내부 스크롤 제거 + 카드 확대 + 앱 배경과 통일 */
+.content{padding:10px 8px 0}
+.cardShell{min-height:auto;gap:14px}
+.flipWrap{perspective:1400px;flex:none;min-height:0;width:100%}
+.flipCard{
+  position:relative;
+  display:grid;
+  width:100%;
+  height:auto;
+  min-height:560px;
+  transform-style:preserve-3d;
+  transition:transform .58s;
+}
+.flipCard .face{
+  position:relative;
+  inset:auto;
+  grid-area:1/1;
+  width:100%;
+  min-height:560px;
+  padding:30px 26px 32px;
+  border-radius:30px;
+}
+.flipCard.wordMode .face{
+  min-height:680px;
+  overflow:visible!important;
+  background:linear-gradient(180deg,#f8fbff 0%,#eef4fa 100%);
+  color:#172033;
+  border:1px solid #d8e4ef;
+  box-shadow:0 12px 30px rgba(34,55,92,.09);
+  align-items:stretch;
+  justify-content:flex-start;
+  text-align:left;
+}
+.flipCard.wordMode .face.back{
+  background:linear-gradient(180deg,#f7faff 0%,#edf3f9 100%);
+  color:#172033;
+}
+.flipCard.wordMode .unitTag{
+  align-self:flex-start;
+  background:#e7f0ff;
+  color:#2563eb;
+  border:1px solid #ccdcf6;
+  margin-bottom:22px;
+}
+.flipCard.wordMode .frontText{
+  font-size:46px;
+  line-height:1.18;
+  color:#1f5fd3;
+  margin-top:28px;
+  text-align:center;
+}
+.wordPron{color:#6b7a90;font-size:18px;margin-top:14px}
+.frontMeaning{margin-top:auto;padding-top:34px}
+.meaningRow{
+  grid-template-columns:58px 1fr;
+  padding:18px 8px;
+  border-top:1px solid #d9e5ef;
+  color:#26364b;
+  font-size:19px;
+}
+.posTag{
+  background:#dcecff;
+  color:#1957bd;
+  border:1px solid #c6dbf6;
+}
+.backWordTitle{font-size:40px;color:#172033;margin:2px 0 14px}
+.flipCard.wordMode .backText{
+  font-size:17px;
+  color:#526176;
+  background:#e7eef6;
+  border:1px solid #d4e0ec;
+  border-radius:16px;
+  padding:12px 14px;
+  margin-bottom:10px;
+}
+.detailGroup{padding:18px 0;border-top:1px solid #d8e4ef}
+.detailTitle{color:#66758a;font-size:15px;margin-bottom:12px}
+.detailIcon{
+  border-color:#4a90e2;
+  color:#2f75c8;
+  background:#edf5ff;
+}
+.detailItem{grid-template-columns:minmax(105px,1fr) minmax(125px,1.45fr);font-size:17px;gap:14px}
+.detailItem .term{color:#172033}
+.detailItem .desc{color:#46566b}
+.detailPlain{color:#34455b;font-size:16px}
+.exampleBlock{border-left-color:#4a90e2;background:#f4f8fc;border-radius:0 14px 14px 0;padding:12px 14px 12px 16px}
+.exampleEn{color:#203249;font-size:18px}
+.exampleKo{color:#66758a;font-size:16px}
+.flipCard.wordMode .flipTip{color:#7a8798}
+.memoryBtns{margin-top:2px}
+@media(max-width:480px){
+  .content{padding:8px 6px 0}
+  .flipCard .face{padding:26px 20px 28px;min-height:540px}
+  .flipCard.wordMode .face{min-height:650px}
+  .flipCard.wordMode .frontText{font-size:42px}
+  .backWordTitle{font-size:36px}
+  .detailItem{grid-template-columns:minmax(92px,1fr) minmax(120px,1.4fr);font-size:16px}
+}
+
+</style>
 </head>
 <body>
 <div class="app">
@@ -101,16 +194,8 @@
       <div class="headRow"><div class="badge" id="cardBadge">영어 · 카드</div><div class="progress" id="cardProgress">1 / 1</div></div>
       <div class="flipWrap">
         <div class="flipCard" id="flipCard">
-          <div class="face front wordFace">
-            <div class="wordTop"><div class="wordSource" id="frontSource"><strong id="frontUnit">Day</strong><span id="frontSourceText"></span></div><div class="bookmarkIcon">▮</div></div>
-            <div class="wordCenter"><div class="wordMain" id="frontText">word</div><div class="wordPron" id="frontPron"></div><div class="wordMeanings" id="frontMeanings"></div></div>
-            <div class="wordFlipTip">카드를 눌러 유의어 · 반의어 · 파생어 보기</div>
-          </div>
-          <div class="face back wordFace">
-            <div class="wordTop"><div class="backWordTitle" id="backWordTitle">word</div><div class="bookmarkIcon">▮</div></div>
-            <div class="detailScroll" id="detailScroll"></div>
-            <div class="wordFlipTip">다시 누르면 앞면으로 돌아가요</div>
-          </div>
+          <div class="face front"><div class="unitTag" id="frontUnit">단원</div><div class="frontText" id="frontText">앞면</div><div class="wordPron" id="frontPronunciation"></div><div class="frontMeaning" id="frontMeaning"></div><div class="flipTip">카드를 눌러 뒤집기</div></div>
+          <div class="face back"><div class="unitTag" id="backUnit">단원</div><div class="backWordTitle" id="backWordTitle"></div><div class="backText" id="backText">뒷면</div><div class="detailGroups" id="wordMeta"></div><div class="example" id="exampleText"></div><div class="flipTip">다시 누르면 앞면으로 돌아가요</div></div>
         </div>
       </div>
       <div class="memoryBtns" id="memoryBtns">
@@ -146,47 +231,162 @@
 <div class="toast" id="toast"></div>
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v7';
+const STORAGE='study_app_v6';
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.',front:'',back:'',partOfSpeech:'',pronunciation:'',synonyms:'',antonyms:'',derivatives:'',phrases:'',example:'',exampleTranslation:'',memo:'',tags:'기초'},
 {subject:'회계',kind:'객관식',subtitle:'재무회계 기초',unit:'회계원리',question:'다음 중 자산에 해당하는 것은?',answer:'A',options:['현금','매출','급여','이자수익'],explanation:'현금은 기업이 통제하는 경제적 자원으로 자산입니다.',front:'',back:'',partOfSpeech:'',pronunciation:'',synonyms:'',antonyms:'',derivatives:'',phrases:'',example:'',exampleTranslation:'',memo:'',tags:'자산'},
 {subject:'세법',kind:'OX',subtitle:'부가가치세 기초',unit:'부가가치세',question:'부가가치세는 일반적으로 재화나 용역의 소비에 과세되는 간접세이다.',answer:'O',options:[],explanation:'부가가치세의 기본 성격을 확인합니다.',front:'',back:'',partOfSpeech:'',pronunciation:'',synonyms:'',antonyms:'',derivatives:'',phrases:'',example:'',exampleTranslation:'',memo:'',tags:'부가세'},
 {subject:'국어',kind:'OX',subtitle:'문법 Day 1',unit:'문법',question:"'먹었다'의 '었'은 과거 시제를 나타내는 선어말 어미이다.",answer:'O',options:[],explanation:"과거 시제를 나타내는 선어말 어미 '-었-'을 확인합니다.",front:'',back:'',partOfSpeech:'',pronunciation:'',synonyms:'',antonyms:'',derivatives:'',phrases:'',example:'',exampleTranslation:'',memo:'',tags:'문법'},
-{subject:'영어',kind:'단어',subtitle:'Day 1',unit:'Vocabulary',question:'',answer:'',options:[],explanation:'',front:'account',back:'계정, 설명하다',partOfSpeech:'noun / verb',pronunciation:'[əˈkaʊnt]',meaning1Pos:'명',meaning1:'계정, 설명',meaning2Pos:'동',meaning2:'설명하다, 원인이 되다',synonyms:'record:기록 | report:보고',antonyms:'',derivatives:'accountable:책임이 있는 | accounting:회계 | accountant:회계사',phrases:'account for ~:~을 설명하다',example:'Please check your account balance.',exampleTranslation:'계좌 잔액을 확인해 주세요.',memo:'명사/동사 뜻을 함께 구분',tags:'영단어'},
-{subject:'영어',kind:'단어',subtitle:'Day 1',unit:'Vocabulary',question:'',answer:'',options:[],explanation:'',front:'deduct',back:'공제하다, 빼다',partOfSpeech:'verb',pronunciation:'[dɪˈdʌkt]',meaning1Pos:'동',meaning1:'공제하다, 빼다',synonyms:'subtract:빼다 | remove:제거하다',antonyms:'add:더하다 | include:포함하다',derivatives:'deduction:공제, 추론 | deductible:공제 가능한',phrases:'deduct A from B:B에서 A를 빼다',example:'The company will deduct the fee from your payment.',exampleTranslation:'회사는 지급액에서 수수료를 공제할 것입니다.',memo:'from과 함께 자주 사용',tags:'영단어'},
-{subject:'영어',kind:'단어',subtitle:'Day 2',unit:'Vocabulary',question:'',answer:'',options:[],explanation:'',front:'derive',back:'끌어내다, 유래하다',partOfSpeech:'verb',pronunciation:'[dɪˈraɪv]',meaning1Pos:'동',meaning1:'끌어내다, 유래하다',synonyms:'obtain:얻다 | originate:유래하다',antonyms:'',derivatives:'derivation:유래, 파생 | derivative:파생된',phrases:'derive A from B:B에서 A를 얻다',example:'The word is derived from Latin.',exampleTranslation:'그 단어는 라틴어에서 유래했다.',memo:'수동태 be derived from도 자주 사용',tags:'영단어'},
+{subject:'영어',kind:'단어',subtitle:'Day 1',unit:'Vocabulary',question:'',answer:'',options:[],explanation:'',front:'account',back:'계정, 설명하다',partOfSpeech:'noun / verb',pronunciation:'/əˈkaʊnt/',synonyms:'record, report',antonyms:'',derivatives:'accountable, accounting, accountant',phrases:'account for ~ : ~을 설명하다',example:'Please check your account balance.',exampleTranslation:'계좌 잔액을 확인해 주세요.',memo:'명사/동사 뜻을 함께 구분',tags:'영단어'},
+{subject:'영어',kind:'단어',subtitle:'Day 1',unit:'Vocabulary',question:'',answer:'',options:[],explanation:'',front:'deduct',back:'공제하다, 빼다',partOfSpeech:'verb',pronunciation:'/dɪˈdʌkt/',synonyms:'subtract, remove',antonyms:'add, include',derivatives:'deduction, deductible',phrases:'deduct A from B : B에서 A를 빼다',example:'The company will deduct the fee from your payment.',exampleTranslation:'회사는 지급액에서 수수료를 공제할 것입니다.',memo:'from과 함께 자주 사용',tags:'영단어'},
+{subject:'영어',kind:'단어',subtitle:'Day 2',unit:'Vocabulary',question:'',answer:'',options:[],explanation:'',front:'derive',back:'끌어내다, 유래하다',partOfSpeech:'verb',pronunciation:'/dɪˈraɪv/',synonyms:'obtain, originate',antonyms:'',derivatives:'derivation, derivative',phrases:'derive A from B : B에서 A를 얻다',example:'The word is derived from Latin.',exampleTranslation:'그 단어는 라틴어에서 유래했다.',memo:'수동태 be derived from도 자주 사용',tags:'영단어'},
 {subject:'영어',kind:'문법',subtitle:'Grammar Day 1',unit:'Grammar',question:'Choose the correct sentence.',answer:'B',options:['She go to school every day.','She goes to school every day.','She going to school every day.','She gone to school every day.'],explanation:'3인칭 단수 주어 she와 현재시제 일반동사에는 -s가 붙습니다.',front:'',back:'',partOfSpeech:'',pronunciation:'',synonyms:'',antonyms:'',derivatives:'',phrases:'',example:'',exampleTranslation:'',memo:'',tags:'문법'}
 ].map((x,i)=>({...x,uid:'sample_'+i}));
 const S={items:[],subject:'회계',section:'전체',screen:'home',quizMode:'all',qIndex:0,cIndex:0,answered:false,quizPool:[],cardPool:[],wrong:new Set(),memory:{},stats:{correct:0,total:0},reviewFilter:'all',filename:'샘플 데이터'};
 const $=id=>document.getElementById(id), $$=sel=>[...document.querySelectorAll(sel)];
-function norm(v){return String(v??'').trim()}
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function itemId(it){return it.uid||[it.subject,it.kind,it.unit,it.question,it.front,it.back].join('|')}
-function splitOptions(raw){if(Array.isArray(raw))return raw.map(norm).filter(Boolean);if(raw&&typeof raw==='object')return Object.values(raw).map(norm).filter(Boolean);const s=norm(raw);return s?s.split(/\s*\|\s*|\r?\n|\s*;\s*/).map(norm).filter(Boolean):[]}
-function normalizeItem(it,i=0){it=it||{};let opts=splitOptions(it.options);if(!opts.length)opts=[it['보기1'],it['보기2'],it['보기3'],it['보기4'],it.option1,it.option2,it.option3,it.option4,it.A,it.B,it.C,it.D].map(norm).filter(Boolean);return{...it,subject:norm(it.subject||it['과목']),kind:norm(it.kind||it['유형']),subtitle:norm(it.subtitle||it['소제목']||it['세트']),unit:norm(it.unit||it['단원']),question:norm(it.question||it['문제']),answer:norm(it.answer||it['정답']),options:opts,explanation:norm(it.explanation||it['해설']),front:norm(it.front||it['앞면']||it['단어']),back:norm(it.back||it['뒷면']||it['뜻']),partOfSpeech:norm(it.partOfSpeech||it['품사']),pronunciation:norm(it.pronunciation||it['발음']),synonyms:norm(it.synonyms||it['유의어']||it['동의어']),antonyms:norm(it.antonyms||it['반의어']),derivatives:norm(it.derivatives||it['파생어']),phrases:norm(it.phrases||it['숙어/표현']),example:norm(it.example||it['예문']),exampleTranslation:norm(it.exampleTranslation||it['예문해석']||it['예문 해석']),memo:norm(it.memo||it['메모']),meaning1Pos:norm(it.meaning1Pos||it['뜻1품사']||it['의미1품사']||it['품사1']),meaning1:norm(it.meaning1||it['뜻1']||it['의미1']),meaning2Pos:norm(it.meaning2Pos||it['뜻2품사']||it['의미2품사']||it['품사2']),meaning2:norm(it.meaning2||it['뜻2']||it['의미2']),meaning3Pos:norm(it.meaning3Pos||it['뜻3품사']||it['의미3품사']||it['품사3']),meaning3:norm(it.meaning3||it['뜻3']||it['의미3']),etymology:norm(it.etymology||it['어원']),source:norm(it.source||it['출처']||it['기출/출처']),tags:norm(it.tags||it['태그']),uid:it.uid||('migrated_'+i+'_'+Date.now())}}
+function norm(v){return String(v??'').trim()}function itemId(it){return it.uid||[it.subject,it.kind,it.unit,it.question,it.front,it.back].join('|')}
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),1600)}
 function save(){try{localStorage.setItem(STORAGE,JSON.stringify({items:S.items,wrong:[...S.wrong],memory:S.memory,stats:S.stats,filename:S.filename}))}catch(e){}}
-function load(){try{let o=JSON.parse(localStorage.getItem(STORAGE)||'null');if(!o){for(const k of ['study_app_v6','study_app_v5']){const prev=JSON.parse(localStorage.getItem(k)||'null');if(prev){o=prev;break}}}if(!o){const old=JSON.parse(localStorage.getItem('study_app_v2_state')||'null');if(old)o={items:old.items,wrong:old.wrong,memory:{},stats:old.stats,filename:old.lastLoadedFile}}if(o){if(Array.isArray(o.items)&&o.items.length)S.items=o.items.map(normalizeItem);if(Array.isArray(o.wrong))S.wrong=new Set(o.wrong);if(o.memory)S.memory=o.memory;if(o.stats)S.stats=o.stats;if(o.filename)S.filename=o.filename}}catch(e){console.error(e)}}
+function load(){try{let o=JSON.parse(localStorage.getItem(STORAGE)||'null');if(!o){const prev=JSON.parse(localStorage.getItem('study_app_v5')||'null');if(prev)o=prev}if(!o){const old=JSON.parse(localStorage.getItem('study_app_v2_state')||'null');if(old)o={items:old.items,wrong:old.wrong,memory:{},stats:old.stats,filename:old.lastLoadedFile}}if(o){if(Array.isArray(o.items)&&o.items.length)S.items=o.items;if(Array.isArray(o.wrong))S.wrong=new Set(o.wrong);if(o.memory)S.memory=o.memory;if(o.stats)S.stats=o.stats;if(o.filename)S.filename=o.filename}}catch(e){}}
 function isCard(it){return ['단어','개념'].includes(norm(it.kind))&&(it.front||it.back)}function isQuiz(it){return ['OX','객관식','문법'].includes(norm(it.kind))&&(it.question||it.options?.length)}function sectionOf(it){return norm(it.subtitle)||norm(it.unit)||'기타'}function sectionMatch(it){return S.section==='전체'||sectionOf(it)===S.section}
 function refreshPools(){let q=S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isQuiz(x));if(S.quizMode==='ox')q=q.filter(x=>x.kind==='OX');if(S.quizMode==='mc')q=q.filter(x=>x.kind!=='OX');S.quizPool=q;S.cardPool=S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isCard(x));S.qIndex=Math.min(S.qIndex,Math.max(0,q.length-1));S.cIndex=Math.min(S.cIndex,Math.max(0,S.cardPool.length-1))}
 function renderTabs(){$('subjectTabs').innerHTML=SUBJECTS.map(s=>`<button class="subjectTab ${s===S.subject?'active':''}" data-sub="${s}">${s}</button>`).join('');$$('[data-sub]').forEach(b=>b.onclick=()=>{S.subject=b.dataset.sub;S.section='전체';S.qIndex=0;S.cIndex=0;renderAll()});const sections=[...new Set(S.items.filter(x=>x.subject===S.subject).map(sectionOf).filter(Boolean))];if(S.section!=='전체'&&!sections.includes(S.section))S.section='전체';$('sectionTabs').innerHTML=['전체',...sections].map(s=>`<button class="sectionTab ${s===S.section?'active':''}" data-section="${s}">${s}</button>`).join('');$$('[data-section]').forEach(b=>b.onclick=()=>{S.section=b.dataset.section;S.qIndex=0;S.cIndex=0;refreshPools();renderAll()})}
 function renderHome(){const items=S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)),review=items.filter(x=>{const id=itemId(x);return S.wrong.has(id)||['confused','unknown'].includes(S.memory[id])}).length;$('heroTitle').innerHTML=`${S.subject} 학습<br>${S.section==='전체'?'바로 시작':S.section}`;$('statTotal').textContent=items.length;$('statReview').textContent=review;$('statRate').textContent=S.stats.total?Math.round(S.stats.correct/S.stats.total*100)+'%':'0%';$('subtitle').textContent=`${S.section==='전체'?'전체 세트':S.section} · 현재 파일: ${S.filename}`}
-function renderQuiz(){refreshPools();const list=S.quizPool,card=$('quizCard'),opts=$('optionsArea');card.className='quizCard';$('answerBox').classList.remove('show');opts.innerHTML='';if(!list.length){$('quizBadge').textContent=S.subject+' · 퀴즈';$('quizProgress').textContent='0 / 0';$('quizMeta').innerHTML='';$('questionText').innerHTML='<div class="empty"><strong>퀴즈가 아직 없어요</strong>엑셀에 OX/객관식/문법 문항을 추가해보세요.</div>';$('prevQuizBtn').disabled=true;$('nextQuizBtn').disabled=true;return}const it=normalizeItem(list[S.qIndex],S.qIndex);S.quizPool[S.qIndex]=it;const last=S.qIndex===list.length-1,first=S.qIndex===0;S.answered=false;$('quizBadge').textContent=`${it.subject} · ${S.quizMode==='all'?'전체':S.quizMode==='ox'?'OX':'객관식'}`;$('quizProgress').textContent=`${S.qIndex+1} / ${list.length}${last?' · 마지막 문제':''}`;$('quizMeta').innerHTML=`<span class="subBadge">${esc(sectionOf(it))}</span><span class="badge">${esc(it.unit||'단원 없음')}</span><span class="badge">${esc(it.kind)}</span>`;$('questionText').textContent=it.question||'(문제 없음)';$('explainText').textContent=it.explanation||'해설이 없습니다.';$('prevQuizBtn').disabled=first;$('nextQuizBtn').disabled=last;$('nextQuizBtn').textContent=last?'마지막 문제':'다음 문제';if(it.kind==='OX'){opts.className='ox';['O','X'].forEach(v=>{const b=document.createElement('button');b.className='option';b.textContent=v;b.onclick=()=>grade(it,v,b);opts.appendChild(b)})}else{opts.className='options';const letters=['A','B','C','D','E'];const choices=splitOptions(it.options);if(!choices.length){opts.innerHTML='<div class="optionMissing">이 문제의 선택지를 읽지 못했습니다.<br>최신 엑셀 양식의 보기1~보기4 열을 확인하거나 엑셀을 다시 불러와 주세요.</div>'}else choices.forEach((o,i)=>{const b=document.createElement('button');b.className='option';const l=document.createElement('span');l.className='letter';l.textContent=letters[i]||String(i+1);const t=document.createElement('span');t.textContent=o;b.append(l,t);b.onclick=()=>grade(it,letters[i]||String(i+1),b);opts.appendChild(b)})}}
+function renderQuiz(){
+  refreshPools();
+  const list=S.quizPool,card=$('quizCard'),opts=$('optionsArea');
+  card.className='quizCard'; $('answerBox').classList.remove('show'); opts.innerHTML='';
+  if(!list.length){
+    $('quizBadge').textContent=S.subject+' · 퀴즈'; $('quizProgress').textContent='0 / 0'; $('quizMeta').innerHTML='';
+    $('questionText').innerHTML='<div class="empty"><strong>퀴즈가 아직 없어요</strong>엑셀에 OX/객관식/문법 문항을 추가해보세요.</div>';
+    $('prevQuizBtn').disabled=true; $('nextQuizBtn').disabled=true; return;
+  }
+  const it=list[S.qIndex],last=S.qIndex===list.length-1,first=S.qIndex===0; S.answered=false;
+  $('quizBadge').textContent=`${it.subject} · ${S.quizMode==='all'?'전체':S.quizMode==='ox'?'OX':'객관식'}`;
+  $('quizProgress').textContent=`${S.qIndex+1} / ${list.length}${last?' · 마지막 문제':''}`;
+  $('quizMeta').innerHTML=`<span class="subBadge">${sectionOf(it)}</span><span class="badge">${it.unit||'단원 없음'}</span><span class="badge">${it.kind}</span>`;
+  $('questionText').textContent=it.question||'(문제 없음)'; $('explainText').textContent=it.explanation||'해설이 없습니다.';
+  $('prevQuizBtn').disabled=first; $('nextQuizBtn').disabled=last; $('nextQuizBtn').textContent=last?'마지막 문제':'다음 문제';
+  if(it.kind==='OX'){
+    opts.className='ox'; ['O','X'].forEach(v=>{const b=document.createElement('button');b.className='option';b.textContent=v;b.onclick=()=>grade(it,v,b);opts.appendChild(b)});
+  }else{
+    opts.className='options'; const letters=['A','B','C','D','E'];
+    const options=(it.options||[]).filter(v=>norm(v));
+    if(!options.length){
+      opts.innerHTML='<div class="optionsMissing"><strong>선택지가 표시되지 않았어요.</strong><br>엑셀에서 보기1~보기4(또는 선택지1~선택지4) 열을 확인해 주세요. 이번 버전은 띄어쓰기·영문 표기까지 자동 인식합니다.</div>';
+    } else {
+      options.forEach((o,i)=>{const b=document.createElement('button');b.className='option';b.innerHTML=`<span class="letter">${letters[i]}</span><span>${esc(o)}</span>`;b.onclick=()=>grade(it,letters[i],b);opts.appendChild(b)});
+    }
+  }
+}
 function grade(it,choice,clicked){if(S.answered)return;S.answered=true;const answer=norm(it.answer).toUpperCase(),ok=norm(choice).toUpperCase()===answer,id=itemId(it);S.stats.total++;if(ok)S.stats.correct++;if(ok)S.wrong.delete(id);else S.wrong.add(id);$('quizCard').classList.add(ok?'correctState':'wrongState');const letters=['A','B','C','D','E'];[...$('optionsArea').children].forEach((b,i)=>{const val=it.kind==='OX'?b.textContent.trim():letters[i];if(val===answer)b.classList.add('correct');if(b===clicked&&!ok)b.classList.add('wrong')});$('resultPill').textContent=ok?'정답이에요!':`오답이에요 · 정답 ${it.answer}`;$('resultPill').className='result '+(ok?'correct':'wrong');$('answerBox').classList.add('show');save();renderHome();renderReview();toast(ok?'정답!':'복습함에 저장했어요')}
-function parseRelations(v){const s=norm(v);if(!s)return[];let chunks=s.split(/\r?\n|\s*\|\s*|\s*;\s*/).map(norm).filter(Boolean);if(chunks.length===1&&!/[=:：]/.test(chunks[0])&&chunks[0].includes(','))chunks=chunks[0].split(/\s*,\s*/).filter(Boolean);return chunks.map(x=>{const p=x.split(/\s*(?:[:：=])\s*/,2);return{term:norm(p[0]),meaning:norm(p[1]||'')}})}
-function posShort(v){const s=norm(v).toLowerCase();if(!s)return'';if(s.includes('noun')||s==='명사'||s==='명')return'명';if(s.includes('verb')||s==='동사'||s==='동')return'동';if(s.includes('adjective')||s==='형용사'||s==='형')return'형';if(s.includes('adverb')||s==='부사'||s==='부')return'부';return norm(v).slice(0,3)}
-function meaningRows(it){const rows=[];[[it.meaning1Pos,it.meaning1],[it.meaning2Pos,it.meaning2],[it.meaning3Pos,it.meaning3]].forEach(([p,m])=>{if(norm(m))rows.push([posShort(p),m])});if(!rows.length&&norm(it.back))rows.push([posShort(it.partOfSpeech),it.back]);return rows}
-function relationSection(label,icon,value){const arr=parseRelations(value);if(!arr.length)return'';return`<div class="detailSection"><div class="detailLabel"><span class="detailIcon">${esc(icon)}</span>${esc(label)}</div><div class="relationList">${arr.map(x=>`<div class="relationRow"><div class="relationTerm">${esc(x.term)}</div><div class="relationMeaning">${x.meaning?esc(x.meaning):''}</div></div>`).join('')}</div></div>`}
-function renderCard(){refreshPools();const list=S.cardPool;if(!list.length){$('cardBadge').textContent=S.subject+' · 카드';$('cardProgress').textContent='0 / 0';$('frontUnit').textContent='카드 없음';$('frontSourceText').textContent='';$('frontText').textContent='카드가 아직 없어요';$('frontPron').textContent='';$('frontMeanings').innerHTML='<div class="meaningRow"><span class="frontMeaningFallback">엑셀에 단어/개념 행을 추가해보세요.</span></div>';$('backWordTitle').textContent='';$('detailScroll').innerHTML='';$('memoryBtns').style.visibility='hidden';$('prevCardBtn').disabled=true;$('nextCardBtn').disabled=true;return}const it=normalizeItem(list[S.cIndex],S.cIndex);S.cardPool[S.cIndex]=it;const last=S.cIndex===list.length-1,first=S.cIndex===0,id=itemId(it),state=S.memory[id]||'';$('cardBadge').textContent=`${it.subject} · ${sectionOf(it)}`;$('cardProgress').textContent=`${S.cIndex+1} / ${list.length}${last?' · 마지막 카드':''}`;$('frontUnit').textContent=sectionOf(it);$('frontSourceText').textContent=it.source||(it.tags?it.tags:it.unit||'');$('frontText').textContent=it.front||it.question||'앞면 없음';$('frontPron').textContent=it.pronunciation||'';const meanings=meaningRows(it);$('frontMeanings').innerHTML=meanings.length?meanings.map(([p,m])=>`<div class="meaningRow">${p?`<span class="posPill">${esc(p)}</span>`:''}<span class="meaningText">${esc(m)}</span></div>`).join(''):'<div class="meaningRow"><span class="frontMeaningFallback">뜻 정보가 없습니다.</span></div>';$('backWordTitle').textContent=it.front||it.question||'카드';let detail='';if(meanings.length)detail+=`<div class="detailSection"><div class="detailLabel"><span class="detailIcon">뜻</span>의미</div><div class="relationList">${meanings.map(([p,m])=>`<div class="relationRow"><div class="relationTerm">${p?`<span class="posPill">${esc(p)}</span>`:''}</div><div class="relationMeaning">${esc(m)}</div></div>`).join('')}</div></div>`;if(it.etymology)detail+=`<div class="detailSection"><div class="detailLabel"><span class="detailIcon">어</span>어원</div><div class="detailBody">${esc(it.etymology)}</div></div>`;if(it.example||it.exampleTranslation)detail+=`<div class="detailSection"><div class="detailLabel"><span class="detailIcon">예</span>예문</div><div class="exampleBox">${it.example?`<strong>${esc(it.example)}</strong>`:''}${it.exampleTranslation?`<div class="exampleTranslation">${esc(it.exampleTranslation)}</div>`:''}</div></div>`;detail+=relationSection('유의어','=',it.synonyms);detail+=relationSection('반의어','↔',it.antonyms);detail+=relationSection('파생어','+',it.derivatives);detail+=relationSection('숙어/표현','P',it.phrases);if(it.memo||it.explanation)detail+=`<div class="detailSection"><div class="detailLabel"><span class="detailIcon">M</span>메모</div><div class="detailBody">${esc(it.memo||it.explanation)}</div></div>`;$('detailScroll').innerHTML=detail||'<div class="detailSection"><div class="detailBody">추가 정보가 없습니다.</div></div>';$('detailScroll').scrollTop=0;$('flipCard').classList.remove('flipped');$('memoryBtns').style.visibility='visible';$$('[data-memory]').forEach(b=>b.classList.toggle('active',b.dataset.memory===state));$('prevCardBtn').disabled=first;$('nextCardBtn').disabled=last;$('nextCardBtn').textContent=last?'마지막 카드':'다음 카드'}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function splitPipe(v){return norm(v)?norm(v).split(/\s*\|\s*|\r?\n|\s*;\s*/).map(x=>x.trim()).filter(Boolean):[]}
+function splitList(v){return norm(v)?norm(v).split(/\s*\|\s*|\r?\n|\s*;\s*|\s*,\s*/).map(x=>x.trim()).filter(Boolean):[]}
+function shortPos(v){const x=norm(v).toLowerCase();if(/noun|명사|^명$/.test(x))return'명';if(/verb|동사|^동$/.test(x))return'동';if(/adjective|형용사|^형$/.test(x))return'형';if(/adverb|부사|^부$/.test(x))return'부';if(/preposition|전치사/.test(x))return'전';return v||'뜻'}
+function meaningRows(it){
+  const raw=norm(it.back||it.answer), pos=splitPipe(it.partOfSpeech);
+  const labeled=splitPipe(raw).map(x=>{const m=x.match(/^([^:：]{1,12})[:：]\s*(.+)$/);return m?{pos:shortPos(m[1]),meaning:m[2]}:null}).filter(Boolean);
+  if(labeled.length) return labeled;
+  const meanings=splitPipe(raw);
+  if(meanings.length>1 && pos.length===meanings.length) return meanings.map((m,i)=>({pos:shortPos(pos[i]),meaning:m}));
+  return raw?[{pos:shortPos(it.partOfSpeech),meaning:raw}]:[];
+}
+function parseTermDesc(text){const m=String(text).match(/^(.+?)\s*[:：]\s*(.+)$/);return m?[m[1].trim(),m[2].trim()]:[String(text).trim(),'']}
+function detailGroup(title,icon,value,comma=true){
+  const arr=comma?splitList(value):splitPipe(value); if(!arr.length)return'';
+  const items=arr.map(x=>{const [a,b]=parseTermDesc(x);return `<div class="detailItem"><span class="term">${esc(a)}</span><span class="desc">${esc(b)}</span></div>`}).join('');
+  return `<div class="detailGroup"><div class="detailTitle"><span class="detailIcon">${icon}</span>${esc(title)}</div><div class="detailItems">${items}</div></div>`;
+}
+function renderCard(){
+  refreshPools(); const list=S.cardPool;
+  if(!list.length){
+    $('cardBadge').textContent=S.subject+' · 카드'; $('cardProgress').textContent='0 / 0'; $('frontUnit').textContent='카드 없음'; $('backUnit').textContent='카드 없음';
+    $('frontText').textContent='카드가 아직 없어요'; $('frontPronunciation').textContent=''; $('frontMeaning').innerHTML=''; $('backWordTitle').textContent=''; $('backText').textContent='엑셀에 단어/개념 행을 추가해보세요';
+    $('wordMeta').innerHTML=''; $('exampleText').textContent=''; $('memoryBtns').style.visibility='hidden'; $('prevCardBtn').disabled=true; $('nextCardBtn').disabled=true; return;
+  }
+  const it=list[S.cIndex],last=S.cIndex===list.length-1,first=S.cIndex===0,id=itemId(it),state=S.memory[id]||'',isWord=it.subject==='영어'&&it.kind==='단어';
+  $('cardBadge').textContent=`${it.subject} · ${sectionOf(it)}`; $('cardProgress').textContent=`${S.cIndex+1} / ${list.length}${last?' · 마지막 카드':''}`;
+  $('frontUnit').textContent=`${sectionOf(it)} · ${it.unit||'단원 없음'}`; $('backUnit').textContent=`${sectionOf(it)} · ${it.unit||'단원 없음'}`;
+  $('flipCard').classList.toggle('wordMode',isWord); $('flipCard').classList.remove('flipped');
+  $('frontText').textContent=it.front||it.question||'앞면 없음';
+  $('frontPronunciation').textContent=isWord?(it.pronunciation||''):'';
+  $('frontPronunciation').style.display=isWord&&it.pronunciation?'block':'none';
+  if(isWord){
+    const meanings=meaningRows(it);
+    $('frontMeaning').innerHTML=meanings.map(x=>`<div class="meaningRow"><span class="posTag">${esc(x.pos)}</span><span>${esc(x.meaning)}</span></div>`).join('');
+    $('frontMeaning').style.display='grid';
+    $('backWordTitle').textContent=it.front||''; $('backWordTitle').style.display='block';
+    $('backText').textContent=[it.pronunciation,it.partOfSpeech].filter(Boolean).join(' · '); $('backText').style.display=(it.pronunciation||it.partOfSpeech)?'block':'none';
+    let detail='';
+    detail+=detailGroup('유의어','=',it.synonyms,true);
+    detail+=detailGroup('반의어','↔',it.antonyms,true);
+    detail+=detailGroup('파생어','+',it.derivatives,true);
+    detail+=detailGroup('숙어 / 표현','•',it.phrases,false);
+    if(norm(it.etymology)) detail+=`<div class="detailGroup"><div class="detailTitle"><span class="detailIcon">↳</span>어원</div><div class="detailPlain">${esc(it.etymology)}</div></div>`;
+    if(norm(it.example)||norm(it.exampleTranslation)) detail+=`<div class="detailGroup"><div class="detailTitle"><span class="detailIcon">··</span>예문</div><div class="exampleBlock"><div class="exampleEn">${esc(it.example)}</div>${norm(it.exampleTranslation)?`<div class="exampleKo">${esc(it.exampleTranslation)}</div>`:''}</div></div>`;
+    if(norm(it.memo)) detail+=`<div class="detailGroup"><div class="detailTitle"><span class="detailIcon">i</span>메모</div><div class="detailPlain">${esc(it.memo)}</div></div>`;
+    if(norm(it.source)) detail+=`<div class="detailGroup"><div class="detailTitle"><span class="detailIcon">#</span>출처</div><div class="detailPlain">${esc(it.source)}</div></div>`;
+    $('wordMeta').innerHTML=detail||'<div class="detailPlain">추가 정보가 없습니다.</div>';
+    $('exampleText').style.display='none';
+  }else{
+    $('frontMeaning').innerHTML=''; $('frontMeaning').style.display='none'; $('backWordTitle').textContent=''; $('backWordTitle').style.display='none';
+    $('backText').style.display='block'; $('backText').textContent=it.back||it.answer||'뒷면 없음';
+    const rows=[['품사',it.partOfSpeech],['발음',it.pronunciation],['유의어',it.synonyms],['반의어',it.antonyms],['파생어',it.derivatives],['숙어/표현',it.phrases],['예문 해석',it.exampleTranslation],['메모',it.memo]].filter(x=>norm(x[1]));
+    $('wordMeta').innerHTML=rows.map(([k,v])=>`<div class="wordMetaRow"><b>${esc(k)}</b><span>${esc(v)}</span></div>`).join('');
+    $('exampleText').style.display=(it.example||it.explanation)?'block':'none'; $('exampleText').textContent=it.example?`예문 · ${it.example}`:(it.explanation||'');
+  }
+  $('memoryBtns').style.visibility='visible'; $$('[data-memory]').forEach(b=>b.classList.toggle('active',b.dataset.memory===state));
+  $('prevCardBtn').disabled=first; $('nextCardBtn').disabled=last; $('nextCardBtn').textContent=last?'마지막 카드':'다음 카드';
+}
 function setMemory(state){if(!S.cardPool.length)return;const it=S.cardPool[S.cIndex],id=itemId(it);S.memory[id]=state;save();renderHome();renderReview();$$('[data-memory]').forEach(b=>b.classList.toggle('active',b.dataset.memory===state));toast(state==='know'?'알아요로 표시했어요':state==='confused'?'헷갈림에 모아뒀어요':'모르는 단어에 모아뒀어요')}
 function renderReview(){const area=$('reviewList');$$('[data-review]').forEach(b=>b.classList.toggle('active',b.dataset.review===S.reviewFilter));let list=[];S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)).forEach(it=>{const id=itemId(it),mem=S.memory[id];if(S.wrong.has(id))list.push({it,type:'wrong'});if(mem==='confused')list.push({it,type:'confused'});if(mem==='unknown')list.push({it,type:'unknown'})});if(S.reviewFilter!=='all')list=list.filter(x=>x.type===S.reviewFilter);area.innerHTML='';if(!list.length){area.innerHTML='<div class="empty"><strong>복습할 항목이 없어요</strong>틀린 문제나 헷갈리는 단어가 생기면 여기에 모입니다.</div>';return}list.forEach(({it,type})=>{const b=document.createElement('button');b.className='reviewItem';const label=type==='wrong'?'문제 오답':type==='confused'?'헷갈리는 단어':'모르는 단어';b.innerHTML=`<strong>${it.question||it.front||'(항목)'}</strong><span>${sectionOf(it)} · ${it.unit||''} · ${it.kind}</span><span class="stateLabel ${type}">${label}</span>`;b.onclick=()=>{S.section=sectionOf(it);refreshPools();if(isCard(it)){S.cIndex=Math.max(0,S.cardPool.findIndex(x=>itemId(x)===itemId(it)));setScreen('card')}else{S.quizMode='all';refreshPools();S.qIndex=Math.max(0,S.quizPool.findIndex(x=>itemId(x)===itemId(it)));setScreen('quiz')}};area.appendChild(b)})}
 function setScreen(s){S.screen=s;$$('.screen').forEach(x=>x.classList.toggle('active',x.id===s+'Screen'));$$('.navBtn').forEach(x=>x.classList.toggle('active',x.dataset.screen===s));if(s==='quiz')renderQuiz();if(s==='card')renderCard();if(s==='review')renderReview();if(s==='home')renderHome()}
 function renderAll(){renderTabs();refreshPools();renderHome();renderQuiz();renderCard();renderReview();setScreen(S.screen)}
 function launch(mode){if(mode==='card'){S.screen='card'}else{S.quizMode=mode;S.qIndex=0;S.screen='quiz'}renderAll()}
-function keyNorm(k){return String(k??'').toLowerCase().replace(/[\s_\-\/().·]/g,'')}
-function parseRows(rows){return rows.map((raw,i)=>{const r={};Object.entries(raw||{}).forEach(([k,v])=>r[keyNorm(k)]=v);const pick=(names)=>{for(const n of names){const v=r[keyNorm(n)];if(v!==undefined&&norm(v))return norm(v)}return''};let opts=[pick(['보기1','선택지1','선지1','option1','a']),pick(['보기2','선택지2','선지2','option2','b']),pick(['보기3','선택지3','선지3','option3','c']),pick(['보기4','선택지4','선지4','option4','d']),pick(['보기5','선택지5','선지5','option5','e'])].filter(Boolean);if(!opts.length){const rawOpts=pick(['보기','options','선택지','선지']);if(rawOpts)opts=splitOptions(rawOpts)}return normalizeItem({subject:pick(['과목','subject']),kind:pick(['유형','학습유형','kind','type']),subtitle:pick(['소제목','세트','학습세트','subtitle','section','day']),unit:pick(['단원','unit','chapter']),question:pick(['문제','question']),answer:pick(['정답','answer']),options:opts,explanation:pick(['해설','explanation','설명']),front:pick(['앞면','front','단어','개념명']),back:pick(['뒷면','back','뜻','의미','정의']),partOfSpeech:pick(['품사','partofspeech','pos']),pronunciation:pick(['발음','pronunciation','pron']),synonyms:pick(['유의어','동의어','synonyms','synonym']),antonyms:pick(['반의어','antonyms','antonym']),derivatives:pick(['파생어','derivatives','derivative']),phrases:pick(['숙어표현','숙어','표현','phrases','phrase']),example:pick(['예문','example']),exampleTranslation:pick(['예문해석','해석','exampletranslation']),memo:pick(['메모','memo','note']),meaning1Pos:pick(['뜻1품사','의미1품사','품사1']),meaning1:pick(['뜻1','의미1']),meaning2Pos:pick(['뜻2품사','의미2품사','품사2']),meaning2:pick(['뜻2','의미2']),meaning3Pos:pick(['뜻3품사','의미3품사','품사3']),meaning3:pick(['뜻3','의미3']),etymology:pick(['어원','etymology']),source:pick(['출처','기출출처','source']),tags:pick(['태그','tags','tag']),uid:'u_'+Date.now()+'_'+i},i)}).filter(x=>x.subject&&(x.question||x.front||x.back))}
-function importFile(file){const reader=new FileReader();reader.onload=e=>{try{const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'}),all=[];wb.SheetNames.forEach(name=>{all.push(...parseRows(XLSX.utils.sheet_to_json(wb.Sheets[name],{defval:''}))) });if(!all.length)throw new Error('학습 행 없음');S.items=all;S.filename=file.name;S.subject=SUBJECTS.find(s=>all.some(x=>x.subject===s))||'회계';S.section='전체';S.wrong=new Set();S.memory={};S.stats={correct:0,total:0};S.qIndex=0;S.cIndex=0;save();renderAll();toast('엑셀을 불러왔어요')}catch(err){console.error(err);toast('엑셀 형식을 확인해주세요')}};reader.readAsArrayBuffer(file)}
-$('uploadBtn').onclick=()=>$('fileInput').click();$('fileInput').onchange=e=>{const f=e.target.files?.[0];if(f)importFile(f);e.target.value=''};$('templateBtn').onclick=()=>{const a=document.createElement('a');a.href='./study_template.xlsx';a.download='학습앱_엑셀양식.xlsx';document.body.appendChild(a);a.click();a.remove()};$$('[data-launch]').forEach(b=>b.onclick=()=>launch(b.dataset.launch));$$('.navBtn').forEach(b=>b.onclick=()=>setScreen(b.dataset.screen));$('prevQuizBtn').onclick=()=>{if(S.qIndex>0){S.qIndex--;renderQuiz()}};$('nextQuizBtn').onclick=()=>{if(S.qIndex<S.quizPool.length-1){S.qIndex++;renderQuiz()}};$('prevCardBtn').onclick=()=>{if(S.cIndex>0){S.cIndex--;renderCard()}};$('nextCardBtn').onclick=()=>{if(S.cIndex<S.cardPool.length-1){S.cIndex++;renderCard()}};$('flipCard').onclick=()=>$('flipCard').classList.toggle('flipped');$$('[data-memory]').forEach(b=>b.onclick=e=>{e.stopPropagation();setMemory(b.dataset.memory)});$$('[data-review]').forEach(b=>b.onclick=()=>{S.reviewFilter=b.dataset.review;renderReview()});$('resetBtn').onclick=()=>{if(confirm('오답, 단어 기억상태, 정답률 기록을 모두 초기화할까요?\n불러온 엑셀 학습내용은 그대로 유지됩니다.')){S.wrong=new Set();S.memory={};S.stats={correct:0,total:0};S.reviewFilter='all';save();renderAll();toast('학습 기록을 초기화했어요')}};load();if(!S.items.length)S.items=SAMPLE.map(normalizeItem);else S.items=S.items.map(normalizeItem);renderAll();if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
+function keyNorm(v){return String(v??'').trim().toLowerCase().replace(/[\s_\-./\\()\[\]]/g,'')}
+function normalizeRow(row){const out={};Object.entries(row||{}).forEach(([k,v])=>{out[keyNorm(k)]=v});return out}
+function pickN(o,names){for(const n of names){const v=o[keyNorm(n)];if(v!==undefined&&norm(v))return norm(v)}return''}
+function parseRows(rows,sheetName=''){
+  return rows.map((raw,i)=>{
+    const r=normalizeRow(raw);
+    let opts=[];
+    for(let n=1;n<=5;n++){
+      const v=pickN(r,[`보기${n}`,`선택지${n}`,`답지${n}`,`option${n}`,`choice${n}`,String.fromCharCode(64+n),`보기${String.fromCharCode(64+n)}`]);
+      if(v) opts.push(v);
+    }
+    if(!opts.length){const rawOptions=pickN(r,['보기','선택지','답지','options','choices']);if(rawOptions){opts=rawOptions.split(/\s*\|\s*|\r?\n|\s*;\s*/).map(x=>x.trim()).filter(Boolean);if(opts.length===1&&rawOptions.includes(','))opts=rawOptions.split(/\s*,\s*/).filter(Boolean)}}
+    const inferredSubject=SUBJECTS.find(s=>keyNorm(sheetName).includes(keyNorm(s)))||'';
+    return{
+      subject:pickN(r,['과목','subject','분야'])||inferredSubject,
+      kind:pickN(r,['유형','학습유형','문제유형','kind','type']),
+      subtitle:pickN(r,['소제목','세트','학습세트','subtitle','section','day']),
+      unit:pickN(r,['단원','unit','chapter']),
+      question:pickN(r,['문제','문항','질문','question']),
+      answer:pickN(r,['정답','답','answer']), options:opts,
+      explanation:pickN(r,['해설','풀이','설명','explanation']),
+      front:pickN(r,['앞면','front','단어','개념명','word']), back:pickN(r,['뒷면','back','뜻','의미','정의','meaning']),
+      partOfSpeech:pickN(r,['품사','partofspeech','pos']), pronunciation:pickN(r,['발음','발음기호','pronunciation','pron']),
+      synonyms:pickN(r,['유의어','동의어','synonyms','synonym']), antonyms:pickN(r,['반의어','antonyms','antonym']),
+      derivatives:pickN(r,['파생어','derivatives','derivative']), phrases:pickN(r,['숙어표현','숙어/표현','숙어','표현','phrases','phrase']),
+      etymology:pickN(r,['어원','etymology','origin']), example:pickN(r,['예문','example','sentence']),
+      exampleTranslation:pickN(r,['예문해석','예문 해석','해석','번역','exampletranslation','translation']),
+      source:pickN(r,['출처','기출','출제','source']), memo:pickN(r,['메모','memo','note']), tags:pickN(r,['태그','tags','tag']),
+      uid:'u_'+Date.now()+'_'+sheetName+'_'+i
+    }
+  }).filter(x=>x.subject&&(x.question||x.front||x.back));
+}
+function importFile(file){
+  const reader=new FileReader();
+  reader.onload=e=>{try{
+    const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'}),all=[];
+    wb.SheetNames.forEach(name=>{all.push(...parseRows(XLSX.utils.sheet_to_json(wb.Sheets[name],{defval:''}),name))});
+    if(!all.length)throw new Error('학습 행 없음');
+    S.items=all;S.filename=file.name;S.subject=SUBJECTS.find(s=>all.some(x=>x.subject===s))||'회계';S.section='전체';S.wrong=new Set();S.memory={};S.stats={correct:0,total:0};S.qIndex=0;S.cIndex=0;save();renderAll();toast(`${all.length}개 항목을 불러왔어요`)
+  }catch(err){console.error(err);toast('엑셀 형식을 확인해주세요')}};
+  reader.readAsArrayBuffer(file)
+}
+$('uploadBtn').onclick=()=>$('fileInput').click();$('fileInput').onchange=e=>{const f=e.target.files?.[0];if(f)importFile(f);e.target.value=''};$('templateBtn').onclick=()=>{const a=document.createElement('a');a.href='./study_template.xlsx';a.download='학습앱_엑셀양식.xlsx';document.body.appendChild(a);a.click();a.remove()};$$('[data-launch]').forEach(b=>b.onclick=()=>launch(b.dataset.launch));$$('.navBtn').forEach(b=>b.onclick=()=>setScreen(b.dataset.screen));$('prevQuizBtn').onclick=()=>{if(S.qIndex>0){S.qIndex--;renderQuiz()}};$('nextQuizBtn').onclick=()=>{if(S.qIndex<S.quizPool.length-1){S.qIndex++;renderQuiz()}};$('prevCardBtn').onclick=()=>{if(S.cIndex>0){S.cIndex--;renderCard()}};$('nextCardBtn').onclick=()=>{if(S.cIndex<S.cardPool.length-1){S.cIndex++;renderCard()}};$('flipCard').onclick=()=>$('flipCard').classList.toggle('flipped');$$('[data-memory]').forEach(b=>b.onclick=e=>{e.stopPropagation();setMemory(b.dataset.memory)});$$('[data-review]').forEach(b=>b.onclick=()=>{S.reviewFilter=b.dataset.review;renderReview()});$('resetBtn').onclick=()=>{if(confirm('오답, 단어 기억상태, 정답률 기록을 모두 초기화할까요?\n불러온 엑셀 학습내용은 그대로 유지됩니다.')){S.wrong=new Set();S.memory={};S.stats={correct:0,total:0};S.reviewFilter='all';save();renderAll();toast('학습 기록을 초기화했어요')}};load();if(!S.items.length)S.items=SAMPLE;renderAll();if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
 </script>
 </body>
 </html>
