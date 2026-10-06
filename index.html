@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <title>세무직 9급 합격 메이트</title>
-<!-- v16: unified quiz/card design, subject header and compact filter -->
+<!-- v17: right-side filter, larger quiz text/buttons, taller card area -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
@@ -473,13 +473,134 @@ body{overflow:hidden}
   .question{font-size:36px !important}
 }
 
+
+/* v17: 상단 토글 우측 배치 + 퀴즈 글씨 확대 + 카드 영역 위로 확장 */
+.subjectHeaderRow{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:10px !important;
+  width:100% !important;
+}
+.subjectTitle{
+  flex:1 1 auto !important;
+  min-width:0 !important;
+}
+.filterToggle{
+  flex:0 0 auto !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  margin-top:0 !important;
+  width:auto !important;
+  height:36px !important;
+  min-height:36px !important;
+  padding:0 12px !important;
+  font-size:13px !important;
+  border-radius:12px !important;
+}
+
+/* 헤더가 한 줄이 되므로 본문/카드가 더 위에서 시작 */
+.topbar{
+  padding:max(8px,env(safe-area-inset-top)) 10px 8px !important;
+}
+.content{
+  padding-top:4px !important;
+}
+.cardShell,
+.quizShell{
+  gap:3px !important;
+}
+#cardScreen .headRow,
+#quizScreen .headRow{
+  min-height:24px !important;
+}
+.flipWrap{
+  margin-top:0 !important;
+}
+
+/* 카드 자체는 남는 공간을 기억 버튼 바로 위까지 전부 사용 */
+.cardShell{
+  grid-template-rows:24px minmax(0,1fr) 38px 38px !important;
+}
+.flipWrap,
+.flipCard,
+.face{
+  min-height:0 !important;
+}
+
+/* 퀴즈가 없을 때 안내 문구를 확실히 크게 */
+#quizScreen .empty{
+  flex:1 1 auto !important;
+  min-height:100% !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:24px 16px !important;
+  font-size:15px !important;
+  line-height:1.5 !important;
+  color:#667085 !important;
+  text-align:center !important;
+}
+#quizScreen .empty strong{
+  display:block !important;
+  margin-bottom:8px !important;
+  font-size:24px !important;
+  line-height:1.15 !important;
+  color:#172033 !important;
+  letter-spacing:-.035em !important;
+}
+
+/* 퀴즈 하단 버튼/선택지 글씨 확대 */
+#quizScreen .btn{
+  min-height:40px !important;
+  padding:9px 12px !important;
+  font-size:16px !important;
+  line-height:1.1 !important;
+  font-weight:950 !important;
+}
+#quizScreen .option{
+  font-size:15px !important;
+  line-height:1.35 !important;
+  padding:13px !important;
+}
+#quizScreen .ox .option{
+  font-size:28px !important;
+}
+
+/* 카드 기억/이동 버튼도 너무 작아 보이지 않게 */
+#cardScreen .memoryBtn{
+  min-height:38px !important;
+  font-size:14px !important;
+}
+#cardScreen .btn{
+  min-height:38px !important;
+  font-size:15px !important;
+  font-weight:950 !important;
+}
+
+@media(max-width:480px){
+  .subjectTitle{font-size:25px !important}
+  .filterToggle{
+    height:36px !important;
+    min-height:36px !important;
+    padding:0 11px !important;
+    font-size:13px !important;
+  }
+  #quizScreen .empty strong{font-size:24px !important}
+  #quizScreen .empty{font-size:15px !important}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
   <header class="topbar">
-    <div class="subjectTitle" id="subjectTitle">회계</div>
-    <button class="selectorToggle filterToggle" id="selectorToggle" aria-expanded="false">회계 · 전체 ▾</button>
+    <div class="subjectHeaderRow">
+      <div class="subjectTitle" id="subjectTitle">회계</div>
+      <button class="selectorToggle filterToggle" id="selectorToggle" aria-expanded="false">회계 · 전체 ▾</button>
+    </div>
     <div class="selectorPanel collapsed" id="selectorPanel">
       <div class="selectorLabel">과목</div>
       <div class="subjectTabs" id="subjectTabs"></div>
@@ -610,7 +731,7 @@ body{overflow:hidden}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v16_compact';
+const STORAGE='study_app_v17_compact';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
