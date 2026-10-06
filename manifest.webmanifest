@@ -1,8 +1,7 @@
 {
   "name": "세무직 9급 합격 메이트",
-  "short_name": "9급 합격메이트",
-  "start_url": "./index.html?v=7",
-  "scope": "./",
+  "short_name": "합격 메이트",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#f4f7fb",
   "theme_color": "#2563eb",
@@ -10,8 +9,7 @@
     {
       "src": "icon.svg",
       "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/svg+xml"
     }
   ]
 }
