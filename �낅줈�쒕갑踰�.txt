@@ -1,0 +1,9 @@
+1. GitHub에서 https://github.com/yuri1123/studyapp 열기
+2. Add file > Upload files
+3. 이 폴더의 index.html, manifest.webmanifest, service-worker.js, icon.svg 네 파일을 모두 업로드
+4. Commit changes 누르기
+5. 저장소 Settings > Pages
+6. Build and deployment > Source: Deploy from a branch
+7. Branch: main, Folder: /(root) 선택 후 Save
+8. 잠시 후 https://yuri1123.github.io/studyapp/ 접속
+9. 폴드8에서 Chrome 또는 삼성 인터넷으로 열고 '앱 설치' 또는 '홈 화면에 추가'
