@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <title>세무직 9급 합격 메이트</title>
-<!-- v30: prettier text logo for 슬세생, left aligned -->
+<!-- v33: stronger left alignment for 슬세생 header -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
@@ -952,6 +952,35 @@ body{overflow:hidden}
   .brandPrettyText{font-size:27px !important;}
 }
 
+
+/* v33: 슬세생 로고를 진짜 왼쪽으로 붙이기 */
+.topbar{
+  padding-left:8px !important;
+  padding-right:10px !important;
+}
+.subjectHeaderRow{
+  justify-content:flex-start !important;
+  align-items:center !important;
+}
+.appBrandTextPretty,
+.appBrand,
+#appBrand{
+  flex:0 0 auto !important;
+  width:auto !important;
+  min-width:auto !important;
+  margin:0 auto 0 0 !important;
+  padding-left:0 !important;
+  justify-content:flex-start !important;
+}
+.brandPrettyText{
+  margin-left:0 !important;
+  text-align:left !important;
+}
+.filterToggle,
+#selectorToggle{
+  margin-left:auto !important;
+}
+
 </style>
 </head>
 <body>
@@ -1093,7 +1122,7 @@ body{overflow:hidden}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v30_compact';
+const STORAGE='study_app_v33_compact';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -1138,7 +1167,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+      for(const k of ['study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
