@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <title>세무직 9급 합격 메이트</title>
-<!-- v23: refreshed Excel template and cache-safe template download -->
+<!-- v24: keep derivative meanings together in one item -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
@@ -760,6 +760,34 @@ body{overflow:hidden}
   }
 }
 
+
+/* v24: 파생어의 쉼표 뜻을 같은 항목으로 유지 */
+.lexicalItem{
+  display:flex !important;
+  align-items:baseline !important;
+  gap:7px !important;
+  flex-wrap:wrap !important;
+  width:100% !important;
+}
+.lexicalItem .term{
+  flex:0 1 auto !important;
+}
+.lexicalItem .lexPos{
+  flex:0 0 auto !important;
+}
+.lexicalItem .lexicalDesc{
+  flex:1 1 120px !important;
+  margin-top:0 !important;
+  min-width:0 !important;
+}
+
+/* 예:
+   progression n 진보, 진행
+   → 하나의 파생어 박스 안에서
+     progression  명  진보, 진행
+   으로 표시
+*/
+
 </style>
 </head>
 <body>
@@ -899,7 +927,7 @@ body{overflow:hidden}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v23_compact';
+const STORAGE='study_app_v24_compact';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -1014,6 +1042,11 @@ function renderHome(){
 
 function splitPipe(v){return norm(v)?norm(v).split(/\s*\|\s*|\r?\n|\s*;\s*/).map(x=>x.trim()).filter(Boolean):[]}
 function splitList(v){return norm(v)?norm(v).split(/\s*\|\s*|\r?\n|\s*;\s*|\s*,\s*/).map(x=>x.trim()).filter(Boolean):[]}
+function splitLexicalList(v){
+  return norm(v)
+    ? norm(v).split(/\s*\|\s*|\r?\n|\s*;\s*/).map(x=>x.trim()).filter(Boolean)
+    : [];
+}
 function shortPos(v){
   const x=norm(v).toLowerCase().replace(/\./g,'');
   if(/^(n|noun|명|명사)$/.test(x))return'명';
@@ -1078,15 +1111,18 @@ function parseLexicalItem(text){
   return{term,pos:'',desc};
 }
 function detailGroup(title,icon,value,comma=true,mode='normal'){
-  const arr=comma?splitList(value):splitPipe(value);
+  const arr=mode==='lexical'
+    ? splitLexicalList(value)
+    : (comma?splitList(value):splitPipe(value));
   if(!arr.length)return'';
 
   if(mode==='lexical'){
     const items=arr.map(x=>{
       const it=parseLexicalItem(x);
       return `<div class="lexicalItem">
-        <div class="lexicalHead"><span class="term">${esc(it.term)}</span>${it.pos?`<span class="lexPos">${esc(it.pos)}</span>`:''}</div>
-        ${it.desc?`<div class="lexicalDesc">${esc(it.desc)}</div>`:''}
+        <span class="term">${esc(it.term)}</span>
+        ${it.pos?`<span class="lexPos">${esc(it.pos)}</span>`:''}
+        ${it.desc?`<span class="lexicalDesc">${esc(it.desc)}</span>`:''}
       </div>`;
     }).join('');
     return `<div class="detailGroup derivativeGroup"><div class="detailTitle"><span class="detailIcon">${icon}</span>${esc(title)}</div><div class="lexicalList">${items}</div></div>`;
