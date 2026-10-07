@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <title>세무직 9급 합격 메이트</title>
-<!-- v18: numbered quiz, OX/MC layouts, richer vocabulary card -->
+<!-- v19: shorthand POS input, Korean POS display -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
@@ -899,7 +899,7 @@ body{overflow:hidden}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v18_compact';
+const STORAGE='study_app_v19_compact';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -1016,11 +1016,11 @@ function splitPipe(v){return norm(v)?norm(v).split(/\s*\|\s*|\r?\n|\s*;\s*/).map
 function splitList(v){return norm(v)?norm(v).split(/\s*\|\s*|\r?\n|\s*;\s*|\s*,\s*/).map(x=>x.trim()).filter(Boolean):[]}
 function shortPos(v){
   const x=norm(v).toLowerCase().replace(/\./g,'');
-  if(/^(n|noun|명|명사)$/.test(x))return'n';
-  if(/^(v|verb|동|동사)$/.test(x))return'v';
-  if(/^(a|adj|adjective|형|형용사)$/.test(x))return'a';
-  if(/^(ad|adv|adverb|부|부사)$/.test(x))return'ad';
-  if(/^(p|prep|preposition|전|전치사)$/.test(x))return'p';
+  if(/^(n|noun|명|명사)$/.test(x))return'명';
+  if(/^(v|verb|동|동사)$/.test(x))return'동';
+  if(/^(a|adj|adjective|형|형용사)$/.test(x))return'형';
+  if(/^(ad|adv|adverb|부|부사)$/.test(x))return'부';
+  if(/^(p|prep|preposition|전|전치사)$/.test(x))return'전';
   return norm(v)||'';
 }
 function meaningRows(it){
