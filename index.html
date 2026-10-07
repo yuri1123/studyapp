@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <title>세무직 9급 합격 메이트</title>
-<!-- v24: keep derivative meanings together in one item -->
+<!-- v25: consistent card-back fonts and export current data workbook -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
@@ -788,6 +788,62 @@ body{overflow:hidden}
    으로 표시
 */
 
+
+/* v25: 카드 뒷면 상세 텍스트 크기 통일 */
+.face.back{
+  font-size:14px !important;
+}
+.face.back .detailTitle{
+  font-size:14px !important;
+  line-height:1.35 !important;
+}
+.face.back .detailIcon{
+  font-size:13px !important;
+}
+.face.back .detailItem,
+.face.back .detailItem .term,
+.face.back .detailItem .desc,
+.face.back .lexicalItem,
+.face.back .lexicalItem .term,
+.face.back .lexicalItem .lexicalDesc,
+.face.back .detailPlain,
+.face.back .exampleEn,
+.face.back .exampleKo{
+  font-size:14px !important;
+  line-height:1.45 !important;
+}
+.face.back .detailItem .term,
+.face.back .lexicalItem .term{
+  font-weight:800 !important;
+}
+.face.back .lexPos{
+  font-size:11px !important;
+  line-height:1.2 !important;
+}
+.face.back .backText{
+  font-size:14px !important;
+}
+.face.back .exampleKo{
+  color:#66758a !important;
+}
+
+@media(max-width:480px){
+  .face.back .detailTitle{
+    font-size:14px !important;
+  }
+  .face.back .detailItem,
+  .face.back .detailItem .term,
+  .face.back .detailItem .desc,
+  .face.back .lexicalItem,
+  .face.back .lexicalItem .term,
+  .face.back .lexicalItem .lexicalDesc,
+  .face.back .detailPlain,
+  .face.back .exampleEn,
+  .face.back .exampleKo{
+    font-size:14px !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -805,7 +861,7 @@ body{overflow:hidden}
       <div class="utilityActions">
         <input id="fileInput" type="file" accept=".xlsx,.xls,.csv" hidden>
         <button class="miniBtn" id="resetBtn">현재 리셋</button>
-        <button class="miniBtn" id="templateBtn">양식</button>
+        <button class="miniBtn" id="templateBtn">양식+데이터</button>
         <button class="miniBtn" id="uploadBtn">엑셀</button>
       </div>
       <div class="scopeHint" id="scopeHint">현재 선택 범위의 학습 기록만 초기화할 수 있어요.</div>
@@ -927,7 +983,7 @@ body{overflow:hidden}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v24_compact';
+const STORAGE='study_app_v25_compact';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -972,7 +1028,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+      for(const k of ['study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -1374,6 +1430,7 @@ function parseRows(rows,sheetName=''){
       exampleTranslation:pickN(r,['예문해석','예문 해석','해석','번역','exampletranslation','translation']),
       source:pickN(r,['출처','기출','출제','source']),
       memo:pickN(r,['메모','memo','note']),
+      tags:pickN(r,['태그','tags','tag']),
       uid:'u_'+Date.now()+'_'+sheetName+'_'+i
     }
   }).filter(x=>x.subject&&(x.question||x.front||x.back));
@@ -1397,7 +1454,91 @@ function importFile(file){
 $('selectorToggle').onclick=()=>toggleSelectors();
 $('uploadBtn').onclick=()=>$('fileInput').click();
 $('fileInput').onchange=e=>{const f=e.target.files?.[0];if(f)importFile(f);e.target.value=''};
-$('templateBtn').onclick=()=>{const a=document.createElement('a');a.href='./study_template.xlsx?v=23';a.download='학습앱_최신_엑셀양식.xlsx';document.body.appendChild(a);a.click();a.remove()};
+
+function downloadCurrentWorkbook(){
+  try{
+    const headers=[
+      '과목','유형','소제목','단원','문제','정답',
+      '보기1','보기2','보기3','보기4','보기5','해설',
+      '앞면','뒷면','품사','발음','유의어','반의어','파생어',
+      '숙어/표현','핵심표현','어원','예문','예문해석','출처','메모','태그'
+    ];
+
+    const rows=S.items.map(it=>{
+      const opts=Array.isArray(it.options)?it.options:[];
+      return[
+        it.subject||'',
+        it.kind||'',
+        it.subtitle||'',
+        it.unit||'',
+        it.question||'',
+        it.answer||'',
+        opts[0]||'',
+        opts[1]||'',
+        opts[2]||'',
+        opts[3]||'',
+        opts[4]||'',
+        it.explanation||'',
+        it.front||'',
+        it.back||'',
+        it.partOfSpeech||'',
+        it.pronunciation||'',
+        it.synonyms||'',
+        it.antonyms||'',
+        it.derivatives||'',
+        it.phrases||'',
+        it.keyExpressions||'',
+        it.etymology||'',
+        it.example||'',
+        it.exampleTranslation||'',
+        it.source||'',
+        it.memo||'',
+        it.tags||''
+      ];
+    });
+
+    // 현재 데이터 아래에 바로 추가 입력할 수 있도록 빈 행 30개를 함께 넣음.
+    const blankRows=Array.from({length:30},()=>Array(headers.length).fill(''));
+    const ws=XLSX.utils.aoa_to_sheet([headers,...rows,...blankRows]);
+
+    ws['!cols']=[
+      {wch:10},{wch:10},{wch:18},{wch:16},{wch:38},{wch:10},
+      {wch:28},{wch:28},{wch:28},{wch:28},{wch:28},{wch:36},
+      {wch:18},{wch:28},{wch:10},{wch:16},{wch:28},{wch:28},{wch:38},
+      {wch:38},{wch:38},{wch:24},{wch:42},{wch:42},{wch:20},{wch:26},{wch:18}
+    ];
+    ws['!autofilter']={ref:`A1:AA${Math.max(2,rows.length+1)}`};
+
+    const guideRows=[
+      ['최신 학습앱 작성가이드',''],
+      ['사용법','다운로드한 파일에는 현재 앱에 들어있는 데이터가 그대로 포함됩니다. 마지막 데이터 아래 빈 행에 새 내용을 추가한 뒤 앱에서 다시 업로드하세요.'],
+      ['과목','회계 / 세법 / 국어 / 영어'],
+      ['유형','OX / 객관식 / 문법 / 단어 / 개념'],
+      ['객관식','보기1~보기5까지 사용 가능. 정답은 A~E 또는 1~5 모두 인식합니다.'],
+      ['품사 입력','n / v / a / ad / p 로 짧게 입력'],
+      ['품사 표시','앞면: 명/동/형/부/전 · 뒷면: 명사/동사/형용사/부사/전치사'],
+      ['파생어','예: protection n 보호 | protective a 보호하는 | protector n 보호자'],
+      ['파생어 여러 뜻','같은 단어의 여러 뜻은 쉼표 사용: progression n 진보, 진행'],
+      ['여러 파생어 구분','| 또는 줄바꿈 또는 ; 로 구분'],
+      ['핵심표현','여러 개면 | 로 구분'],
+      ['기출예문','예문 열에 영어 문장, 예문해석 열에 한국어 해석 입력']
+    ];
+    const guide=XLSX.utils.aoa_to_sheet(guideRows);
+    guide['!cols']=[{wch:18},{wch:80}];
+
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,'학습데이터');
+    XLSX.utils.book_append_sheet(wb,guide,'작성가이드');
+
+    const baseName=(S.filename||'학습앱_데이터').replace(/\.(xlsx|xls|csv)$/i,'');
+    XLSX.writeFile(wb,`${baseName}_이어쓰기.xlsx`);
+    toast(`현재 데이터 ${rows.length}개를 포함해 저장했어요`);
+  }catch(err){
+    console.error(err);
+    toast('엑셀 파일 저장 중 오류가 났어요');
+  }
+}
+$('templateBtn').onclick=downloadCurrentWorkbook;
 $('resetBtn').onclick=resetCurrentScope;
 $$('[data-launch]').forEach(b=>b.onclick=()=>launch(b.dataset.launch));
 $$('.navBtn').forEach(b=>b.onclick=()=>setScreen(b.dataset.screen));

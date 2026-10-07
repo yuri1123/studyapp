@@ -1,4 +1,4 @@
-const CACHE='study-app-v24-compact';
+const CACHE='study-app-v25-compact';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./icon.svg'];
 
 self.addEventListener('install',e=>{
@@ -21,22 +21,18 @@ self.addEventListener('fetch',e=>{
   if(e.request.method!=='GET')return;
   const url=new URL(e.request.url);
   const isHtml=e.request.mode==='navigate' || url.pathname.endsWith('/index.html');
-  const isTemplate=url.pathname.endsWith('/study_template.xlsx') || url.pathname.endsWith('.xlsx');
 
-  if(isHtml || isTemplate){
+  if(isHtml){
     e.respondWith(
       fetch(e.request,{cache:'no-store'})
         .then(resp=>{
-          if(resp&&resp.ok && !isTemplate){
+          if(resp&&resp.ok){
             const copy=resp.clone();
             caches.open(CACHE).then(c=>c.put('./index.html',copy));
           }
           return resp;
         })
-        .catch(()=>{
-          if(isHtml)return caches.match('./index.html');
-          return Response.error();
-        })
+        .catch(()=>caches.match('./index.html'))
     );
     return;
   }
