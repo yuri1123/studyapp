@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <title>세무직 9급 합격 메이트</title>
-<!-- v17: right-side filter, larger quiz text/buttons, taller card area -->
+<!-- v18: numbered quiz, OX/MC layouts, richer vocabulary card -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
@@ -592,6 +592,174 @@ body{overflow:hidden}
   #quizScreen .empty{font-size:15px !important}
 }
 
+
+/* v18: 퀴즈 레이아웃/번호 + 카드 상세정보 개선 */
+
+/* ===== 퀴즈 ===== */
+
+/* 객관식: 문제는 왼쪽 상단, 작고 굵지 않게 */
+.quizCard.mcMode{
+  justify-content:flex-start !important;
+}
+.quizCard.mcMode .question{
+  margin:4px 2px 12px !important;
+  text-align:left !important;
+  font-size:19px !important;
+  line-height:1.45 !important;
+  font-weight:500 !important;
+  letter-spacing:-.02em !important;
+  color:#172033 !important;
+}
+.quizCard.mcMode .options{
+  margin-top:0 !important;
+  width:100% !important;
+}
+
+/* OX: 문제와 O/X를 카드 세로 중앙에 모음 */
+.quizCard.oxMode{
+  justify-content:center !important;
+}
+.quizCard.oxMode .question{
+  margin:0 auto 22px !important;
+  max-width:92% !important;
+  text-align:center !important;
+  font-size:22px !important;
+  line-height:1.42 !important;
+  font-weight:500 !important;
+  letter-spacing:-.02em !important;
+  color:#172033 !important;
+}
+.quizCard.oxMode .ox{
+  margin-top:0 !important;
+  width:100% !important;
+}
+
+/* 번호는 1~5 */
+#quizScreen .option .letter{
+  min-width:24px !important;
+  color:#2563eb !important;
+  font-weight:950 !important;
+  font-size:16px !important;
+}
+#quizScreen .option{
+  align-items:flex-start !important;
+  font-size:15px !important;
+  line-height:1.45 !important;
+}
+
+/* ===== 카드 높이 ===== */
+
+/* 카드가 기억 버튼 바로 위까지 최대한 붙어서 내려오도록 */
+.cardShell{
+  grid-template-rows:24px minmax(0,1fr) 40px 40px !important;
+  gap:2px !important;
+}
+.flipWrap{
+  height:100% !important;
+  min-height:0 !important;
+  margin:0 !important;
+}
+.flipCard{
+  height:100% !important;
+  min-height:0 !important;
+}
+.face{
+  height:100% !important;
+  min-height:0 !important;
+}
+.memoryBtns{
+  margin:0 !important;
+}
+
+/* ===== 단어 카드 뒷면 ===== */
+
+/* 파생어: 예문처럼 전체 너비를 쓰는 블록 */
+.lexicalList{
+  display:grid;
+  gap:8px;
+  width:100%;
+}
+.lexicalItem{
+  width:100%;
+  padding:10px 12px;
+  background:#f4f8fc;
+  border:1px solid #dce6f0;
+  border-radius:12px;
+}
+.lexicalHead{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-width:0;
+  flex-wrap:wrap;
+}
+.lexicalHead .term{
+  font-weight:900;
+  color:#172033;
+  overflow-wrap:anywhere;
+}
+.lexPos{
+  flex:0 0 auto;
+  min-width:24px;
+  padding:2px 6px;
+  border-radius:999px;
+  background:#dcecff;
+  border:1px solid #c6dbf6;
+  color:#1957bd;
+  font-size:10px;
+  font-weight:950;
+  text-align:center;
+}
+.lexicalDesc{
+  margin-top:5px;
+  color:#46566b;
+  font-size:13px;
+  line-height:1.45;
+  overflow-wrap:anywhere;
+}
+
+/* 기출예문: 영문 다음 줄에 해석 */
+.exampleBlock{
+  display:block !important;
+  width:100% !important;
+}
+.exampleEn,
+.exampleKo{
+  display:block !important;
+  width:100% !important;
+}
+.exampleKo{
+  margin-top:8px !important;
+}
+
+/* 기존 2열 상세도 너무 좁게 잘리지 않게 */
+.detailItem{
+  grid-template-columns:minmax(88px,.9fr) minmax(0,1.6fr) !important;
+}
+.detailItem .term,
+.detailItem .desc{
+  overflow-wrap:anywhere;
+}
+
+/* 모바일에서 퀴즈 문제 과대 표시 방지 */
+@media(max-width:480px){
+  .quizCard.mcMode .question{
+    font-size:18px !important;
+    line-height:1.45 !important;
+    font-weight:500 !important;
+  }
+  .quizCard.oxMode .question{
+    font-size:21px !important;
+    font-weight:500 !important;
+  }
+  .lexicalItem{
+    padding:9px 10px;
+  }
+  .lexicalDesc{
+    font-size:13px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -731,7 +899,7 @@ body{overflow:hidden}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v17_compact';
+const STORAGE='study_app_v18_compact';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -774,7 +942,13 @@ function save(){
 
 function load(){
   try{
-    const o=JSON.parse(localStorage.getItem(STORAGE)||'null');
+    let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
+    if(!o){
+      for(const k of ['study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+        const cand=JSON.parse(localStorage.getItem(k)||'null');
+        if(cand){o=cand;break}
+      }
+    }
     if(o){
       if(Array.isArray(o.items)&&o.items.length)S.items=o.items;
       if(Array.isArray(o.wrong))S.wrong=new Set(o.wrong);
@@ -841,13 +1015,13 @@ function renderHome(){
 function splitPipe(v){return norm(v)?norm(v).split(/\s*\|\s*|\r?\n|\s*;\s*/).map(x=>x.trim()).filter(Boolean):[]}
 function splitList(v){return norm(v)?norm(v).split(/\s*\|\s*|\r?\n|\s*;\s*|\s*,\s*/).map(x=>x.trim()).filter(Boolean):[]}
 function shortPos(v){
-  const x=norm(v).toLowerCase();
-  if(/noun|명사|^명$/.test(x))return'명';
-  if(/verb|동사|^동$/.test(x))return'동';
-  if(/adjective|형용사|^형$/.test(x))return'형';
-  if(/adverb|부사|^부$/.test(x))return'부';
-  if(/preposition|전치사/.test(x))return'전';
-  return v||'뜻';
+  const x=norm(v).toLowerCase().replace(/\./g,'');
+  if(/^(n|noun|명|명사)$/.test(x))return'n';
+  if(/^(v|verb|동|동사)$/.test(x))return'v';
+  if(/^(a|adj|adjective|형|형용사)$/.test(x))return'a';
+  if(/^(ad|adv|adverb|부|부사)$/.test(x))return'ad';
+  if(/^(p|prep|preposition|전|전치사)$/.test(x))return'p';
+  return norm(v)||'';
 }
 function meaningRows(it){
   const raw=norm(it.back||it.answer),pos=splitPipe(it.partOfSpeech);
@@ -857,10 +1031,53 @@ function meaningRows(it){
   if(meanings.length>1&&pos.length===meanings.length)return meanings.map((m,i)=>({pos:shortPos(pos[i]),meaning:m}));
   return raw?[{pos:shortPos(it.partOfSpeech),meaning:raw}]:[];
 }
-function parseTermDesc(text){const m=String(text).match(/^(.+?)\s*[:：]\s*(.+)$/);return m?[m[1].trim(),m[2].trim()]:[String(text).trim(),'']}
-function detailGroup(title,icon,value,comma=true){
-  const arr=comma?splitList(value):splitPipe(value);if(!arr.length)return'';
-  const items=arr.map(x=>{const[a,b]=parseTermDesc(x);return `<div class="detailItem"><span class="term">${esc(a)}</span><span class="desc">${esc(b)}</span></div>`}).join('');
+function parseTermDesc(text){
+  const s=String(text??'').trim();
+  const m=s.match(/^(.+?)\s*[:：]\s*(.+)$/);
+  return m?[m[1].trim(),m[2].trim()]:[s,''];
+}
+function parseLexicalItem(text){
+  const s=String(text??'').trim();
+
+  // 지원 예:
+  // protection n 보호
+  // protection / n / 보호
+  // protection:n:보호
+  // protection (n): 보호
+  let m=s.match(/^(.+?)\s*[\/|]\s*(n|v|a|ad|p)\s*[\/|]\s*(.+)$/i);
+  if(m)return{term:m[1].trim(),pos:shortPos(m[2]),desc:m[3].trim()};
+
+  m=s.match(/^(.+?)\s*\((n|v|a|ad|p)\)\s*[:：]?\s*(.+)$/i);
+  if(m)return{term:m[1].trim(),pos:shortPos(m[2]),desc:m[3].trim()};
+
+  m=s.match(/^([^:：]+?)\s*[:：]\s*(n|v|a|ad|p)\s*[:：]\s*(.+)$/i);
+  if(m)return{term:m[1].trim(),pos:shortPos(m[2]),desc:m[3].trim()};
+
+  m=s.match(/^(.+?)\s+(n|v|a|ad|p)\s+(.+)$/i);
+  if(m)return{term:m[1].trim(),pos:shortPos(m[2]),desc:m[3].trim()};
+
+  const [term,desc]=parseTermDesc(s);
+  return{term,pos:'',desc};
+}
+function detailGroup(title,icon,value,comma=true,mode='normal'){
+  const arr=comma?splitList(value):splitPipe(value);
+  if(!arr.length)return'';
+
+  if(mode==='lexical'){
+    const items=arr.map(x=>{
+      const it=parseLexicalItem(x);
+      return `<div class="lexicalItem">
+        <div class="lexicalHead"><span class="term">${esc(it.term)}</span>${it.pos?`<span class="lexPos">${esc(it.pos)}</span>`:''}</div>
+        ${it.desc?`<div class="lexicalDesc">${esc(it.desc)}</div>`:''}
+      </div>`;
+    }).join('');
+    return `<div class="detailGroup derivativeGroup"><div class="detailTitle"><span class="detailIcon">${icon}</span>${esc(title)}</div><div class="lexicalList">${items}</div></div>`;
+  }
+
+  const items=arr.map(x=>{
+    const[a,b]=parseTermDesc(x);
+    return `<div class="detailItem"><span class="term">${esc(a)}</span><span class="desc">${esc(b)}</span></div>`;
+  }).join('');
   return `<div class="detailGroup"><div class="detailTitle"><span class="detailIcon">${icon}</span>${esc(title)}</div><div class="detailItems">${items}</div></div>`;
 }
 
@@ -901,15 +1118,17 @@ function renderCard(){
   $('frontMeaning').innerHTML=meanings.map(x=>`<div class="meaningRow"><span class="posTag">${esc(x.pos)}</span><span>${esc(x.meaning)}</span></div>`).join('');
 
   $('backWordTitle').textContent=it.front||'';
-  $('backText').textContent=[it.pronunciation,it.partOfSpeech].filter(Boolean).join(' · ') || (it.back||it.answer||'뒷면 없음');
+  const posDisplay=splitPipe(it.partOfSpeech).map(shortPos).filter(Boolean).join(' / ');
+  $('backText').textContent=[it.pronunciation,posDisplay].filter(Boolean).join(' · ') || (it.back||it.answer||'뒷면 없음');
 
   let detail='';
   detail+=detailGroup('유의어','=',it.synonyms,true);
   detail+=detailGroup('반의어','↔',it.antonyms,true);
-  detail+=detailGroup('파생어','+',it.derivatives,true);
+  detail+=detailGroup('파생어','+',it.derivatives,true,'lexical');
   detail+=detailGroup('숙어 / 표현','•',it.phrases,false);
+  detail+=detailGroup('핵심표현','★',it.keyExpressions,false);
   if(norm(it.etymology))detail+=`<div class="detailGroup"><div class="detailTitle"><span class="detailIcon">↳</span>어원</div><div class="detailPlain">${esc(it.etymology)}</div></div>`;
-  if(norm(it.example)||norm(it.exampleTranslation))detail+=`<div class="detailGroup"><div class="detailTitle"><span class="detailIcon">··</span>예문</div><div class="exampleBlock"><div class="exampleEn">${esc(it.example)}</div>${norm(it.exampleTranslation)?`<div class="exampleKo">${esc(it.exampleTranslation)}</div>`:''}</div></div>`;
+  if(norm(it.example)||norm(it.exampleTranslation))detail+=`<div class="detailGroup"><div class="detailTitle"><span class="detailIcon">··</span>기출예문</div><div class="exampleBlock"><div class="exampleEn">${esc(it.example)}</div>${norm(it.exampleTranslation)?`<div class="exampleKo">${esc(it.exampleTranslation)}</div>`:''}</div></div>`;
   if(norm(it.memo))detail+=`<div class="detailGroup"><div class="detailTitle"><span class="detailIcon">i</span>메모</div><div class="detailPlain">${esc(it.memo)}</div></div>`;
   if(!detail&&norm(it.back))detail=`<div class="detailGroup"><div class="detailPlain">${esc(it.back)}</div></div>`;
   $('wordMeta').innerHTML=detail;
@@ -928,6 +1147,13 @@ function setMemory(state){
   toast(state==='know'?'알아요로 표시했어요':state==='confused'?'헷갈림에 모아뒀어요':'모르는 단어에 모아뒀어요');
 }
 
+function quizAnswerNumber(v){
+  const x=norm(v).toUpperCase();
+  const map={A:'1',B:'2',C:'3',D:'4',E:'5'};
+  if(map[x])return map[x];
+  const m=x.match(/[1-5]/);
+  return m?m[0]:x;
+}
 function renderQuiz(){
   refreshPools();
   const list=S.quizPool,opts=$('optionsArea'),card=$('quizCard');
@@ -937,47 +1163,70 @@ function renderQuiz(){
     $('questionText').innerHTML='<div class="empty"><strong>퀴즈가 아직 없어요</strong>엑셀에 OX/객관식/문법 문항을 추가해보세요.</div>';
     $('prevQuizBtn').disabled=true;$('nextQuizBtn').disabled=true;return;
   }
+
   const it=list[S.qIndex],last=S.qIndex===list.length-1,first=S.qIndex===0;
+  const isOx=norm(it.kind).toUpperCase()==='OX';
   S.answered=false;
+
+  card.classList.add(isOx?'oxMode':'mcMode');
   $('quizBadge').textContent=`${it.subject} · ${sectionOf(it)}`;
   $('quizProgress').textContent=`${S.qIndex+1} / ${list.length}`;
   $('quizMeta').innerHTML='';
   $('questionText').textContent=it.question||'(문제 없음)';
   $('explainText').textContent=it.explanation||'해설이 없습니다.';
-  $('prevQuizBtn').disabled=first;$('nextQuizBtn').disabled=last;$('nextQuizBtn').textContent=last?'마지막 문제':'다음 문제';
+  $('prevQuizBtn').disabled=first;
+  $('nextQuizBtn').disabled=last;
+  $('nextQuizBtn').textContent=last?'마지막 문제':'다음 문제';
 
-  if(it.kind==='OX'){
+  if(isOx){
     opts.className='ox';
     ['O','X'].forEach(v=>{
-      const b=document.createElement('button');b.className='option';b.textContent=v;b.onclick=()=>grade(it,v,b);opts.appendChild(b)
+      const b=document.createElement('button');
+      b.className='option';
+      b.textContent=v;
+      b.dataset.value=v;
+      b.onclick=()=>grade(it,v,b);
+      opts.appendChild(b);
     });
   }else{
-    opts.className='options';const letters=['A','B','C','D','E'];
-    const options=(it.options||[]).filter(v=>norm(v));
+    opts.className='options';
+    const options=(it.options||[]).filter(v=>norm(v)).slice(0,5);
     options.forEach((o,i)=>{
-      const b=document.createElement('button');b.className='option';
-      b.innerHTML=`<span class="letter">${letters[i]}</span><span>${esc(o)}</span>`;
-      b.onclick=()=>grade(it,letters[i],b);opts.appendChild(b)
+      const value=String(i+1);
+      const b=document.createElement('button');
+      b.className='option';
+      b.dataset.value=value;
+      b.innerHTML=`<span class="letter">${value}</span><span>${esc(o)}</span>`;
+      b.onclick=()=>grade(it,value,b);
+      opts.appendChild(b);
     });
   }
 }
 
 function grade(it,choice,clicked){
-  if(S.answered)return;S.answered=true;
-  const answer=norm(it.answer).toUpperCase(),ok=norm(choice).toUpperCase()===answer,id=itemId(it);
-  const a=S.attempts[id]||(S.attempts[id]={correct:0,total:0});a.total++;if(ok)a.correct++;
+  if(S.answered)return;
+  S.answered=true;
+
+  const isOx=norm(it.kind).toUpperCase()==='OX';
+  const answer=isOx?norm(it.answer).toUpperCase():quizAnswerNumber(it.answer);
+  const picked=isOx?norm(choice).toUpperCase():quizAnswerNumber(choice);
+  const ok=picked===answer,id=itemId(it);
+
+  const a=S.attempts[id]||(S.attempts[id]={correct:0,total:0});
+  a.total++;
+  if(ok)a.correct++;
   if(ok)S.wrong.delete(id);else S.wrong.add(id);
 
-  const letters=['A','B','C','D','E'];
-  [...$('optionsArea').children].forEach((b,i)=>{
-    const val=it.kind==='OX'?b.textContent.trim():letters[i];
+  [...$('optionsArea').children].forEach(b=>{
+    const val=isOx?norm(b.dataset.value).toUpperCase():quizAnswerNumber(b.dataset.value);
     if(val===answer)b.classList.add('correct');
     if(b===clicked&&!ok)b.classList.add('wrong');
   });
 
-  $('resultPill').textContent=ok?'정답이에요!':`오답이에요 · 정답 ${it.answer}`;
+  $('resultPill').textContent=ok?'정답이에요!':`오답이에요 · 정답 ${answer}`;
   $('resultPill').className='result '+(ok?'correct':'wrong');
-  $('answerBox').classList.add('show');save();renderHome();renderReview();
+  $('answerBox').classList.add('show');
+  save();renderHome();renderReview();
   toast(ok?'정답!':'복습함에 저장했어요');
 }
 
@@ -1062,6 +1311,7 @@ function parseRows(rows,sheetName=''){
       antonyms:pickN(r,['반의어','antonyms','antonym']),
       derivatives:pickN(r,['파생어','derivatives','derivative']),
       phrases:pickN(r,['숙어표현','숙어/표현','숙어','표현','phrases','phrase']),
+      keyExpressions:pickN(r,['핵심표현','핵심 표현','중요표현','keyexpression','keyexpressions','keyphrase']),
       etymology:pickN(r,['어원','etymology','origin']),
       example:pickN(r,['예문','example','sentence']),
       exampleTranslation:pickN(r,['예문해석','예문 해석','해석','번역','exampletranslation','translation']),
