@@ -1,15 +1,11 @@
 {
-  "name": "세무직 9급 합격 메이트",
-  "short_name": "합격 메이트",
+  "name": "슬세생",
+  "short_name": "슬세생",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f4f7fb",
+  "background_color": "#ffffff",
   "theme_color": "#2563eb",
   "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
-    }
+    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}
   ]
 }

@@ -1,4 +1,4 @@
-const CACHE='study-app-v27-compact';
+const CACHE='study-app-v28-compact';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./icon.svg'];
 
 self.addEventListener('install',e=>{
