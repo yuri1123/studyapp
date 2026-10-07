@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <title>세무직 9급 합격 메이트</title>
-<!-- v28: simple brand title 슬세생 and custom mascot icon -->
+<!-- v29: provided 슬세생 wordmark image in header -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
@@ -916,14 +916,44 @@ body{overflow:hidden}
   .appBrandSimple .appBrandMain{font-size:27px !important}
 }
 
+
+/* v29: use provided 슬세생 wordmark image on the top-left */
+.subjectHeaderRow{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:10px !important;
+  width:100% !important;
+}
+.appBrandLogoOnly{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  flex:1 1 auto !important;
+  min-width:0 !important;
+}
+.brandWordmark{
+  display:block !important;
+  width:132px !important;
+  height:auto !important;
+  max-width:100% !important;
+  object-fit:contain !important;
+}
+.appBrandMain,.appBrandSub{
+  display:none !important;
+}
+@media(max-width:480px){
+  .brandWordmark{width:126px !important;}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
   <header class="topbar">
     <div class="subjectHeaderRow">
-      <div class="appBrand appBrandSimple" id="appBrand">
-        <div class="appBrandMain">슬세생</div>
+      <div class="appBrand appBrandLogoOnly" id="appBrand">
+        <img class="brandWordmark" src="./brand.svg" alt="슬세생">
       </div>
       <button class="selectorToggle filterToggle" id="selectorToggle" aria-expanded="false">회계 · 전체 ▾</button>
     </div>
@@ -1057,7 +1087,7 @@ body{overflow:hidden}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v28_compact';
+const STORAGE='study_app_v29_compact';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -1102,7 +1132,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+      for(const k of ['study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }

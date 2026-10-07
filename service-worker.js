@@ -1,5 +1,5 @@
-const CACHE='study-app-v28-compact';
-const ASSETS=['./','./index.html','./manifest.webmanifest','./icon.svg'];
+const CACHE='study-app-v29-compact';
+const ASSETS=['./','./index.html','./manifest.webmanifest','./icon.svg','./brand.svg'];
 
 self.addEventListener('install',e=>{
   e.waitUntil(
