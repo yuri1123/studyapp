@@ -9,7 +9,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <title>세무직 9급 합격 메이트</title>
-<!-- v19: shorthand POS input, Korean POS display -->
+<!-- v20: force Korean POS labels on main card -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
@@ -899,7 +899,7 @@ body{overflow:hidden}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v19_compact';
+const STORAGE='study_app_v20_compact';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -1115,7 +1115,10 @@ function renderCard(){
   $('frontPronunciation').style.display=isWord&&it.pronunciation?'block':'none';
 
   const meanings=meaningRows(it);
-  $('frontMeaning').innerHTML=meanings.map(x=>`<div class="meaningRow"><span class="posTag">${esc(x.pos)}</span><span>${esc(x.meaning)}</span></div>`).join('');
+  $('frontMeaning').innerHTML=meanings.map(x=>{
+    const displayPos=shortPos(x.pos);
+    return `<div class="meaningRow"><span class="posTag">${esc(displayPos)}</span><span>${esc(x.meaning)}</span></div>`;
+  }).join('');
 
   $('backWordTitle').textContent=it.front||'';
   const posDisplay=splitPipe(it.partOfSpeech).map(shortPos).filter(Boolean).join(' / ');
