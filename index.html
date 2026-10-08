@@ -981,6 +981,48 @@ body{overflow:hidden}
   margin-left:auto !important;
 }
 
+
+/* v36: 숙어/표현 + 핵심표현을 기출예문처럼 2줄로 표시 */
+.phraseItems{
+  display:grid !important;
+  gap:8px !important;
+  width:100% !important;
+}
+.phraseItem{
+  display:block !important;
+  width:100% !important;
+  padding:8px 10px !important;
+  background:#f4f8fc !important;
+  border-left:3px solid #4a90e2 !important;
+  border-radius:0 10px 10px 0 !important;
+}
+.phraseTerm{
+  display:block !important;
+  width:100% !important;
+  font-size:14px !important;
+  line-height:1.45 !important;
+  font-weight:800 !important;
+  color:#172033 !important;
+  white-space:normal !important;
+  overflow-wrap:anywhere !important;
+}
+.phraseDesc{
+  display:block !important;
+  width:100% !important;
+  margin-top:5px !important;
+  font-size:14px !important;
+  line-height:1.45 !important;
+  color:#66758a !important;
+  white-space:normal !important;
+  overflow-wrap:anywhere !important;
+}
+@media(max-width:480px){
+  .phraseTerm,
+  .phraseDesc{
+    font-size:14px !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1122,7 +1164,7 @@ body{overflow:hidden}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v33_compact';
+const STORAGE='study_app_v36_compact';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -1146,6 +1188,14 @@ const norm=v=>String(v??'').trim();
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const itemId=it=>it.uid||[it.subject,it.kind,it.unit,it.question,it.front,it.back].join('|');
 const sectionOf=it=>norm(it.subtitle)||norm(it.unit)||'기타';
+const locationLabel=it=>{
+  const subtitle=norm(it.subtitle);
+  const unit=norm(it.unit);
+  const parts=[];
+  if(subtitle)parts.push(subtitle);
+  if(unit && unit!==subtitle)parts.push(unit);
+  return parts.length?parts.join(' · '):'분류 없음';
+};
 const sectionMatch=it=>S.section==='전체'||sectionOf(it)===S.section;
 const isCard=it=>['단어','개념'].includes(norm(it.kind))&&(it.front||it.back);
 const isQuiz=it=>['OX','객관식','문법'].includes(norm(it.kind))&&(it.question||it.options?.length);
@@ -1167,7 +1217,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+      for(const k of ['study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -1323,6 +1373,14 @@ function detailGroup(title,icon,value,comma=true,mode='normal'){
     return `<div class="detailGroup derivativeGroup"><div class="detailTitle"><span class="detailIcon">${icon}</span>${esc(title)}</div><div class="lexicalList">${items}</div></div>`;
   }
 
+  if(mode==='phrase'){
+    const items=arr.map(x=>{
+      const[a,b]=parseTermDesc(x);
+      return `<div class="phraseItem"><span class="phraseTerm">${esc(a)}</span>${b?`<span class="phraseDesc">${esc(b)}</span>`:''}</div>`;
+    }).join('');
+    return `<div class="detailGroup phraseGroup"><div class="detailTitle"><span class="detailIcon">${icon}</span>${esc(title)}</div><div class="phraseItems">${items}</div></div>`;
+  }
+
   const items=arr.map(x=>{
     const[a,b]=parseTermDesc(x);
     return `<div class="detailItem"><span class="term">${esc(a)}</span><span class="desc">${esc(b)}</span></div>`;
@@ -1355,7 +1413,7 @@ function renderCard(){
   const last=S.cIndex===list.length-1,first=S.cIndex===0;
   const isWord=it.subject==='영어'&&it.kind==='단어';
 
-  $('cardBadge').textContent=`${it.subject} · ${sectionOf(it)}`;
+  $('cardBadge').textContent=locationLabel(it);
   $('cardProgress').textContent=`${S.cIndex+1} / ${list.length}${last?' · 마지막 카드':''}`;
   $('frontUnit').textContent=`${sectionOf(it)} · ${it.unit||'단원 없음'}`;
   $('backUnit').textContent=`${sectionOf(it)} · ${it.unit||'단원 없음'}`;
@@ -1377,8 +1435,8 @@ function renderCard(){
   detail+=detailGroup('유의어','=',it.synonyms,true);
   detail+=detailGroup('반의어','↔',it.antonyms,true);
   detail+=detailGroup('파생어','+',it.derivatives,true,'lexical');
-  detail+=detailGroup('숙어 / 표현','•',it.phrases,false);
-  detail+=detailGroup('핵심표현','★',it.keyExpressions,false);
+  detail+=detailGroup('숙어 / 표현','•',it.phrases,false,'phrase');
+  detail+=detailGroup('핵심표현','★',it.keyExpressions,false,'phrase');
   if(norm(it.etymology))detail+=`<div class="detailGroup"><div class="detailTitle"><span class="detailIcon">↳</span>어원</div><div class="detailPlain">${esc(it.etymology)}</div></div>`;
   if(norm(it.example)||norm(it.exampleTranslation))detail+=`<div class="detailGroup"><div class="detailTitle"><span class="detailIcon">··</span>기출예문</div><div class="exampleBlock"><div class="exampleEn">${esc(it.example)}</div>${norm(it.exampleTranslation)?`<div class="exampleKo">${esc(it.exampleTranslation)}</div>`:''}</div></div>`;
   if(norm(it.memo))detail+=`<div class="detailGroup"><div class="detailTitle"><span class="detailIcon">i</span>메모</div><div class="detailPlain">${esc(it.memo)}</div></div>`;
@@ -1421,7 +1479,7 @@ function renderQuiz(){
   S.answered=false;
 
   card.classList.add(isOx?'oxMode':'mcMode');
-  $('quizBadge').textContent=`${it.subject} · ${sectionOf(it)}`;
+  $('quizBadge').textContent=locationLabel(it);
   $('quizProgress').textContent=`${S.qIndex+1} / ${list.length}`;
   $('quizMeta').innerHTML='';
   $('questionText').textContent=it.question||'(문제 없음)';
