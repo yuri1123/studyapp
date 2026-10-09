@@ -1042,6 +1042,12 @@ body{overflow:hidden}
 .wordTestCard.meaningMode .wordTestMeaning{font-size:23px}
 .wordTestCard.wordMode .wordTestMeaning{font-size:30px;color:#1f5fd3}
 
+
+/* v40: 퀴즈 가로 스와이프 */
+#quizScreen .quizCard{
+  touch-action:pan-y !important;
+}
+
 </style>
 </head>
 <body>
@@ -1206,7 +1212,7 @@ body{overflow:hidden}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v38_compact';
+const STORAGE='study_app_v41_compact';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -1266,7 +1272,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+      for(const k of ['study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -1648,8 +1654,8 @@ function renderQuiz(){
   $('questionText').textContent=it.question||'(문제 없음)';
   $('explainText').textContent=it.explanation||'해설이 없습니다.';
   $('prevQuizBtn').disabled=first;
-  $('nextQuizBtn').disabled=last;
-  $('nextQuizBtn').textContent=last?'마지막 문제':'다음 문제';
+  $('nextQuizBtn').disabled=false;
+  $('nextQuizBtn').textContent=last?'학습 완료':'다음 문제';
 
   if(isOx){
     opts.className='ox';
@@ -1699,6 +1705,10 @@ function grade(it,choice,clicked){
   $('resultPill').textContent=ok?'정답이에요!':`오답이에요 · 정답 ${answer}`;
   $('resultPill').className='result '+(ok?'correct':'wrong');
   $('answerBox').classList.add('show');
+  if(S.qIndex===S.quizPool.length-1){
+    $('nextQuizBtn').textContent='학습 완료';
+    $('nextQuizBtn').disabled=false;
+  }
   save();renderHome();renderReview();
   toast(ok?'정답!':'복습함에 저장했어요');
 }
@@ -1920,7 +1930,7 @@ $$('.navBtn').forEach(b=>b.onclick=()=>setScreen(b.dataset.screen));
 {
   const card=$('flipCard');let sx=0,sy=0,dragging=false;
   card.addEventListener('touchstart',e=>{const t=e.changedTouches[0];sx=t.clientX;sy=t.clientY;dragging=true},{passive:true});
-  card.addEventListener('touchend',e=>{if(!dragging)return;dragging=false;const t=e.changedTouches[0];const dx=t.clientX-sx,dy=t.clientY-sy;if(Math.abs(dx)<55||Math.abs(dx)<Math.abs(dy)*1.25)return;if(dx>0){if(S.cIndex<S.cardPool.length-1){S.cIndex++;save();renderCard()}else showComplete('card')}else{if(S.cIndex>0){S.cIndex--;save();renderCard()}}},{passive:true});
+  card.addEventListener('touchend',e=>{if(!dragging)return;dragging=false;const t=e.changedTouches[0];const dx=t.clientX-sx,dy=t.clientY-sy;if(Math.abs(dx)<55||Math.abs(dx)<Math.abs(dy)*1.25)return;if(dx<0){if(S.cIndex<S.cardPool.length-1){S.cIndex++;save();renderCard()}else showComplete('card')}else{if(S.cIndex>0){S.cIndex--;save();renderCard()}}},{passive:true});
 }
 $$('[data-memory]').forEach(b=>b.onclick=e=>{e.stopPropagation();setMemory(b.dataset.memory)});
 $('prevCardBtn').onclick=()=>{if(S.cIndex>0){S.cIndex--;save();renderCard()}};
@@ -1929,6 +1939,40 @@ $('prevQuizBtn').onclick=()=>{if(S.qIndex>0){S.qIndex--;save();renderQuiz()}};
 $('nextQuizBtn').onclick=()=>{if(S.qIndex<S.quizPool.length-1){S.qIndex++;save();renderQuiz()}else showComplete('quiz')};
 $('quizRandomBtn').onclick=()=>toggleRandom('quiz');$('cardRandomBtn').onclick=()=>toggleRandom('card');$('quizListBtn').onclick=()=>openList('quiz');$('cardListBtn').onclick=()=>openList('card');$('listCloseBtn').onclick=()=>setScreen(S.listKind==='card'?'card':'quiz');$$('[data-list-kind]').forEach(b=>b.onclick=()=>setListKind(b.dataset.listKind));
 $('prevWordBtn').onclick=()=>{if(S.wordTestIndex>0){S.wordTestIndex--;save();renderWordTest()}};$('nextWordBtn').onclick=()=>{if(S.wordTestIndex<S.wordTestPool.length-1){S.wordTestIndex++;save();renderWordTest()}else showComplete('wordtest')};$('completeCloseBtn').onclick=closeComplete;$('completeRestartBtn').onclick=restartComplete;
+
+{
+  const quizCard=$('quizCard');
+  let sx=0,sy=0,active=false;
+  quizCard.addEventListener('touchstart',e=>{
+    const t=e.changedTouches[0];
+    sx=t.clientX;sy=t.clientY;active=true;
+  },{passive:true});
+  quizCard.addEventListener('touchend',e=>{
+    if(!active)return;
+    active=false;
+    const t=e.changedTouches[0];
+    const dx=t.clientX-sx,dy=t.clientY-sy;
+    if(Math.abs(dx)<55||Math.abs(dx)<Math.abs(dy)*1.25)return;
+
+    // 카드와 동일: 오른쪽 = 다음 / 왼쪽 = 이전
+    if(dx<0){
+      if(S.qIndex<S.quizPool.length-1){
+        S.qIndex++;
+        save();
+        renderQuiz();
+      }else{
+        showComplete('quiz');
+      }
+    }else{
+      if(S.qIndex>0){
+        S.qIndex--;
+        save();
+        renderQuiz();
+      }
+    }
+  },{passive:true});
+}
+
 $$('[data-review]').forEach(b=>b.onclick=()=>{S.reviewFilter=b.dataset.review;renderReview()});
 
 document.addEventListener('click',e=>{
