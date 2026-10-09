@@ -1030,6 +1030,18 @@ body{overflow:hidden}
 .wordTestShell{display:grid;grid-template-rows:26px minmax(0,1fr) 40px;gap:4px}.wordTestCard{min-height:0;background:linear-gradient(180deg,#f8fbff 0%,#eef4fa 100%);border:1px solid #d8e4ef;border-radius:24px;box-shadow:var(--shadow);padding:18px 16px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}.wordTestPromptLabel{font-size:11px;font-weight:900;color:#7a8798}.wordTestMeaning{margin-top:12px;font-size:24px;line-height:1.3;font-weight:900;color:#172033}.wordTestInput{width:100%;margin-top:20px;height:46px;border:1px solid #cfdbea;border-radius:13px;background:#fff;padding:0 12px;font-size:17px;font-weight:800;text-align:center;outline:none}.wordTestInput:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.10)}.wordSubmitBtn{margin-top:8px;width:100%}.wordTestResult{min-height:22px;margin-top:10px;font-size:12px;font-weight:900}.wordTestResult.ok{color:#08732d}.wordTestResult.bad{color:#ac2020}
 .completeOverlay{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(15,23,42,.35);backdrop-filter:blur(4px)}.completeOverlay.show{display:flex}.completeCard{width:min(360px,100%);background:#fff;border-radius:24px;padding:24px 20px;text-align:center;box-shadow:0 22px 50px rgba(15,23,42,.2)}.completeIcon{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;margin:0 auto 12px;background:#eaf8ef;color:#16803a;font-size:28px;font-weight:950}.completeTitle{font-size:22px;font-weight:950;color:#172033}.completeText{margin-top:7px;font-size:13px;line-height:1.5;color:#667085}.completeActions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:18px}
 
+
+/* v38: 단어테스트 객관식 */
+.wordTestTranslation{margin-top:8px;font-size:12px;line-height:1.45;color:#66758a;min-height:18px}
+.wordTestChoices{width:100%;margin-top:18px;display:grid;gap:7px}
+.wordChoice{width:100%;min-height:44px;border:1px solid #d8e4ef;border-radius:13px;background:#fff;padding:10px 12px;text-align:left;font-size:14px;line-height:1.35;font-weight:800;color:#172033}
+.wordChoice.correct{background:var(--greenSoft);border-color:#9bd8af;color:#08732d}
+.wordChoice.wrong{background:var(--redSoft);border-color:#ffb2b2;color:#ac2020}
+.wordChoice:disabled{opacity:1}
+.wordTestCard.exampleMode .wordTestMeaning{font-size:19px;line-height:1.55;font-weight:700;text-align:left;width:100%}
+.wordTestCard.meaningMode .wordTestMeaning{font-size:23px}
+.wordTestCard.wordMode .wordTestMeaning{font-size:30px;color:#1f5fd3}
+
 </style>
 </head>
 <body>
@@ -1067,7 +1079,7 @@ body{overflow:hidden}
             <button class="quickCard" data-launch="ox"><strong>OX 퀴즈</strong><span>빠르게 판단하기</span></button>
             <button class="quickCard" data-launch="mc"><strong>객관식</strong><span>실전처럼 선택하기</span></button>
             <button class="quickCard" data-launch="card"><strong>카드 학습</strong><span>뒤집고 기억 상태 체크</span></button>
-            <button class="quickCard" data-launch="wordtest"><strong>단어 테스트</strong><span>뜻을 보고 단어 직접 입력</span></button>
+            <button class="quickCard" data-launch="wordtest"><strong>단어 테스트</strong><span>뜻·단어·기출예문 객관식</span></button>
             <button class="quickCard" data-launch="list"><strong>문제 목록</strong><span>소단원별 목록에서 골라 보기</span></button>
           </div>
         </div>
@@ -1151,10 +1163,10 @@ body{overflow:hidden}
       <div class="wordTestShell">
         <div class="headRow"><div class="badge" id="wordTestBadge">단어 테스트</div><div class="progress" id="wordTestProgress">1 / 1</div></div>
         <div class="wordTestCard">
-          <div class="wordTestPromptLabel">뜻을 보고 단어를 입력하세요</div>
+          <div class="wordTestPromptLabel" id="wordTestPromptLabel">단어 테스트</div>
           <div class="wordTestMeaning" id="wordTestMeaning"></div>
-          <input id="wordTestInput" class="wordTestInput" type="text" autocomplete="off" autocapitalize="none" placeholder="영단어 입력">
-          <button class="btn primary wordSubmitBtn" id="wordSubmitBtn">정답 확인</button>
+          <div class="wordTestTranslation" id="wordTestTranslation"></div>
+          <div class="wordTestChoices" id="wordTestChoices"></div>
           <div class="wordTestResult" id="wordTestResult"></div>
         </div>
         <div class="actions"><button class="btn" id="prevWordBtn">이전</button><button class="btn primary" id="nextWordBtn">다음 단어</button></div>
@@ -1194,7 +1206,7 @@ body{overflow:hidden}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v37_compact';
+const STORAGE='study_app_v38_compact';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -1254,7 +1266,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+      for(const k of ['study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -1348,9 +1360,55 @@ function toggleRandom(kind){
 function showComplete(kind){let title='학습 완료!',text='여기까지 모두 학습했어요.';if(kind==='quiz'){const a=currentScopeAttempts();const rate=a.total?Math.round(a.correct/a.total*100):0;title='퀴즈 완료!';text=`총 ${S.quizPool.length}문제 · 누적 정답률 ${rate}%`}else if(kind==='card'){const reviewed=S.cardPool.filter(x=>S.memory[itemId(x)]).length;title='카드 학습 완료!';text=`총 ${S.cardPool.length}장 중 ${reviewed}장에 기억 상태를 표시했어요.`}else if(kind==='wordtest'){const rate=S.wordTestTotal?Math.round(S.wordTestCorrect/S.wordTestTotal*100):0;title='단어 테스트 완료!';text=`${S.wordTestTotal}개 응답 · 정답률 ${rate}%`}$('completeTitle').textContent=title;$('completeText').textContent=text;$('completeOverlay').dataset.kind=kind;$('completeOverlay').classList.add('show')}
 function closeComplete(){$('completeOverlay').classList.remove('show')}
 function restartComplete(){const kind=$('completeOverlay').dataset.kind;if(kind==='quiz'){S.qIndex=0;renderQuiz()}if(kind==='card'){S.cIndex=0;renderCard()}if(kind==='wordtest'){S.wordTestIndex=0;S.wordTestCorrect=0;S.wordTestTotal=0;renderWordTest()}save();closeComplete()}
-function normalizeAnswerText(v){return norm(v).toLowerCase().replace(/\s+/g,' ')}
-function renderWordTest(){refreshPools();const list=S.wordTestPool;$('wordTestResult').textContent='';$('wordTestResult').className='wordTestResult';$('wordTestInput').value='';S.wordTestAnswered=false;if(!list.length){$('wordTestBadge').textContent='단어 테스트';$('wordTestProgress').textContent='0 / 0';$('wordTestMeaning').textContent='테스트할 단어 카드가 없어요';$('wordTestInput').disabled=true;$('wordSubmitBtn').disabled=true;$('prevWordBtn').disabled=true;$('nextWordBtn').disabled=true;return}$('wordTestInput').disabled=false;$('wordSubmitBtn').disabled=false;const it=list[S.wordTestIndex];$('wordTestBadge').textContent=locationLabel(it);$('wordTestProgress').textContent=`${S.wordTestIndex+1} / ${list.length}`;$('wordTestMeaning').textContent=it.back||'뜻 없음';$('prevWordBtn').disabled=S.wordTestIndex===0;$('nextWordBtn').disabled=false;$('nextWordBtn').textContent=S.wordTestIndex===list.length-1?'테스트 완료':'다음 단어'}
-function submitWordTest(){if(S.wordTestAnswered||!S.wordTestPool.length)return;const it=S.wordTestPool[S.wordTestIndex];const user=normalizeAnswerText($('wordTestInput').value);const answer=normalizeAnswerText(it.front);if(!user){toast('단어를 입력해주세요');return}const ok=user===answer;S.wordTestAnswered=true;S.wordTestTotal++;if(ok)S.wordTestCorrect++;$('wordTestResult').textContent=ok?'정답이에요!':`정답: ${it.front}`;$('wordTestResult').className='wordTestResult '+(ok?'ok':'bad');save()}
+function stableHash(text){let h=2166136261;const s=String(text??'');for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function uniqueValues(arr){const seen=new Set();return arr.filter(v=>{const k=norm(v).toLowerCase();if(!k||seen.has(k))return false;seen.add(k);return true})}
+function deterministicPick(arr,count,seedText){const seed=stableHash(seedText);return [...arr].map((v,i)=>({v,score:stableHash(seed+'|'+i+'|'+v)})).sort((a,b)=>a.score-b.score).slice(0,count).map(x=>x.v)}
+function deterministicShuffle(arr,seedText){return [...arr].map((v,i)=>({v,score:stableHash(seedText+'|shuffle|'+i+'|'+v)})).sort((a,b)=>a.score-b.score).map(x=>x.v)}
+function blankExample(example,word){const e=norm(example),w=norm(word);if(!e||!w)return'';const escaped=w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');const re=new RegExp(`\\b${escaped}\\b`,'i');return re.test(e)?e.replace(re,'_____'):''}
+function getWordTestQuestion(it,index){
+  const list=S.wordTestPool;
+  const exampleBlank=blankExample(it.example,it.front);
+  const modes=exampleBlank?['example','meaningToWord','wordToMeaning']:['meaningToWord','wordToMeaning'];
+  const mode=modes[stableHash(itemId(it)+'|'+index)%modes.length];
+  let promptLabel='',prompt='',translation='',correct='',distractorSource=[];
+  if(mode==='example'){
+    promptLabel='기출예문 빈칸에 들어갈 단어를 고르세요';
+    prompt=exampleBlank;translation=it.exampleTranslation||'';correct=it.front;
+    distractorSource=list.filter(x=>itemId(x)!==itemId(it)).map(x=>x.front);
+  }else if(mode==='wordToMeaning'){
+    promptLabel='단어의 뜻을 고르세요';
+    prompt=it.front;correct=it.back;
+    distractorSource=list.filter(x=>itemId(x)!==itemId(it)).map(x=>x.back);
+  }else{
+    promptLabel='뜻에 맞는 단어를 고르세요';
+    prompt=it.back;correct=it.front;
+    distractorSource=list.filter(x=>itemId(x)!==itemId(it)).map(x=>x.front);
+  }
+  const distractors=deterministicPick(uniqueValues(distractorSource).filter(x=>norm(x).toLowerCase()!==norm(correct).toLowerCase()),3,itemId(it)+'|'+mode);
+  const options=deterministicShuffle(uniqueValues([correct,...distractors]),itemId(it)+'|'+mode+'|options');
+  return{mode,promptLabel,prompt,translation,correct,options};
+}
+function renderWordTest(){
+  refreshPools();const list=S.wordTestPool;
+  $('wordTestResult').textContent='';$('wordTestResult').className='wordTestResult';
+  $('wordTestChoices').innerHTML='';$('wordTestTranslation').textContent='';S.wordTestAnswered=false;
+  if(!list.length){$('wordTestBadge').textContent='단어 테스트';$('wordTestProgress').textContent='0 / 0';$('wordTestPromptLabel').textContent='';$('wordTestMeaning').textContent='테스트할 단어 카드가 없어요';$('prevWordBtn').disabled=true;$('nextWordBtn').disabled=true;return}
+  const it=list[S.wordTestIndex],q=getWordTestQuestion(it,S.wordTestIndex),card=document.querySelector('.wordTestCard');
+  card.classList.remove('exampleMode','meaningMode','wordMode');card.classList.add(q.mode==='example'?'exampleMode':q.mode==='wordToMeaning'?'wordMode':'meaningMode');
+  $('wordTestBadge').textContent=locationLabel(it);$('wordTestProgress').textContent=`${S.wordTestIndex+1} / ${list.length}`;
+  $('wordTestPromptLabel').textContent=q.promptLabel;$('wordTestMeaning').textContent=q.prompt||'내용 없음';$('wordTestTranslation').textContent=q.translation||'';
+  $('wordTestChoices').innerHTML=q.options.map((opt,i)=>`<button class="wordChoice" data-word-choice="${esc(opt)}">${i+1}. ${esc(opt)}</button>`).join('');
+  $$('[data-word-choice]').forEach(b=>b.onclick=()=>answerWordChoice(b,q.correct));
+  $('prevWordBtn').disabled=S.wordTestIndex===0;$('nextWordBtn').disabled=false;$('nextWordBtn').textContent=S.wordTestIndex===list.length-1?'테스트 완료':'다음 단어';
+}
+function answerWordChoice(button,correct){
+  if(S.wordTestAnswered)return;S.wordTestAnswered=true;
+  const picked=norm(button.dataset.wordChoice),ok=picked.toLowerCase()===norm(correct).toLowerCase();
+  S.wordTestTotal++;if(ok)S.wordTestCorrect++;
+  $$('[data-word-choice]').forEach(b=>{b.disabled=true;if(norm(b.dataset.wordChoice).toLowerCase()===norm(correct).toLowerCase())b.classList.add('correct')});
+  if(!ok)button.classList.add('wrong');
+  $('wordTestResult').textContent=ok?'정답이에요!':`정답: ${correct}`;$('wordTestResult').className='wordTestResult '+(ok?'ok':'bad');save()
+}
 
 function renderTabs(){
   $('subjectTabs').innerHTML=SUBJECTS.map(s=>`<button class="subjectTab ${s===S.subject?'active':''}" data-sub="${s}">${s}</button>`).join('');
@@ -1870,7 +1928,7 @@ $('nextCardBtn').onclick=()=>{if(S.cIndex<S.cardPool.length-1){S.cIndex++;save()
 $('prevQuizBtn').onclick=()=>{if(S.qIndex>0){S.qIndex--;save();renderQuiz()}};
 $('nextQuizBtn').onclick=()=>{if(S.qIndex<S.quizPool.length-1){S.qIndex++;save();renderQuiz()}else showComplete('quiz')};
 $('quizRandomBtn').onclick=()=>toggleRandom('quiz');$('cardRandomBtn').onclick=()=>toggleRandom('card');$('quizListBtn').onclick=()=>openList('quiz');$('cardListBtn').onclick=()=>openList('card');$('listCloseBtn').onclick=()=>setScreen(S.listKind==='card'?'card':'quiz');$$('[data-list-kind]').forEach(b=>b.onclick=()=>setListKind(b.dataset.listKind));
-$('wordSubmitBtn').onclick=submitWordTest;$('wordTestInput').addEventListener('keydown',e=>{if(e.key==='Enter')submitWordTest()});$('prevWordBtn').onclick=()=>{if(S.wordTestIndex>0){S.wordTestIndex--;save();renderWordTest()}};$('nextWordBtn').onclick=()=>{if(S.wordTestIndex<S.wordTestPool.length-1){S.wordTestIndex++;save();renderWordTest()}else showComplete('wordtest')};$('completeCloseBtn').onclick=closeComplete;$('completeRestartBtn').onclick=restartComplete;
+$('prevWordBtn').onclick=()=>{if(S.wordTestIndex>0){S.wordTestIndex--;save();renderWordTest()}};$('nextWordBtn').onclick=()=>{if(S.wordTestIndex<S.wordTestPool.length-1){S.wordTestIndex++;save();renderWordTest()}else showComplete('wordtest')};$('completeCloseBtn').onclick=closeComplete;$('completeRestartBtn').onclick=restartComplete;
 $$('[data-review]').forEach(b=>b.onclick=()=>{S.reviewFilter=b.dataset.review;renderReview()});
 
 document.addEventListener('click',e=>{
