@@ -1550,6 +1550,34 @@ html[data-theme="dark"] .problemBookmark{
   background:#182231 !important;color:var(--text) !important;border-color:#2d3a4d !important
 }
 
+
+/* v48: 시작 전 대단원/소단원 범위 선택 */
+.launchScopeValues{
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  margin-top:7px;
+  padding-bottom:2px;
+  scrollbar-width:none;
+}
+.launchScopeValues::-webkit-scrollbar{display:none}
+.launchScopeValueBtn{
+  flex:0 0 auto;
+  min-height:34px;
+  padding:7px 10px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--card);
+  color:var(--muted);
+  font-size:10.5px;
+  font-weight:900;
+}
+.launchScopeValueBtn.active{
+  background:var(--blue);
+  color:#fff;
+  border-color:var(--blue);
+}
+
 </style>
 </head>
 <body>
@@ -1708,7 +1736,13 @@ html[data-theme="dark"] .problemBookmark{
         </div>
 
         <div class="launchSection">
-          <div class="launchLabel">현재 범위</div>
+          <div class="launchLabel">테스트 범위</div>
+          <div class="launchChoices three">
+            <button data-launch-scope="all">전체</button>
+            <button data-launch-scope="large">대단원</button>
+            <button data-launch-scope="small">소단원</button>
+          </div>
+          <div class="launchScopeValues" id="launchScopeValues"></div>
           <div class="launchCurrentScope" id="launchCurrentScope"></div>
         </div>
 
@@ -1958,7 +1992,7 @@ html[data-theme="dark"] .problemBookmark{
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v47_compact';
+const STORAGE='study_app_v48_compact';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -1984,7 +2018,7 @@ const S={
   flipMode:'any',answerDisplay:'explain',
   reviewWrong:true,reviewConfused:true,reviewUnknown:true,
   effectVibrate:false,effectSound:false,effectAnimation:true,
-  wrongRetry:'review',bookmarks:new Set(),pendingLaunch:'',launchOrder:'default',launchLimit:'default',wordTestQuestionMode:'mix'
+  wrongRetry:'review',bookmarks:new Set(),pendingLaunch:'',launchOrder:'default',launchLimit:'default',wordTestQuestionMode:'mix',launchScopeMode:'all',launchScopeValue:''
 };
 
 const $=id=>document.getElementById(id);
@@ -2024,7 +2058,7 @@ function save(){
       flipMode:S.flipMode,answerDisplay:S.answerDisplay,
       reviewWrong:S.reviewWrong,reviewConfused:S.reviewConfused,reviewUnknown:S.reviewUnknown,
       effectVibrate:S.effectVibrate,effectSound:S.effectSound,effectAnimation:S.effectAnimation,
-      wrongRetry:S.wrongRetry,bookmarks:[...S.bookmarks],pendingLaunch:S.pendingLaunch,launchOrder:S.launchOrder,launchLimit:S.launchLimit,wordTestQuestionMode:S.wordTestQuestionMode
+      wrongRetry:S.wrongRetry,bookmarks:[...S.bookmarks],pendingLaunch:S.pendingLaunch,launchOrder:S.launchOrder,launchLimit:S.launchLimit,wordTestQuestionMode:S.wordTestQuestionMode,launchScopeMode:S.launchScopeMode,launchScopeValue:S.launchScopeValue
     }))
   }catch(e){}
 }
@@ -2033,7 +2067,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+      for(const k of ['study_app_v47_compact','study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -2081,7 +2115,7 @@ function load(){
       if(typeof o.effectVibrate==='boolean')S.effectVibrate=o.effectVibrate;
       if(typeof o.effectSound==='boolean')S.effectSound=o.effectSound;
       if(typeof o.effectAnimation==='boolean')S.effectAnimation=o.effectAnimation;
-      if(o.wrongRetry)S.wrongRetry=o.wrongRetry;if(Array.isArray(o.bookmarks))S.bookmarks=new Set(o.bookmarks);if(o.pendingLaunch)S.pendingLaunch=o.pendingLaunch;if(o.launchOrder)S.launchOrder=o.launchOrder;if(o.launchLimit)S.launchLimit=o.launchLimit;if(o.wordTestQuestionMode)S.wordTestQuestionMode=o.wordTestQuestionMode;
+      if(o.wrongRetry)S.wrongRetry=o.wrongRetry;if(Array.isArray(o.bookmarks))S.bookmarks=new Set(o.bookmarks);if(o.pendingLaunch)S.pendingLaunch=o.pendingLaunch;if(o.launchOrder)S.launchOrder=o.launchOrder;if(o.launchLimit)S.launchLimit=o.launchLimit;if(o.wordTestQuestionMode)S.wordTestQuestionMode=o.wordTestQuestionMode;if(o.launchScopeMode)S.launchScopeMode=o.launchScopeMode;if(typeof o.launchScopeValue==='string')S.launchScopeValue=o.launchScopeValue;
     }
   }catch(e){}
 }
@@ -2097,10 +2131,10 @@ function makeRandomOrder(list){
   return ids;
 }
 function refreshPools(){
-  let q=S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isQuiz(x));
+  let q=S.items.filter(x=>launchScopeMatch(x)&&isQuiz(x));
   if(S.quizMode==='ox')q=q.filter(x=>x.kind==='OX');
   if(S.quizMode==='mc')q=q.filter(x=>x.kind!=='OX');
-  let cards=S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isCard(x));
+  let cards=S.items.filter(x=>launchScopeMatch(x)&&isCard(x));
 
   if(S.quizRandom){
     const ids=new Set(q.map(itemId));
@@ -2148,6 +2182,41 @@ function itemStudyStatus(it,kind){
   if(S.wrong.has(id))return{cls:'wrong',label:'오답'};
   return{cls:'done',label:'정답'};
 }
+
+function launchScopeValues(mode){
+  const items=S.items.filter(x=>x.subject===S.subject);
+  if(mode==='large')return [...new Set(items.map(x=>norm(x.subtitle)).filter(Boolean))];
+  if(mode==='small')return [...new Set(items.map(x=>norm(x.unit)).filter(Boolean))];
+  return [];
+}
+function renderLaunchScopeValues(){
+  $$('[data-launch-scope]').forEach(b=>b.classList.toggle('active',b.dataset.launchScope===S.launchScopeMode));
+  const area=$('launchScopeValues');
+  if(S.launchScopeMode==='all'){
+    S.launchScopeValue='';
+    area.innerHTML='';
+    $('launchCurrentScope').textContent=`${S.subject} · 전체`;
+    return;
+  }
+  const values=launchScopeValues(S.launchScopeMode);
+  if(!values.includes(S.launchScopeValue))S.launchScopeValue=values[0]||'';
+  area.innerHTML=values.map(v=>`<button class="launchScopeValueBtn ${v===S.launchScopeValue?'active':''}" data-launch-scope-value="${esc(v)}">${esc(v)}</button>`).join('');
+  $$('[data-launch-scope-value]').forEach(b=>b.onclick=()=>{
+    S.launchScopeValue=b.dataset.launchScopeValue;
+    save();
+    renderLaunchScopeValues();
+  });
+  const label=S.launchScopeMode==='large'?'대단원':'소단원';
+  $('launchCurrentScope').textContent=`${S.subject} · ${label} · ${S.launchScopeValue||'없음'}`;
+}
+function launchScopeMatch(it){
+  if(it.subject!==S.subject)return false;
+  if(S.launchScopeMode==='all')return true;
+  if(S.launchScopeMode==='large')return norm(it.subtitle)===S.launchScopeValue;
+  if(S.launchScopeMode==='small')return norm(it.unit)===S.launchScopeValue;
+  return true;
+}
+
 function effectiveLaunchLimit(){
   if(S.launchLimit==='default')return S.studyLimit;
   return S.launchLimit;
@@ -2161,13 +2230,15 @@ function openLaunchSetup(mode){
   S.pendingLaunch=mode;
   S.launchOrder='default';
   S.launchLimit='default';
+  S.launchScopeMode='all';
+  S.launchScopeValue='';
   $('launchTitle').textContent=mode==='card'?'카드 학습 설정':mode==='wordtest'?'단어 테스트 설정':'퀴즈 설정';
-  $('launchSub').textContent='범위, 학습량, 순서를 정한 뒤 시작할 수 있어요.';
-  $('launchCurrentScope').textContent=`${S.subject} · ${S.section==='전체'?'전체':S.section}`;
+  $('launchSub').textContent='대단원/소단원, 학습량, 순서를 정한 뒤 시작할 수 있어요.';
   $('launchOverlay').classList.toggle('wordMode',mode==='wordtest');
   $$('[data-launch-limit]').forEach(b=>b.classList.toggle('active',b.dataset.launchLimit==='default'));
   $$('[data-launch-order]').forEach(b=>b.classList.toggle('active',b.dataset.launchOrder==='default'));
   $$('[data-word-test-mode]').forEach(b=>b.classList.toggle('active',b.dataset.wordTestMode===S.wordTestQuestionMode));
+  renderLaunchScopeValues();
   $('launchOverlay').classList.add('show');
 }
 function closeLaunchSetup(){
@@ -2181,6 +2252,9 @@ function startPendingLaunch(){
   }else if(mode==='wordtest'){
     S.wordTestIndex=0;S.wordTestCorrect=0;S.wordTestTotal=0;S.wordTestOrder=[];
     S.defaultWordRandom=effectiveLaunchRandom('word');
+    if(S.launchScopeMode==='large'){S.wordTestScope='large';S.wordTestScopeValue=S.launchScopeValue}
+    else if(S.launchScopeMode==='small'){S.wordTestScope='small';S.wordTestScopeValue=S.launchScopeValue}
+    else{S.wordTestScope='all';S.wordTestScopeValue=''}
     refreshWordTestPool(true);S.screen='wordTest';
   }else{
     S.quizMode=mode||'all';S.qIndex=0;S.quizRandom=effectiveLaunchRandom('quiz');S.quizOrder=[];S.screen='quiz';
@@ -2189,7 +2263,7 @@ function startPendingLaunch(){
 }
 
 function getUnits(kind){
-  const src=kind==='card'?S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isCard(x)):S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isQuiz(x));
+  const src=kind==='card'?S.items.filter(x=>x.subject===S.subject&&isCard(x)):S.items.filter(x=>x.subject===S.subject&&isQuiz(x));
   return [...new Set(src.map(x=>norm(x.unit)||'단원 없음'))];
 }
 function renderProblemList(){
@@ -2275,7 +2349,7 @@ function reviewFromComplete(){
   }
 }
 function wordTestBaseCards(){
-  return S.items.filter(x=>x.subject===S.subject&&isCard(x)&&norm(x.front)&&norm(x.back));
+  return S.items.filter(x=>launchScopeMatch(x)&&isCard(x)&&norm(x.front)&&norm(x.back));
 }
 function getWordScopeValues(scope){
   const cards=wordTestBaseCards();
@@ -2913,7 +2987,7 @@ function grade(it,choice,clicked){
   const a=S.attempts[id]||(S.attempts[id]={correct:0,total:0});
   a.total++;
   if(ok)a.correct++;
-  if(ok)S.wrong.delete(id);else S.wrong.add(id);
+  if(!ok)S.wrong.add(id);
 
   [...$('optionsArea').children].forEach(b=>{
     const val=isOx?norm(b.dataset.value).toUpperCase():quizAnswerNumber(b.dataset.value);
@@ -2941,7 +3015,7 @@ function renderReview(){
   const area=$('reviewList');
   $$('[data-review]').forEach(b=>b.classList.toggle('active',b.dataset.review===S.reviewFilter));
   let list=[];
-  S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)).forEach(it=>{
+  S.items.filter(x=>x.subject===S.subject).forEach(it=>{
     const id=itemId(it),mem=S.memory[id];
     if(S.reviewWrong&&S.wrong.has(id))list.push({it,type:'wrong'});
     if(S.reviewConfused&&mem==='confused')list.push({it,type:'confused'});
@@ -2955,6 +3029,7 @@ function renderReview(){
     const label=type==='wrong'?'문제 오답':type==='confused'?'헷갈리는 단어':'모르는 단어';
     b.innerHTML=`<strong>${esc(it.question||it.front||'(항목)')}</strong><span>${esc(sectionOf(it))} · ${esc(it.unit||'')} · ${esc(it.kind)}</span><span class="stateLabel ${type}">${label}</span>`;
     b.onclick=()=>{
+      S.launchScopeMode='all';S.launchScopeValue='';
       S.section=sectionOf(it);refreshPools();
       if(isCard(it)){S.cIndex=Math.max(0,S.cardPool.findIndex(x=>itemId(x)===itemId(it)));setScreen('card')}
       else{S.quizMode='all';refreshPools();S.qIndex=Math.max(0,S.quizPool.findIndex(x=>itemId(x)===itemId(it)));setScreen('quiz')}
@@ -3138,6 +3213,11 @@ $$('[data-launch]').forEach(b=>b.onclick=()=>launch(b.dataset.launch));
 
 $('launchCloseBtn').onclick=closeLaunchSetup;
 $('launchStartBtn').onclick=startPendingLaunch;
+$$('[data-launch-scope]').forEach(b=>b.onclick=()=>{
+  S.launchScopeMode=b.dataset.launchScope;
+  S.launchScopeValue='';
+  renderLaunchScopeValues();
+});
 $$('[data-launch-limit]').forEach(b=>b.onclick=()=>{S.launchLimit=b.dataset.launchLimit;$$('[data-launch-limit]').forEach(x=>x.classList.toggle('active',x===b))});
 $$('[data-launch-order]').forEach(b=>b.onclick=()=>{S.launchOrder=b.dataset.launchOrder;$$('[data-launch-order]').forEach(x=>x.classList.toggle('active',x===b))});
 $$('[data-word-test-mode]').forEach(b=>b.onclick=()=>{S.wordTestQuestionMode=b.dataset.wordTestMode;$$('[data-word-test-mode]').forEach(x=>x.classList.toggle('active',x===b))});
