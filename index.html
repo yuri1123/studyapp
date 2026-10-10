@@ -1501,6 +1501,7 @@ html[data-density="roomy"] .wordChoice{min-height:46px}
             <button class="quickCard" data-launch="mc"><strong>객관식</strong><span>실전처럼 선택하기</span></button>
             <button class="quickCard" data-launch="card"><strong>카드 학습</strong><span>뒤집고 기억 상태 체크</span></button>
             <button class="quickCard" id="wordTestHomeCard" data-launch="wordtest"><strong>단어 테스트</strong><span>영단어·문법만 랜덤 테스트</span></button>
+            <button class="quickCard" id="grammarHomeCard" data-launch="grammar"><strong>영문법 핵심암기</strong><span>파트별 핵심개념을 카드로 암기</span></button>
             <button class="quickCard" data-launch="list"><strong>문제 목록</strong><span>소단원별 목록에서 골라 보기</span></button>
           </div>
         </div>
@@ -1812,7 +1813,7 @@ html[data-density="roomy"] .wordChoice{min-height:46px}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v52_stable';
+const STORAGE='study_app_v53_stable';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -1825,7 +1826,7 @@ const SAMPLE=[
 ].map((x,i)=>({...x,uid:'sample_'+i}));
 
 const S={
-  items:[],subject:'회계',section:'전체',screen:'home',quizMode:'all',
+  items:[],subject:'회계',section:'전체',screen:'home',quizMode:'all',cardMode:'all',
   qIndex:0,cIndex:0,answered:false,quizPool:[],cardPool:[],
   wrong:new Set(),memory:{},attempts:{},reviewFilter:'all',selectorsOpen:false,filename:'',
   quizRandom:false,cardRandom:false,quizOrder:[],cardOrder:[],
@@ -1843,7 +1844,14 @@ const S={
 
 const $=id=>document.getElementById(id);
 const $$=sel=>[...document.querySelectorAll(sel)];
-const norm=v=>String(v??'').trim();
+function cleanExcelText(v){
+  return String(v??'')
+    .replace(/_x005F_x000D_/gi,'\n')
+    .replace(/_x000D_/gi,'\n')
+    .replace(/_x000A_/gi,'\n')
+    .replace(/\r\n?/g,'\n');
+}
+const norm=v=>cleanExcelText(v).trim();
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const itemId=it=>it.uid||[it.subject,it.kind,it.unit,it.question,it.front,it.back].join('|');
 const sectionOf=it=>norm(it.subtitle)||norm(it.unit)||'기타';
@@ -1857,6 +1865,7 @@ const locationLabel=it=>{
 };
 const sectionMatch=it=>S.section==='전체'||sectionOf(it)===S.section;
 const isCard=it=>['단어','개념'].includes(norm(it.kind))&&(it.front||it.back);
+const isGrammarCard=it=>it.subject==='영어'&&norm(it.kind)==='문법'&&(it.front||it.back);
 const isQuiz=it=>['OX','객관식','문법'].includes(norm(it.kind))&&(it.question||it.options?.length);
 
 function toast(msg){
@@ -1868,7 +1877,7 @@ function save(){
   try{
     localStorage.setItem(STORAGE,JSON.stringify({
       items:S.items,wrong:[...S.wrong],memory:S.memory,attempts:S.attempts,filename:S.filename,
-      subject:S.subject,section:S.section,screen:S.screen,quizMode:S.quizMode,
+      subject:S.subject,section:S.section,screen:S.screen,quizMode:S.quizMode,cardMode:S.cardMode,
       qIndex:S.qIndex,cIndex:S.cIndex,quizRandom:S.quizRandom,cardRandom:S.cardRandom,
       quizOrder:S.quizOrder,cardOrder:S.cardOrder,listKind:S.listKind,listUnit:S.listUnit,
       wordTestIndex:S.wordTestIndex,wordTestCorrect:S.wordTestCorrect,wordTestTotal:S.wordTestTotal,wordTestScope:S.wordTestScope,wordTestScopeValue:S.wordTestScopeValue,wordTestOrder:S.wordTestOrder,autoAdvance:S.autoAdvance,theme:S.theme,autoDelay:S.autoDelay,autoQuiz:S.autoQuiz,autoCard:S.autoCard,autoWord:S.autoWord,
@@ -1887,7 +1896,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v51_stable','study_app_v50_stable','study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+      for(const k of ['study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -1901,7 +1910,7 @@ function load(){
       if(o.subject)S.subject=o.subject;
       if(o.section)S.section=o.section;
       if(o.screen)S.screen=o.screen;
-      if(o.quizMode)S.quizMode=o.quizMode;
+      if(o.quizMode)S.quizMode=o.quizMode;if(o.cardMode)S.cardMode=o.cardMode;
       if(Number.isInteger(o.qIndex))S.qIndex=o.qIndex;
       if(Number.isInteger(o.cIndex))S.cIndex=o.cIndex;
       if(typeof o.quizRandom==='boolean')S.quizRandom=o.quizRandom;
@@ -1954,7 +1963,10 @@ function refreshPools(){
   let q=S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isQuiz(x));
   if(S.quizMode==='ox')q=q.filter(x=>x.kind==='OX');
   if(S.quizMode==='mc')q=q.filter(x=>x.kind!=='OX');
-  let cards=S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isCard(x));
+  let cards=S.items.filter(x=>{
+    if(S.cardMode==='grammar')return isGrammarCard(x)&&sectionMatch(x);
+    return x.subject===S.subject&&sectionMatch(x)&&isCard(x);
+  });
 
   if(S.quizRandom){
     const ids=new Set(q.map(itemId));
@@ -1998,7 +2010,12 @@ function setListKind(kind){S.listKind=kind;S.listUnit='전체';save();renderProb
 function openList(kind){S.listKind=kind;S.listUnit='전체';save();setScreen('list')}
 function toggleRandom(kind){
   if(kind==='quiz'){S.quizRandom=!S.quizRandom;S.quizOrder=S.quizRandom?makeRandomOrder(S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isQuiz(x))):[];S.qIndex=0}
-  else{S.cardRandom=!S.cardRandom;S.cardOrder=S.cardRandom?makeRandomOrder(S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isCard(x))):[];S.cIndex=0}
+  else{
+    S.cardRandom=!S.cardRandom;
+    const src=S.items.filter(x=>S.cardMode==='grammar'?(isGrammarCard(x)&&sectionMatch(x)):(x.subject===S.subject&&sectionMatch(x)&&isCard(x)));
+    S.cardOrder=S.cardRandom?makeRandomOrder(src):[];
+    S.cIndex=0
+  }
   save();refreshPools();kind==='quiz'?renderQuiz():renderCard()
 }
 function showComplete(kind){let title='학습 완료!',text='여기까지 모두 학습했어요.';if(kind==='quiz'){const a=currentScopeAttempts();const rate=a.total?Math.round(a.correct/a.total*100):0;title='퀴즈 완료!';
@@ -2114,7 +2131,7 @@ function getWordTestQuestion(it,index){
   let promptLabel='',prompt='',translation='',correct='',distractorSource=[];
   if(mode==='example'){
     promptLabel='기출예문 빈칸에 들어갈 단어를 고르세요';
-    prompt=cleanWordTestText(exampleBlank);translation=cleanWordTestText(it.exampleTranslation||'');correct=cleanWordTestText(it.front);
+    prompt=cleanWordTestText(exampleBlank);translation=cleanWordTestText(excelExportText(it.exampleTranslation||''));correct=cleanWordTestText(it.front);
     distractorSource=list.filter(x=>itemId(x)!==itemId(it)).map(x=>cleanWordTestText(x.front));
   }else if(mode==='wordToMeaning'){
     promptLabel='단어의 뜻을 고르세요';
@@ -2402,7 +2419,7 @@ function resetSettings(){
 function renderTabs(){
   $('subjectTabs').innerHTML=SUBJECTS.map(s=>`<button class="subjectTab ${s===S.subject?'active':''}" data-sub="${s}">${s}</button>`).join('');
   $$('[data-sub]').forEach(b=>b.onclick=()=>{
-    S.subject=b.dataset.sub;S.section='전체';S.qIndex=0;S.cIndex=0;S.wordTestIndex=0;S.wordTestScopeValue='';S.wordTestOrder=[];S.quizOrder=[];S.cardOrder=[];save();renderAll();
+    S.subject=b.dataset.sub;S.section='전체';S.qIndex=0;S.cIndex=0;S.cardMode='all';S.wordTestIndex=0;S.wordTestScopeValue='';S.wordTestOrder=[];S.quizOrder=[];S.cardOrder=[];save();renderAll();
 if(window.matchMedia){window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>{if(S.theme==='system')applyTheme()});}toggleSelectors(true)
   });
   const sections=[...new Set(S.items.filter(x=>x.subject===S.subject).map(sectionOf).filter(Boolean))];
@@ -2435,6 +2452,8 @@ function renderHome(){
   $('statRate').textContent=a.total?Math.round(a.correct/a.total*100)+'%':'0%';
   const wordCard=$('wordTestHomeCard');
   if(wordCard)wordCard.style.display=S.subject==='영어'?'':'none';
+  const grammarCard=$('grammarHomeCard');
+  if(grammarCard)grammarCard.style.display=S.subject==='영어'?'':'none';
   // 상단 좌측은 고정 앱 이름 표시
 }
 
@@ -2572,7 +2591,7 @@ function renderCard(){
   $('frontUnit').textContent=`${sectionOf(it)} · ${it.unit||'단원 없음'}`;
   $('backUnit').textContent=`${sectionOf(it)} · ${it.unit||'단원 없음'}`;
   $('frontText').textContent=it.front||it.question||'앞면 없음';
-  $('frontPronunciation').textContent=isWord?(it.pronunciation||''):'';
+  $('frontPronunciation').textContent=isWord?(excelExportText(it.pronunciation||'')):'';
   $('frontPronunciation').style.display=isWord&&it.pronunciation?'block':'none';
 
   const meanings=meaningRows(it);
@@ -2581,7 +2600,7 @@ function renderCard(){
     return `<div class="meaningRow"><span class="posTag">${esc(displayPos)}</span><span>${esc(x.meaning)}</span></div>`;
   }).join('');
 
-  $('backWordTitle').textContent=it.front||'';
+  $('backWordTitle').textContent=excelExportText(it.front||'');
   const posDisplay=fullPosDisplay(it.partOfSpeech);
   $('backText').textContent=[it.pronunciation,posDisplay].filter(Boolean).join(' · ') || (it.back||it.answer||'뒷면 없음');
 
@@ -2725,7 +2744,7 @@ function renderReview(){
   list.forEach(({it,type})=>{
     const b=document.createElement('button');b.className='reviewItem';
     const label=type==='wrong'?(isWordTestEligible(it)?'단어테스트 오답':'문제 오답'):type==='confused'?'헷갈리는 단어':'모르는 단어';
-    b.innerHTML=`<strong>${esc(it.question||it.front||'(항목)')}</strong><span>${esc(sectionOf(it))} · ${esc(it.unit||'')} · ${esc(it.kind)}</span><span class="stateLabel ${type}">${label}</span>`;
+    b.innerHTML=`<strong>${esc(it.question||it.front||'(항목)')}</strong><span>${esc(sectionOf(it))} · ${esc(excelExportText(it.unit||''))} · ${esc(it.kind)}</span><span class="stateLabel ${type}">${label}</span>`;
     b.onclick=()=>{
       S.section=sectionOf(it);refreshPools();
       if(isCard(it)||isWordTestEligible(it)){S.cIndex=Math.max(0,S.cardPool.findIndex(x=>itemId(x)===itemId(it)));setScreen('card')}
@@ -2746,6 +2765,14 @@ function setScreen(s){
 function renderAll(){renderTabs();refreshPools();renderHome();renderQuiz();renderCard();renderReview();setScreen(S.screen)}
 function launch(mode){
   if(mode==='card'){
+    S.cardMode='all';
+    S.cardRandom=S.defaultCardRandom;
+    S.cardOrder=[];
+    S.cIndex=0;
+    S.screen='card';
+  }else if(mode==='grammar'){
+    if(S.subject!=='영어'){toast('영문법은 영어에서만 사용할 수 있어요');return}
+    S.cardMode='grammar';
     S.cardRandom=S.defaultCardRandom;
     S.cardOrder=[];
     S.cIndex=0;
@@ -2789,7 +2816,7 @@ function parseRows(rows,sheetName=''){
     const r=normalizeRow(raw);let opts=[];
     for(let n=1;n<=5;n++){
       const v=pickN(r,[`보기${n}`,`선택지${n}`,`답지${n}`,`option${n}`,`choice${n}`,String.fromCharCode(64+n)]);
-      if(v)opts.push(v);
+      if(v)opts.push(norm(v));
     }
     if(!opts.length){
       const rawOptions=pickN(r,['보기','선택지','답지','options','choices']);
@@ -2829,7 +2856,7 @@ function importFile(file){
   reader.onload=e=>{
     try{
       const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'}),all=[];
-      wb.SheetNames.forEach(name=>all.push(...parseRows(XLSX.utils.sheet_to_json(wb.Sheets[name],{defval:''}),name)));
+      wb.SheetNames.forEach(name=>all.push(...parseRows(XLSX.utils.sheet_to_json(wb.Sheets[name],{defval:'',raw:false}),name)));
       if(!all.length)throw new Error('학습 행 없음');
       S.items=all;S.filename=file.name;S.subject=SUBJECTS.find(s=>all.some(x=>x.subject===s))||'회계';
       S.section='전체';S.wrong=new Set();S.memory={};S.attempts={};S.qIndex=0;S.cIndex=0;
@@ -2843,6 +2870,12 @@ $('selectorToggle').onclick=()=>toggleSelectors();
 $('uploadBtn').onclick=()=>$('fileInput').click();
 $('fileInput').onchange=e=>{const f=e.target.files?.[0];if(f)importFile(f);e.target.value=''};
 
+function excelExportText(v){
+  return cleanExcelText(v)
+    .replace(/_x000D_/gi,'\n')
+    .replace(/\r\n?/g,'\n');
+}
+
 function downloadCurrentWorkbook(){
   try{
     const headers=[
@@ -2855,33 +2888,33 @@ function downloadCurrentWorkbook(){
     const rows=S.items.map(it=>{
       const opts=Array.isArray(it.options)?it.options:[];
       return[
-        it.subject||'',
-        it.kind||'',
-        it.subtitle||'',
-        it.unit||'',
-        it.question||'',
-        it.answer||'',
-        opts[0]||'',
-        opts[1]||'',
-        opts[2]||'',
-        opts[3]||'',
-        opts[4]||'',
-        it.explanation||'',
-        it.front||'',
-        it.back||'',
-        it.partOfSpeech||'',
-        it.pronunciation||'',
-        it.synonyms||'',
-        it.antonyms||'',
-        it.derivatives||'',
-        it.phrases||'',
-        it.keyExpressions||'',
-        it.etymology||'',
-        it.example||'',
-        it.exampleTranslation||'',
-        it.source||'',
-        it.memo||'',
-        it.tags||''
+        excelExportText(it.subject||''),
+        excelExportText(it.kind||''),
+        excelExportText(it.subtitle||''),
+        excelExportText(it.unit||''),
+        excelExportText(it.question||''),
+        excelExportText(it.answer||''),
+        excelExportText(opts[0]||''),
+        excelExportText(opts[1]||''),
+        excelExportText(opts[2]||''),
+        excelExportText(opts[3]||''),
+        excelExportText(opts[4]||''),
+        excelExportText(it.explanation||''),
+        excelExportText(it.front||''),
+        excelExportText(it.back||''),
+        excelExportText(it.partOfSpeech||''),
+        excelExportText(it.pronunciation||''),
+        excelExportText(it.synonyms||''),
+        excelExportText(it.antonyms||''),
+        excelExportText(it.derivatives||''),
+        excelExportText(it.phrases||''),
+        excelExportText(it.keyExpressions||''),
+        excelExportText(it.etymology||''),
+        excelExportText(it.example||''),
+        excelExportText(it.exampleTranslation||''),
+        excelExportText(it.source||''),
+        excelExportText(it.memo||''),
+        excelExportText(it.tags||'')
       ];
     });
 
@@ -2902,6 +2935,8 @@ function downloadCurrentWorkbook(){
       ['사용법','다운로드한 파일에는 현재 앱에 들어있는 데이터가 그대로 포함됩니다. 마지막 데이터 아래 빈 행에 새 내용을 추가한 뒤 앱에서 다시 업로드하세요.'],
       ['과목','회계 / 세법 / 국어 / 영어'],
       ['유형','OX / 객관식 / 문법 / 단어 / 개념'],
+      ['영문법 핵심암기','영어 과목에서 유형을 문법으로 입력하면 홈의 영문법 핵심암기에서 카드로 학습할 수 있습니다. 앞면=질문/개념명, 뒷면=핵심내용, 핵심표현/예문도 함께 활용하세요.'],
+      ['줄바꿈','셀 안 줄바꿈은 그대로 사용할 수 있습니다. 다운로드/재업로드 시 _x000D_ 문자열이 남지 않도록 정리됩니다.'],
       ['객관식','보기1~보기5까지 사용 가능. 정답은 A~E 또는 1~5 모두 인식합니다.'],
       ['품사 입력','n / v / a / ad / p 로 짧게 입력'],
       ['품사 표시','앞면: 명/동/형/부/전 · 뒷면: 명사/동사/형용사/부사/전치사'],
