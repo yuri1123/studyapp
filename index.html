@@ -1463,121 +1463,6 @@ html[data-density="roomy"] .wordChoice{min-height:46px}
   100%{transform:scale(1)}
 }
 
-
-/* v47: 시작 설정 / 목록 상태 / 북마크 / 완료 화면 강화 */
-.bookmarkControl{
-  width:28px !important;
-  min-width:28px !important;
-  padding:0 !important;
-  font-size:17px !important;
-  line-height:1 !important;
-}
-.bookmarkControl.active{
-  background:#fff7db !important;
-  border-color:#f0d67a !important;
-  color:#c38a00 !important;
-}
-.launchOverlay{
-  position:fixed;inset:0;z-index:125;display:none;align-items:flex-end;justify-content:center;
-  padding:16px;background:rgba(15,23,42,.35);backdrop-filter:blur(4px)
-}
-.launchOverlay.show{display:flex}
-.launchCard{
-  width:min(420px,100%);max-height:88vh;overflow-y:auto;background:var(--card);
-  border:1px solid var(--line);border-radius:24px 24px 18px 18px;padding:18px;
-  box-shadow:0 24px 60px rgba(15,23,42,.25)
-}
-.launchTop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.launchTitle{font-size:20px;font-weight:950;color:var(--text);letter-spacing:-.035em}
-.launchSub{margin-top:4px;font-size:10.5px;line-height:1.45;color:var(--muted)}
-.launchCloseBtn{
-  width:32px;height:32px;border:1px solid var(--line);border-radius:10px;background:var(--card);
-  color:var(--muted);font-size:20px
-}
-.launchSection{margin-top:15px}
-.launchLabel{font-size:11px;font-weight:950;color:var(--text);margin-bottom:7px}
-.launchCurrentScope{
-  min-height:39px;display:flex;align-items:center;padding:9px 11px;border:1px solid var(--line);
-  background:var(--blueSoft);border-radius:12px;color:var(--text);font-size:11px;font-weight:850
-}
-.launchChoices{display:grid;gap:6px}
-.launchChoices.four{grid-template-columns:repeat(4,1fr)}
-.launchChoices.three{grid-template-columns:repeat(3,1fr)}
-.launchChoices.two{grid-template-columns:repeat(2,1fr)}
-.launchChoices button{
-  min-height:38px;border:1px solid var(--line);border-radius:11px;background:var(--card);
-  color:var(--muted);font-size:10.5px;font-weight:900
-}
-.launchChoices button.active{background:var(--blue);border-color:var(--blue);color:#fff}
-.launchStartBtn{width:100%;margin-top:17px;min-height:44px !important}
-.wordLaunchOnly{display:none}
-.launchOverlay.wordMode .wordLaunchOnly{display:block}
-
-.problemItem{
-  position:relative !important;
-  padding-right:42px !important;
-}
-.problemStatusRow{
-  display:flex !important;align-items:center !important;gap:6px !important;margin-top:5px !important;
-  font-size:9.5px !important;color:var(--muted) !important
-}
-.statusDot{width:8px;height:8px;border-radius:50%;display:inline-block}
-.statusDot.done{background:#32a852}
-.statusDot.wrong{background:#e04a4a}
-.statusDot.pending{background:#c9d1dc}
-.statusDot.confused{background:#e3a52f}
-.problemBookmark{
-  position:absolute;right:9px;top:9px;width:28px;height:28px;border:1px solid var(--line);
-  border-radius:9px;background:var(--card);font-size:16px;color:#9aa4b2
-}
-.problemBookmark.active{background:#fff7db;border-color:#f0d67a;color:#c38a00}
-
-.completeStats{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:14px
-}
-.completeStat{
-  background:var(--blueSoft);border:1px solid var(--line);border-radius:13px;padding:10px 6px
-}
-.completeStat strong{display:block;font-size:18px;color:var(--text)}
-.completeStat span{display:block;margin-top:3px;font-size:9px;color:var(--muted)}
-.completeActions.three{grid-template-columns:repeat(3,1fr)}
-.completeActions.three .btn{font-size:11px !important;padding:8px 6px !important}
-
-html[data-theme="dark"] .launchCard,
-html[data-theme="dark"] .launchCloseBtn,
-html[data-theme="dark"] .launchChoices button,
-html[data-theme="dark"] .problemBookmark{
-  background:#182231 !important;color:var(--text) !important;border-color:#2d3a4d !important
-}
-
-
-/* v48: 시작 전 대단원/소단원 범위 선택 */
-.launchScopeValues{
-  display:flex;
-  gap:6px;
-  overflow-x:auto;
-  margin-top:7px;
-  padding-bottom:2px;
-  scrollbar-width:none;
-}
-.launchScopeValues::-webkit-scrollbar{display:none}
-.launchScopeValueBtn{
-  flex:0 0 auto;
-  min-height:34px;
-  padding:7px 10px;
-  border:1px solid var(--line);
-  border-radius:10px;
-  background:var(--card);
-  color:var(--muted);
-  font-size:10.5px;
-  font-weight:900;
-}
-.launchScopeValueBtn.active{
-  background:var(--blue);
-  color:#fff;
-  border-color:var(--blue);
-}
-
 </style>
 </head>
 <body>
@@ -1611,12 +1496,12 @@ html[data-theme="dark"] .problemBookmark{
           <h1 id="heroTitle">회계 학습<br>바로 시작</h1>
           <p>문제를 풀거나 카드를 뒤집어 학습하세요. 틀린 문제와 헷갈리는 단어는 자동으로 복습함에 모입니다.</p>
           <div class="quickGrid">
-            <button class="quickCard primaryStart" data-launch="all"><strong>퀴즈 시작</strong><span>범위·문제 수·순서를 고르고 시작</span></button>
-            <button class="quickCard" data-launch="card"><strong>카드 학습</strong><span>범위·학습량을 정해서 시작</span></button>
-            <button class="quickCard" data-launch="wordtest"><strong>단어 테스트</strong><span>뜻·단어·기출예문 유형 선택</span></button>
-            <button class="quickCard" data-screen-direct="review"><strong>복습하기</strong><span>오답과 헷갈린 항목 다시 보기</span></button>
-            <button class="quickCard" data-launch="list"><strong>전체 목록</strong><span>문제와 카드를 골라서 보기</span></button>
-            <button class="quickCard" data-screen-direct="settings"><strong>학습 설정</strong><span>글꼴·자동넘김·화면 방식 조절</span></button>
+            <button class="quickCard" data-launch="all"><strong>전체 퀴즈</strong><span>OX와 객관식을 섞어서</span></button>
+            <button class="quickCard" data-launch="ox"><strong>OX 퀴즈</strong><span>빠르게 판단하기</span></button>
+            <button class="quickCard" data-launch="mc"><strong>객관식</strong><span>실전처럼 선택하기</span></button>
+            <button class="quickCard" data-launch="card"><strong>카드 학습</strong><span>뒤집고 기억 상태 체크</span></button>
+            <button class="quickCard" id="wordTestHomeCard" data-launch="wordtest"><strong>단어 테스트</strong><span>영단어·문법만 랜덤 테스트</span></button>
+            <button class="quickCard" data-launch="list"><strong>문제 목록</strong><span>소단원별 목록에서 골라 보기</span></button>
           </div>
         </div>
         <div class="panel">
@@ -1633,7 +1518,7 @@ html[data-theme="dark"] .problemBookmark{
 
     <section class="screen" id="quizScreen">
       <div class="quizShell">
-        <div class="headRow"><div class="badge" id="quizBadge">회계 · 퀴즈</div><div class="headTools"><button class="smallControl bookmarkControl" id="quizBookmarkBtn">☆</button><button class="smallControl" id="quizListBtn">목록</button><button class="smallControl" id="quizRandomBtn">순서</button><button class="smallControl" id="quizAutoBtn">수동</button><div class="progress" id="quizProgress">1 / 1</div></div></div>
+        <div class="headRow"><div class="badge" id="quizBadge">회계 · 퀴즈</div><div class="headTools"><button class="smallControl" id="quizListBtn">목록</button><button class="smallControl" id="quizRandomBtn">순서</button><button class="smallControl" id="quizAutoBtn">수동</button><div class="progress" id="quizProgress">1 / 1</div></div></div>
         <div class="quizCard" id="quizCard">
           <div class="metaRow" id="quizMeta"></div>
           <div class="question" id="questionText"></div>
@@ -1652,7 +1537,7 @@ html[data-theme="dark"] .problemBookmark{
 
     <section class="screen" id="cardScreen">
       <div class="cardShell">
-        <div class="headRow"><div class="badge" id="cardBadge">영어 · 카드</div><div class="headTools"><button class="smallControl bookmarkControl" id="cardBookmarkBtn">☆</button><button class="smallControl" id="cardListBtn">목록</button><button class="smallControl" id="cardRandomBtn">순서</button><button class="smallControl" id="cardAutoBtn">수동</button><button class="smallControl cardFlipControl" id="cardFlipBtn">뒤집기</button><div class="progress" id="cardProgress">1 / 1</div></div></div>
+        <div class="headRow"><div class="badge" id="cardBadge">영어 · 카드</div><div class="headTools"><button class="smallControl" id="cardListBtn">목록</button><button class="smallControl" id="cardRandomBtn">순서</button><button class="smallControl" id="cardAutoBtn">수동</button><button class="smallControl cardFlipControl" id="cardFlipBtn">뒤집기</button><div class="progress" id="cardProgress">1 / 1</div></div></div>
 
         <div class="flipWrap">
           <div class="flipCard" id="flipCard">
@@ -1724,73 +1609,8 @@ html[data-theme="dark"] .problemBookmark{
       </div>
     </section>
 
-    
-    <div class="launchOverlay" id="launchOverlay">
-      <div class="launchCard">
-        <div class="launchTop">
-          <div>
-            <div class="launchTitle" id="launchTitle">학습 시작 설정</div>
-            <div class="launchSub" id="launchSub">시작 전에 범위와 순서를 정할 수 있어요.</div>
-          </div>
-          <button class="launchCloseBtn" id="launchCloseBtn">×</button>
-        </div>
-
-        <div class="launchSection">
-          <div class="launchLabel">테스트 범위</div>
-          <div class="launchChoices three">
-            <button data-launch-scope="all">전체</button>
-            <button data-launch-scope="large">대단원</button>
-            <button data-launch-scope="small">소단원</button>
-          </div>
-          <div class="launchScopeValues" id="launchScopeValues"></div>
-          <div class="launchCurrentScope" id="launchCurrentScope"></div>
-        </div>
-
-        <div class="launchSection">
-          <div class="launchLabel">학습량</div>
-          <div class="launchChoices four">
-            <button data-launch-limit="10">10개</button>
-            <button data-launch-limit="20">20개</button>
-            <button data-launch-limit="30">30개</button>
-            <button data-launch-limit="default">설정값</button>
-          </div>
-        </div>
-
-        <div class="launchSection">
-          <div class="launchLabel">순서</div>
-          <div class="launchChoices three">
-            <button data-launch-order="sequence">순서대로</button>
-            <button data-launch-order="random">랜덤</button>
-            <button data-launch-order="default">설정값</button>
-          </div>
-        </div>
-
-        <div class="launchSection wordLaunchOnly" id="wordLaunchTypeSection">
-          <div class="launchLabel">단어 테스트 유형</div>
-          <div class="launchChoices two wordTypes">
-            <button data-word-test-mode="mix">혼합</button>
-            <button data-word-test-mode="meaningToWord">뜻 → 단어</button>
-            <button data-word-test-mode="wordToMeaning">단어 → 뜻</button>
-            <button data-word-test-mode="example">기출예문</button>
-          </div>
-        </div>
-
-        <button class="btn primary launchStartBtn" id="launchStartBtn">이 설정으로 시작</button>
-      </div>
-    </div>
-
-<div class="completeOverlay" id="completeOverlay">
-      <div class="completeCard">
-        <div class="completeIcon">✓</div>
-        <div class="completeTitle" id="completeTitle">학습 완료!</div>
-        <div class="completeText" id="completeText"></div>
-        <div class="completeStats" id="completeStats"></div>
-        <div class="completeActions three">
-          <button class="btn" id="completeHomeBtn">홈으로</button>
-          <button class="btn" id="completeReviewBtn">복습하기</button>
-          <button class="btn primary" id="completeRestartBtn">다시 시작</button>
-        </div>
-      </div>
+    <div class="completeOverlay" id="completeOverlay">
+      <div class="completeCard"><div class="completeIcon">✓</div><div class="completeTitle" id="completeTitle">학습 완료!</div><div class="completeText" id="completeText"></div><div class="completeActions"><button class="btn" id="completeCloseBtn">닫기</button><button class="btn primary" id="completeRestartBtn">처음부터</button></div></div>
     </div>
 
     
@@ -1992,7 +1812,7 @@ html[data-theme="dark"] .problemBookmark{
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v48_compact';
+const STORAGE='study_app_v50_stable';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -2018,7 +1838,7 @@ const S={
   flipMode:'any',answerDisplay:'explain',
   reviewWrong:true,reviewConfused:true,reviewUnknown:true,
   effectVibrate:false,effectSound:false,effectAnimation:true,
-  wrongRetry:'review',bookmarks:new Set(),pendingLaunch:'',launchOrder:'default',launchLimit:'default',wordTestQuestionMode:'mix',launchScopeMode:'all',launchScopeValue:''
+  wrongRetry:'review'
 };
 
 const $=id=>document.getElementById(id);
@@ -2058,7 +1878,7 @@ function save(){
       flipMode:S.flipMode,answerDisplay:S.answerDisplay,
       reviewWrong:S.reviewWrong,reviewConfused:S.reviewConfused,reviewUnknown:S.reviewUnknown,
       effectVibrate:S.effectVibrate,effectSound:S.effectSound,effectAnimation:S.effectAnimation,
-      wrongRetry:S.wrongRetry,bookmarks:[...S.bookmarks],pendingLaunch:S.pendingLaunch,launchOrder:S.launchOrder,launchLimit:S.launchLimit,wordTestQuestionMode:S.wordTestQuestionMode,launchScopeMode:S.launchScopeMode,launchScopeValue:S.launchScopeValue
+      wrongRetry:S.wrongRetry
     }))
   }catch(e){}
 }
@@ -2067,7 +1887,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v47_compact','study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+      for(const k of ['study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -2115,7 +1935,7 @@ function load(){
       if(typeof o.effectVibrate==='boolean')S.effectVibrate=o.effectVibrate;
       if(typeof o.effectSound==='boolean')S.effectSound=o.effectSound;
       if(typeof o.effectAnimation==='boolean')S.effectAnimation=o.effectAnimation;
-      if(o.wrongRetry)S.wrongRetry=o.wrongRetry;if(Array.isArray(o.bookmarks))S.bookmarks=new Set(o.bookmarks);if(o.pendingLaunch)S.pendingLaunch=o.pendingLaunch;if(o.launchOrder)S.launchOrder=o.launchOrder;if(o.launchLimit)S.launchLimit=o.launchLimit;if(o.wordTestQuestionMode)S.wordTestQuestionMode=o.wordTestQuestionMode;if(o.launchScopeMode)S.launchScopeMode=o.launchScopeMode;if(typeof o.launchScopeValue==='string')S.launchScopeValue=o.launchScopeValue;
+      if(o.wrongRetry)S.wrongRetry=o.wrongRetry;
     }
   }catch(e){}
 }
@@ -2131,10 +1951,10 @@ function makeRandomOrder(list){
   return ids;
 }
 function refreshPools(){
-  let q=S.items.filter(x=>launchScopeMatch(x)&&isQuiz(x));
+  let q=S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isQuiz(x));
   if(S.quizMode==='ox')q=q.filter(x=>x.kind==='OX');
   if(S.quizMode==='mc')q=q.filter(x=>x.kind!=='OX');
-  let cards=S.items.filter(x=>launchScopeMatch(x)&&isCard(x));
+  let cards=S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isCard(x));
 
   if(S.quizRandom){
     const ids=new Set(q.map(itemId));
@@ -2160,110 +1980,8 @@ function toggleSelectors(force){
 }
 
 
-
-function toggleBookmark(id){
-  if(S.bookmarks.has(id))S.bookmarks.delete(id);else S.bookmarks.add(id);
-  save();
-  if(S.screen==='list')renderProblemList();
-  if(S.screen==='quiz')renderQuiz();
-  if(S.screen==='card')renderCard();
-}
-function itemStudyStatus(it,kind){
-  const id=itemId(it);
-  if(kind==='card'){
-    const m=S.memory[id];
-    if(m==='know')return{cls:'done',label:'알아요'};
-    if(m==='confused')return{cls:'confused',label:'헷갈려요'};
-    if(m==='unknown')return{cls:'wrong',label:'모르겠어요'};
-    return{cls:'pending',label:'미학습'};
-  }
-  const a=S.attempts[id];
-  if(!a||!a.total)return{cls:'pending',label:'미풀이'};
-  if(S.wrong.has(id))return{cls:'wrong',label:'오답'};
-  return{cls:'done',label:'정답'};
-}
-
-function launchScopeValues(mode){
-  const items=S.items.filter(x=>x.subject===S.subject);
-  if(mode==='large')return [...new Set(items.map(x=>norm(x.subtitle)).filter(Boolean))];
-  if(mode==='small')return [...new Set(items.map(x=>norm(x.unit)).filter(Boolean))];
-  return [];
-}
-function renderLaunchScopeValues(){
-  $$('[data-launch-scope]').forEach(b=>b.classList.toggle('active',b.dataset.launchScope===S.launchScopeMode));
-  const area=$('launchScopeValues');
-  if(S.launchScopeMode==='all'){
-    S.launchScopeValue='';
-    area.innerHTML='';
-    $('launchCurrentScope').textContent=`${S.subject} · 전체`;
-    return;
-  }
-  const values=launchScopeValues(S.launchScopeMode);
-  if(!values.includes(S.launchScopeValue))S.launchScopeValue=values[0]||'';
-  area.innerHTML=values.map(v=>`<button class="launchScopeValueBtn ${v===S.launchScopeValue?'active':''}" data-launch-scope-value="${esc(v)}">${esc(v)}</button>`).join('');
-  $$('[data-launch-scope-value]').forEach(b=>b.onclick=()=>{
-    S.launchScopeValue=b.dataset.launchScopeValue;
-    save();
-    renderLaunchScopeValues();
-  });
-  const label=S.launchScopeMode==='large'?'대단원':'소단원';
-  $('launchCurrentScope').textContent=`${S.subject} · ${label} · ${S.launchScopeValue||'없음'}`;
-}
-function launchScopeMatch(it){
-  if(it.subject!==S.subject)return false;
-  if(S.launchScopeMode==='all')return true;
-  if(S.launchScopeMode==='large')return norm(it.subtitle)===S.launchScopeValue;
-  if(S.launchScopeMode==='small')return norm(it.unit)===S.launchScopeValue;
-  return true;
-}
-
-function effectiveLaunchLimit(){
-  if(S.launchLimit==='default')return S.studyLimit;
-  return S.launchLimit;
-}
-function effectiveLaunchRandom(kind){
-  if(S.launchOrder==='random')return true;
-  if(S.launchOrder==='sequence')return false;
-  return kind==='quiz'?S.defaultQuizRandom:kind==='card'?S.defaultCardRandom:S.defaultWordRandom;
-}
-function openLaunchSetup(mode){
-  S.pendingLaunch=mode;
-  S.launchOrder='default';
-  S.launchLimit='default';
-  S.launchScopeMode='all';
-  S.launchScopeValue='';
-  $('launchTitle').textContent=mode==='card'?'카드 학습 설정':mode==='wordtest'?'단어 테스트 설정':'퀴즈 설정';
-  $('launchSub').textContent='대단원/소단원, 학습량, 순서를 정한 뒤 시작할 수 있어요.';
-  $('launchOverlay').classList.toggle('wordMode',mode==='wordtest');
-  $$('[data-launch-limit]').forEach(b=>b.classList.toggle('active',b.dataset.launchLimit==='default'));
-  $$('[data-launch-order]').forEach(b=>b.classList.toggle('active',b.dataset.launchOrder==='default'));
-  $$('[data-word-test-mode]').forEach(b=>b.classList.toggle('active',b.dataset.wordTestMode===S.wordTestQuestionMode));
-  renderLaunchScopeValues();
-  $('launchOverlay').classList.add('show');
-}
-function closeLaunchSetup(){
-  $('launchOverlay').classList.remove('show');
-}
-function startPendingLaunch(){
-  const mode=S.pendingLaunch;
-  closeLaunchSetup();
-  if(mode==='card'){
-    S.cardRandom=effectiveLaunchRandom('card');S.cardOrder=[];S.cIndex=0;S.screen='card';
-  }else if(mode==='wordtest'){
-    S.wordTestIndex=0;S.wordTestCorrect=0;S.wordTestTotal=0;S.wordTestOrder=[];
-    S.defaultWordRandom=effectiveLaunchRandom('word');
-    if(S.launchScopeMode==='large'){S.wordTestScope='large';S.wordTestScopeValue=S.launchScopeValue}
-    else if(S.launchScopeMode==='small'){S.wordTestScope='small';S.wordTestScopeValue=S.launchScopeValue}
-    else{S.wordTestScope='all';S.wordTestScopeValue=''}
-    refreshWordTestPool(true);S.screen='wordTest';
-  }else{
-    S.quizMode=mode||'all';S.qIndex=0;S.quizRandom=effectiveLaunchRandom('quiz');S.quizOrder=[];S.screen='quiz';
-  }
-  save();renderAll();
-}
-
 function getUnits(kind){
-  const src=kind==='card'?S.items.filter(x=>x.subject===S.subject&&isCard(x)):S.items.filter(x=>x.subject===S.subject&&isQuiz(x));
+  const src=kind==='card'?S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isCard(x)):S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isQuiz(x));
   return [...new Set(src.map(x=>norm(x.unit)||'단원 없음'))];
 }
 function renderProblemList(){
@@ -2273,24 +1991,8 @@ function renderProblemList(){
   $$('[data-unit]').forEach(b=>b.onclick=()=>{S.listUnit=b.dataset.unit;save();renderProblemList()});
   const list=S.listUnit==='전체'?all:all.filter(x=>(norm(x.unit)||'단원 없음')===S.listUnit);
   if(!list.length){$('problemList').innerHTML='<div class="empty"><strong>항목이 없어요</strong>이 소단원에는 아직 학습 항목이 없습니다.</div>';return}
-  $('problemList').innerHTML=list.map((it,i)=>{
-    const id=itemId(it),title=kind==='card'?(it.front||it.back||'(카드)'):(it.question||'(문제)');
-    const meta=[sectionOf(it),norm(it.unit),norm(it.kind)].filter(Boolean).join(' · ');
-    const st=itemStudyStatus(it,kind),book=S.bookmarks.has(id);
-    return `<div class="problemItem" data-list-id="${esc(id)}">
-      <strong>${i+1}. ${esc(title)}</strong>
-      <span>${esc(meta)}</span>
-      <div class="problemStatusRow"><span class="statusDot ${st.cls}"></span>${esc(st.label)}${book?' · 중요':''}</div>
-      <button class="problemBookmark ${book?'active':''}" data-bookmark-id="${esc(id)}">${book?'★':'☆'}</button>
-    </div>`;
-  }).join('');
-  $$('[data-list-id]').forEach(b=>b.onclick=e=>{
-    if(e.target.closest('[data-bookmark-id]'))return;
-    const id=b.dataset.listId;
-    if(kind==='card'){refreshPools();const idx=S.cardPool.findIndex(x=>itemId(x)===id);if(idx>=0)S.cIndex=idx;save();setScreen('card')}
-    else{refreshPools();const idx=S.quizPool.findIndex(x=>itemId(x)===id);if(idx>=0)S.qIndex=idx;save();setScreen('quiz')}
-  });
-  $$('[data-bookmark-id]').forEach(b=>b.onclick=e=>{e.stopPropagation();toggleBookmark(b.dataset.bookmarkId)});
+  $('problemList').innerHTML=list.map((it,i)=>{const title=kind==='card'?(it.front||it.back||'(카드)'):(it.question||'(문제)');const meta=[sectionOf(it),norm(it.unit),norm(it.kind)].filter(Boolean).join(' · ');return `<button class="problemItem" data-list-id="${esc(itemId(it))}"><strong>${i+1}. ${esc(title)}</strong><span>${esc(meta)}</span></button>`}).join('');
+  $$('[data-list-id]').forEach(b=>b.onclick=()=>{const id=b.dataset.listId;if(kind==='card'){refreshPools();const idx=S.cardPool.findIndex(x=>itemId(x)===id);if(idx>=0)S.cIndex=idx;save();setScreen('card')}else{refreshPools();const idx=S.quizPool.findIndex(x=>itemId(x)===id);if(idx>=0)S.qIndex=idx;save();setScreen('quiz')}})
 }
 function setListKind(kind){S.listKind=kind;S.listUnit='전체';save();renderProblemList()}
 function openList(kind){S.listKind=kind;S.listUnit='전체';save();setScreen('list')}
@@ -2299,57 +2001,24 @@ function toggleRandom(kind){
   else{S.cardRandom=!S.cardRandom;S.cardOrder=S.cardRandom?makeRandomOrder(S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isCard(x))):[];S.cIndex=0}
   save();refreshPools();kind==='quiz'?renderQuiz():renderCard()
 }
-function showComplete(kind){
-  let title='학습 완료!',text='여기까지 모두 학습했어요.',stats=[];
-  if(kind==='quiz'){
-    let correct=0,total=0,wrong=0;
-    S.quizPool.forEach(it=>{const a=S.attempts[itemId(it)];if(a&&a.total){total++;if(S.wrong.has(itemId(it)))wrong++;else correct++;}});
-    const rate=total?Math.round(correct/total*100):0;
-    title='퀴즈 완료!';
-    text='수고했어요. 바로 오답 복습을 이어갈 수도 있어요.';
-    stats=[['정답',correct],['오답',wrong],['정답률',rate+'%']];
-  }else if(kind==='card'){
-    const known=S.cardPool.filter(x=>S.memory[itemId(x)]==='know').length;
-    const review=S.cardPool.filter(x=>['confused','unknown'].includes(S.memory[itemId(x)])).length;
-    const pending=S.cardPool.length-known-review;
-    title='카드 학습 완료!';
-    text='기억 상태를 기준으로 필요한 카드만 다시 볼 수 있어요.';
-    stats=[['알아요',known],['복습',review],['미학습',pending]];
-  }else if(kind==='wordtest'){
-    const wrong=Math.max(0,S.wordTestTotal-S.wordTestCorrect);
-    const rate=S.wordTestTotal?Math.round(S.wordTestCorrect/S.wordTestTotal*100):0;
-    title='단어 테스트 완료!';
-    text='랜덤으로 다시 시작하거나 복습함에서 헷갈린 항목을 확인해보세요.';
-    stats=[['정답',S.wordTestCorrect],['오답',wrong],['정답률',rate+'%']];
-  }
-  $('completeTitle').textContent=title;
-  $('completeText').textContent=text;
-  $('completeStats').innerHTML=stats.map(([label,value])=>`<div class="completeStat"><strong>${esc(value)}</strong><span>${esc(label)}</span></div>`).join('');
-  $('completeReviewBtn').textContent=kind==='quiz'?'오답 복습':'복습하기';
-  $('completeOverlay').dataset.kind=kind;
-  $('completeOverlay').classList.add('show');
-}
+function showComplete(kind){let title='학습 완료!',text='여기까지 모두 학습했어요.';if(kind==='quiz'){const a=currentScopeAttempts();const rate=a.total?Math.round(a.correct/a.total*100):0;title='퀴즈 완료!';
+    const retryCount=S.wrongRetry==='end'?S.quizPool.filter(x=>S.wrong.has(itemId(x))).length:0;
+    text=`총 ${S.quizPool.length}문제 · 누적 정답률 ${rate}%${retryCount?` · 다시 풀 오답 ${retryCount}개`:''}`}else if(kind==='card'){const reviewed=S.cardPool.filter(x=>S.memory[itemId(x)]).length;title='카드 학습 완료!';text=`총 ${S.cardPool.length}장 중 ${reviewed}장에 기억 상태를 표시했어요.`}else if(kind==='wordtest'){const rate=S.wordTestTotal?Math.round(S.wordTestCorrect/S.wordTestTotal*100):0;title='단어 테스트 완료!';text=`${S.wordTestTotal}개 응답 · 정답률 ${rate}%`}$('completeTitle').textContent=title;$('completeText').textContent=text;$('completeOverlay').dataset.kind=kind;$('completeOverlay').classList.add('show')}
 function closeComplete(){$('completeOverlay').classList.remove('show')}
-function restartComplete(){
-  const kind=$('completeOverlay').dataset.kind;
-  if(kind==='quiz'){S.qIndex=0;if(S.quizRandom)S.quizOrder=makeRandomOrder(S.quizPool);renderQuiz()}
-  if(kind==='card'){S.cIndex=0;if(S.cardRandom)S.cardOrder=makeRandomOrder(S.cardPool);renderCard()}
-  if(kind==='wordtest'){S.wordTestIndex=0;S.wordTestCorrect=0;S.wordTestTotal=0;refreshWordTestPool(true);renderWordTest()}
-  save();closeComplete()
-}
-function reviewFromComplete(){
-  const kind=$('completeOverlay').dataset.kind;
-  closeComplete();
-  if(kind==='quiz'){
-    S.reviewFilter='wrong';
-    setScreen('review');
-  }else{
-    S.reviewFilter='all';
-    setScreen('review');
-  }
+function restartComplete(){const kind=$('completeOverlay').dataset.kind;if(kind==='quiz'){
+    if(S.wrongRetry==='end'){
+      const firstWrong=S.quizPool.findIndex(x=>S.wrong.has(itemId(x)));
+      S.qIndex=firstWrong>=0?firstWrong:0;
+    }else S.qIndex=0;
+    renderQuiz()
+  }if(kind==='card'){S.cIndex=0;renderCard()}if(kind==='wordtest'){S.wordTestIndex=0;S.wordTestCorrect=0;S.wordTestTotal=0;refreshWordTestPool(true);renderWordTest()}save();closeComplete()}
+
+function isWordTestEligible(x){
+  const kind=norm(x.kind);
+  return x.subject==='영어'&&['단어','문법'].includes(kind)&&norm(x.front)&&norm(x.back);
 }
 function wordTestBaseCards(){
-  return S.items.filter(x=>launchScopeMatch(x)&&isCard(x)&&norm(x.front)&&norm(x.back));
+  return S.items.filter(isWordTestEligible);
 }
 function getWordScopeValues(scope){
   const cards=wordTestBaseCards();
@@ -2440,9 +2109,8 @@ function blankExample(example,word){const e=norm(example),w=norm(word);if(!e||!w
 function getWordTestQuestion(it,index){
   const list=S.wordTestPool;
   const exampleBlank=blankExample(it.example,it.front);
-  const available=exampleBlank?['example','meaningToWord','wordToMeaning']:['meaningToWord','wordToMeaning'];
-  const requested=S.wordTestQuestionMode||'mix';
-  const mode=requested==='mix'?available[stableHash(itemId(it)+'|'+index)%available.length]:(available.includes(requested)?requested:available[0]);
+  const modes=exampleBlank?['example','meaningToWord','wordToMeaning']:['meaningToWord','wordToMeaning'];
+  const mode=modes[stableHash(itemId(it)+'|'+index)%modes.length];
   let promptLabel='',prompt='',translation='',correct='',distractorSource=[];
   if(mode==='example'){
     promptLabel='기출예문 빈칸에 들어갈 단어를 고르세요';
@@ -2476,12 +2144,36 @@ function renderWordTest(){
   $('prevWordBtn').disabled=S.wordTestIndex===0;$('nextWordBtn').disabled=false;$('nextWordBtn').textContent=S.wordTestIndex===list.length-1?'테스트 완료':'다음 단어';
 }
 function answerWordChoice(button,correct){
-  if(S.wordTestAnswered)return;S.wordTestAnswered=true;
-  const picked=cleanWordTestText(button.dataset.wordChoice),ok=wordAnswerKey(picked)===wordAnswerKey(correct);
-  S.wordTestTotal++;if(ok)S.wordTestCorrect++;
-  $$('[data-word-choice]').forEach(b=>{b.disabled=true;if(wordAnswerKey(b.dataset.wordChoice)===wordAnswerKey(correct))b.classList.add('correct')});
+  if(S.wordTestAnswered)return;
+  S.wordTestAnswered=true;
+
+  const it=S.wordTestPool[S.wordTestIndex];
+  const id=it?itemId(it):'';
+  const picked=cleanWordTestText(button.dataset.wordChoice);
+  const ok=wordAnswerKey(picked)===wordAnswerKey(correct);
+
+  S.wordTestTotal++;
+  if(ok){
+    S.wordTestCorrect++;
+  }else if(id){
+    // 단어테스트 오답도 일반 퀴즈 오답과 동일하게 복습함에 저장
+    S.wrong.add(id);
+  }
+
+  $$('[data-word-choice]').forEach(b=>{
+    b.disabled=true;
+    if(wordAnswerKey(b.dataset.wordChoice)===wordAnswerKey(correct))b.classList.add('correct')
+  });
   if(!ok)button.classList.add('wrong');
-  $('wordTestResult').textContent=ok?'정답이에요!':`정답: ${cleanWordTestText(correct)}`;$('wordTestResult').className='wordTestResult '+(ok?'ok':'bad');save();runFeedbackEffect(ok,document.querySelector('.wordTestCard'));if(ok)autoAdvanceWord()
+
+  $('wordTestResult').textContent=ok?'정답이에요!':`정답: ${cleanWordTestText(correct)}`;
+  $('wordTestResult').className='wordTestResult '+(ok?'ok':'bad');
+
+  save();
+  renderHome();
+  renderReview();
+  runFeedbackEffect(ok,document.querySelector('.wordTestCard'));
+  if(ok)autoAdvanceWord()
 }
 
 
@@ -2547,9 +2239,8 @@ function swipeThreshold(){
   return S.swipeSensitivity==='high'?35:S.swipeSensitivity==='low'?80:55;
 }
 function studyLimitNumber(){
-  const raw=(S.pendingLaunch&&S.screen!=='home'&&S.launchLimit!=='default')?S.launchLimit:S.studyLimit;
-  if(raw==='all'||raw==='default')return Infinity;
-  const n=Number(raw);
+  if(S.studyLimit==='all')return Infinity;
+  const n=Number(S.studyLimit);
   return Number.isFinite(n)&&n>0?n:Infinity;
 }
 function applyStudyLimit(list){
@@ -2741,6 +2432,8 @@ function renderHome(){
   $('statTotal').textContent=items.length;
   $('statReview').textContent=review;
   $('statRate').textContent=a.total?Math.round(a.correct/a.total*100)+'%':'0%';
+  const wordCard=$('wordTestHomeCard');
+  if(wordCard)wordCard.style.display=S.subject==='영어'?'':'none';
   // 상단 좌측은 고정 앱 이름 표시
 }
 
@@ -2872,7 +2565,7 @@ function renderCard(){
   const last=S.cIndex===list.length-1,first=S.cIndex===0;
   const isWord=it.subject==='영어'&&it.kind==='단어';
 
-  $('cardBadge').textContent=locationLabel(it);$('cardBookmarkBtn').classList.toggle('active',S.bookmarks.has(id));$('cardBookmarkBtn').textContent=S.bookmarks.has(id)?'★':'☆';
+  $('cardBadge').textContent=locationLabel(it);
   $('cardProgress').textContent=`${S.cIndex+1} / ${list.length}${last?' · 마지막 카드':''}`;
   $('cardRandomBtn').classList.toggle('active',S.cardRandom);$('cardRandomBtn').textContent=S.cardRandom?'랜덤':'순서';$('cardFlipBtn').style.display=S.flipMode==='button'?'inline-flex':'none';renderAutoAdvanceButtons();
   $('frontUnit').textContent=`${sectionOf(it)} · ${it.unit||'단원 없음'}`;
@@ -2935,12 +2628,12 @@ function renderQuiz(){
     $('prevQuizBtn').disabled=true;$('nextQuizBtn').disabled=true;return;
   }
 
-  const it=list[S.qIndex],qid=itemId(it),last=S.qIndex===list.length-1,first=S.qIndex===0;
+  const it=list[S.qIndex],last=S.qIndex===list.length-1,first=S.qIndex===0;
   const isOx=norm(it.kind).toUpperCase()==='OX';
   S.answered=false;
 
   card.classList.add(isOx?'oxMode':'mcMode');
-  $('quizBadge').textContent=locationLabel(it);$('quizBookmarkBtn').classList.toggle('active',S.bookmarks.has(qid));$('quizBookmarkBtn').textContent=S.bookmarks.has(qid)?'★':'☆';
+  $('quizBadge').textContent=locationLabel(it);
   $('quizProgress').textContent=`${S.qIndex+1} / ${list.length}`;
   $('quizRandomBtn').classList.toggle('active',S.quizRandom);$('quizRandomBtn').textContent=S.quizRandom?'랜덤':'순서';renderAutoAdvanceButtons();
   $('quizMeta').innerHTML='';
@@ -2987,7 +2680,7 @@ function grade(it,choice,clicked){
   const a=S.attempts[id]||(S.attempts[id]={correct:0,total:0});
   a.total++;
   if(ok)a.correct++;
-  if(!ok)S.wrong.add(id);
+  if(ok)S.wrong.delete(id);else S.wrong.add(id);
 
   [...$('optionsArea').children].forEach(b=>{
     const val=isOx?norm(b.dataset.value).toUpperCase():quizAnswerNumber(b.dataset.value);
@@ -3015,7 +2708,11 @@ function renderReview(){
   const area=$('reviewList');
   $$('[data-review]').forEach(b=>b.classList.toggle('active',b.dataset.review===S.reviewFilter));
   let list=[];
-  S.items.filter(x=>x.subject===S.subject).forEach(it=>{
+  S.items.filter(x=>{
+    if(x.subject!==S.subject)return false;
+    const id=itemId(x);
+    return sectionMatch(x) || (isWordTestEligible(x)&&S.wrong.has(id));
+  }).forEach(it=>{
     const id=itemId(it),mem=S.memory[id];
     if(S.reviewWrong&&S.wrong.has(id))list.push({it,type:'wrong'});
     if(S.reviewConfused&&mem==='confused')list.push({it,type:'confused'});
@@ -3026,12 +2723,11 @@ function renderReview(){
   area.innerHTML='';
   list.forEach(({it,type})=>{
     const b=document.createElement('button');b.className='reviewItem';
-    const label=type==='wrong'?'문제 오답':type==='confused'?'헷갈리는 단어':'모르는 단어';
+    const label=type==='wrong'?(isWordTestEligible(it)?'단어테스트 오답':'문제 오답'):type==='confused'?'헷갈리는 단어':'모르는 단어';
     b.innerHTML=`<strong>${esc(it.question||it.front||'(항목)')}</strong><span>${esc(sectionOf(it))} · ${esc(it.unit||'')} · ${esc(it.kind)}</span><span class="stateLabel ${type}">${label}</span>`;
     b.onclick=()=>{
-      S.launchScopeMode='all';S.launchScopeValue='';
       S.section=sectionOf(it);refreshPools();
-      if(isCard(it)){S.cIndex=Math.max(0,S.cardPool.findIndex(x=>itemId(x)===itemId(it)));setScreen('card')}
+      if(isCard(it)||isWordTestEligible(it)){S.cIndex=Math.max(0,S.cardPool.findIndex(x=>itemId(x)===itemId(it)));setScreen('card')}
       else{S.quizMode='all';refreshPools();S.qIndex=Math.max(0,S.quizPool.findIndex(x=>itemId(x)===itemId(it)));setScreen('quiz')}
     };
     area.appendChild(b);
@@ -3048,8 +2744,30 @@ function setScreen(s){
 
 function renderAll(){renderTabs();refreshPools();renderHome();renderQuiz();renderCard();renderReview();setScreen(S.screen)}
 function launch(mode){
-  if(mode==='list'){S.listKind='quiz';S.listUnit='전체';save();setScreen('list');return}
-  openLaunchSetup(mode);
+  if(mode==='card'){
+    S.cardRandom=S.defaultCardRandom;
+    S.cardOrder=[];
+    S.cIndex=0;
+    S.screen='card';
+  }else if(mode==='wordtest'){
+    if(S.subject!=='영어'){
+      toast('단어 테스트는 영어에서만 사용할 수 있어요');
+      return;
+    }
+    if(S.screen!=='wordTest'){
+      S.wordTestIndex=0;S.wordTestCorrect=0;S.wordTestTotal=0;S.wordTestOrder=[];
+      refreshWordTestPool(true);
+    }
+    S.screen='wordTest';
+  }else if(mode==='list'){
+    S.listKind='quiz';S.listUnit='전체';S.screen='list';
+  }else{
+    S.quizMode=mode;S.qIndex=0;
+    S.quizRandom=S.defaultQuizRandom;
+    S.quizOrder=[];
+    S.screen='quiz';
+  }
+  save();renderAll()
 }
 
 function resetCurrentScope(){
@@ -3210,24 +2928,7 @@ function downloadCurrentWorkbook(){
 $('templateBtn').onclick=downloadCurrentWorkbook;
 $('resetBtn').onclick=resetCurrentScope;
 $$('[data-launch]').forEach(b=>b.onclick=()=>launch(b.dataset.launch));
-
-$('launchCloseBtn').onclick=closeLaunchSetup;
-$('launchStartBtn').onclick=startPendingLaunch;
-$$('[data-launch-scope]').forEach(b=>b.onclick=()=>{
-  S.launchScopeMode=b.dataset.launchScope;
-  S.launchScopeValue='';
-  renderLaunchScopeValues();
-});
-$$('[data-launch-limit]').forEach(b=>b.onclick=()=>{S.launchLimit=b.dataset.launchLimit;$$('[data-launch-limit]').forEach(x=>x.classList.toggle('active',x===b))});
-$$('[data-launch-order]').forEach(b=>b.onclick=()=>{S.launchOrder=b.dataset.launchOrder;$$('[data-launch-order]').forEach(x=>x.classList.toggle('active',x===b))});
-$$('[data-word-test-mode]').forEach(b=>b.onclick=()=>{S.wordTestQuestionMode=b.dataset.wordTestMode;$$('[data-word-test-mode]').forEach(x=>x.classList.toggle('active',x===b))});
-$('quizBookmarkBtn').onclick=()=>{if(S.quizPool.length)toggleBookmark(itemId(S.quizPool[S.qIndex]))};
-$('cardBookmarkBtn').onclick=()=>{if(S.cardPool.length)toggleBookmark(itemId(S.cardPool[S.cIndex]))};
-$('completeHomeBtn').onclick=()=>{closeComplete();setScreen('home')};
-$('completeReviewBtn').onclick=reviewFromComplete;
-
 $$('.navBtn').forEach(b=>b.onclick=()=>setScreen(b.dataset.screen));
-$$('[data-screen-direct]').forEach(b=>b.onclick=()=>setScreen(b.dataset.screenDirect));
 
 $$('[data-theme-choice]').forEach(b=>b.onclick=()=>setThemeChoice(b.dataset.themeChoice));
 
@@ -3330,7 +3031,7 @@ $('wordAutoBtn').onclick=toggleAutoAdvance;
   },{passive:true});
 }
 
-$('prevWordBtn').onclick=()=>{if(S.wordTestIndex>0){S.wordTestIndex--;save();renderWordTest()}};$('nextWordBtn').onclick=()=>{if(S.wordTestIndex<S.wordTestPool.length-1){S.wordTestIndex++;save();renderWordTest()}else showComplete('wordtest')};$('completeRestartBtn').onclick=restartComplete;
+$('prevWordBtn').onclick=()=>{if(S.wordTestIndex>0){S.wordTestIndex--;save();renderWordTest()}};$('nextWordBtn').onclick=()=>{if(S.wordTestIndex<S.wordTestPool.length-1){S.wordTestIndex++;save();renderWordTest()}else showComplete('wordtest')};$('completeCloseBtn').onclick=closeComplete;$('completeRestartBtn').onclick=restartComplete;
 
 {
   const quizCard=$('quizCard');
