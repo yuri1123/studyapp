@@ -1094,6 +1094,93 @@ body{overflow:hidden}
   border-color:#d7e3fb;
 }
 
+
+/* v43: 단어테스트 구조/범위 수정 + 퀴즈 하단 버튼 여유 확보 */
+
+/* 퀴즈 하단 버튼이 잘리지 않도록 액션 행 높이를 실제 버튼 높이에 맞춤 */
+.quizShell{
+  grid-template-rows:26px minmax(0,1fr) 44px !important;
+}
+#quizScreen .actions{
+  min-height:44px !important;
+  overflow:visible !important;
+}
+#quizScreen .actions .btn{
+  min-height:40px !important;
+  height:40px !important;
+}
+#quizScreen .quizCard{
+  overflow-x:hidden !important;
+}
+
+/* 단어 테스트: 상단 조작부는 컴팩트하게, 카드 내부는 위에서부터 자연스럽게 */
+.wordTestShell{
+  grid-template-rows:26px auto minmax(0,1fr) 44px !important;
+  gap:5px !important;
+}
+.wordTestScopePanel{
+  gap:5px !important;
+}
+.wordShuffleBtn{
+  height:26px !important;
+  min-height:26px !important;
+  padding:0 8px !important;
+  font-size:10px !important;
+  color:#2563eb !important;
+  background:#eef4ff !important;
+  border-color:#d7e3fb !important;
+}
+.wordTestCard{
+  justify-content:flex-start !important;
+  align-items:stretch !important;
+  text-align:center !important;
+  padding:16px 16px 14px !important;
+  overflow-y:auto !important;
+}
+.wordTestPromptLabel{
+  align-self:center !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:30px !important;
+  padding:6px 11px !important;
+  border-radius:999px !important;
+  background:#eaf2ff !important;
+  color:#45617f !important;
+  font-size:11px !important;
+  line-height:1.2 !important;
+  margin:0 auto !important;
+}
+.wordTestMeaning{
+  margin-top:16px !important;
+}
+.wordTestTranslation{
+  margin-top:7px !important;
+}
+.wordTestChoices{
+  margin-top:16px !important;
+  gap:8px !important;
+}
+.wordChoice{
+  min-height:46px !important;
+  padding:11px 12px !important;
+}
+#wordTestScreen .actions{
+  min-height:44px !important;
+}
+#wordTestScreen .actions .btn{
+  min-height:40px !important;
+  height:40px !important;
+}
+
+/* 범위 선택 버튼은 서로 같은 크기로 */
+.wordTestScopeModes{
+  gap:6px !important;
+}
+.wordScopeBtn{
+  min-height:34px !important;
+}
+
 </style>
 </head>
 <body>
@@ -1215,7 +1302,10 @@ body{overflow:hidden}
       <div class="wordTestShell">
         <div class="headRow">
           <div class="badge" id="wordTestBadge">단어 테스트</div>
-          <div class="progress" id="wordTestProgress">1 / 1</div>
+          <div class="headTools">
+            <button class="smallControl wordShuffleBtn" id="wordShuffleBtn">다시 섞기</button>
+            <div class="progress" id="wordTestProgress">1 / 1</div>
+          </div>
         </div>
         <div class="wordTestScopePanel">
           <div class="wordTestScopeModes">
@@ -1224,7 +1314,6 @@ body{overflow:hidden}
             <button class="wordScopeBtn" data-word-scope="all">전체</button>
           </div>
           <div class="wordTestScopeValues" id="wordTestScopeValues"></div>
-          <button class="wordShuffleBtn" id="wordShuffleBtn">랜덤 다시 섞기</button>
         </div>
         <div class="wordTestCard">
           <div class="wordTestPromptLabel" id="wordTestPromptLabel">단어 테스트</div>
@@ -1270,7 +1359,7 @@ body{overflow:hidden}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v42_compact';
+const STORAGE='study_app_v43_compact';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -1330,7 +1419,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+      for(const k of ['study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -1430,8 +1519,8 @@ function wordTestBaseCards(){
 }
 function getWordScopeValues(scope){
   const cards=wordTestBaseCards();
-  if(scope==='small')return [...new Set(cards.map(x=>norm(x.subtitle)||'소단원 없음'))];
-  if(scope==='large')return [...new Set(cards.map(x=>norm(x.unit)||'대단원 없음'))];
+  if(scope==='large')return [...new Set(cards.map(x=>norm(x.subtitle)||'대단원 없음'))];
+  if(scope==='small')return [...new Set(cards.map(x=>norm(x.unit)||'소단원 없음'))];
   return [];
 }
 function currentWordTestSource(){
@@ -1441,11 +1530,11 @@ function currentWordTestSource(){
   if(!S.wordTestScopeValue || !values.includes(S.wordTestScopeValue)){
     S.wordTestScopeValue=values[0]||'';
   }
-  if(S.wordTestScope==='small'){
-    return cards.filter(x=>(norm(x.subtitle)||'소단원 없음')===S.wordTestScopeValue);
-  }
   if(S.wordTestScope==='large'){
-    return cards.filter(x=>(norm(x.unit)||'대단원 없음')===S.wordTestScopeValue);
+    return cards.filter(x=>(norm(x.subtitle)||'대단원 없음')===S.wordTestScopeValue);
+  }
+  if(S.wordTestScope==='small'){
+    return cards.filter(x=>(norm(x.unit)||'소단원 없음')===S.wordTestScopeValue);
   }
   return cards;
 }
