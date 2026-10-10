@@ -1812,7 +1812,7 @@ html[data-density="roomy"] .wordChoice{min-height:46px}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v50_stable';
+const STORAGE='study_app_v52_stable';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -1887,7 +1887,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+      for(const k of ['study_app_v51_stable','study_app_v50_stable','study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -2141,7 +2141,7 @@ function renderWordTest(){
   $('wordTestPromptLabel').textContent=q.promptLabel;$('wordTestMeaning').textContent=q.prompt||'내용 없음';$('wordTestTranslation').textContent=q.translation||'';
   $('wordTestChoices').innerHTML=q.options.map((opt,i)=>`<button class="wordChoice" data-word-choice="${esc(opt)}">${i+1}. ${esc(opt)}</button>`).join('');
   $$('[data-word-choice]').forEach(b=>b.onclick=()=>answerWordChoice(b,q.correct));
-  $('prevWordBtn').disabled=S.wordTestIndex===0;$('nextWordBtn').disabled=false;$('nextWordBtn').textContent=S.wordTestIndex===list.length-1?'테스트 완료':'다음 단어';
+  $('prevWordBtn').disabled=S.wordTestIndex===0;$('nextWordBtn').disabled=false;$('nextWordBtn').textContent=S.wordTestAnswered?(S.wordTestIndex===list.length-1?'테스트 완료':'다음 단어'):'정답을 고르세요';
 }
 function answerWordChoice(button,correct){
   if(S.wordTestAnswered)return;
@@ -2168,12 +2168,13 @@ function answerWordChoice(button,correct){
 
   $('wordTestResult').textContent=ok?'정답이에요!':`정답: ${cleanWordTestText(correct)}`;
   $('wordTestResult').className='wordTestResult '+(ok?'ok':'bad');
+  $('nextWordBtn').textContent=S.wordTestIndex===S.wordTestPool.length-1?'테스트 완료':'다음 단어';
 
   save();
   renderHome();
   renderReview();
   runFeedbackEffect(ok,document.querySelector('.wordTestCard'));
-  if(ok)autoAdvanceWord()
+  if(S.autoAdvance&&S.autoWord)autoAdvanceWord()
 }
 
 
@@ -3014,6 +3015,10 @@ $('wordAutoBtn').onclick=toggleAutoAdvance;
     const dx=t.clientX-sx,dy=t.clientY-sy;
     if(Math.abs(dx)<swipeThreshold()||Math.abs(dx)<Math.abs(dy)*1.25)return;
     if(dx<0){
+      if(!S.wordTestAnswered){
+        toast('정답을 고르세요');
+        return;
+      }
       if(S.wordTestIndex<S.wordTestPool.length-1){
         S.wordTestIndex++;
         save();
@@ -3031,7 +3036,7 @@ $('wordAutoBtn').onclick=toggleAutoAdvance;
   },{passive:true});
 }
 
-$('prevWordBtn').onclick=()=>{if(S.wordTestIndex>0){S.wordTestIndex--;save();renderWordTest()}};$('nextWordBtn').onclick=()=>{if(S.wordTestIndex<S.wordTestPool.length-1){S.wordTestIndex++;save();renderWordTest()}else showComplete('wordtest')};$('completeCloseBtn').onclick=closeComplete;$('completeRestartBtn').onclick=restartComplete;
+$('prevWordBtn').onclick=()=>{if(S.wordTestIndex>0){S.wordTestIndex--;save();renderWordTest()}};$('nextWordBtn').onclick=()=>{if(!S.wordTestAnswered){toast('정답을 고르세요');return}if(S.wordTestIndex<S.wordTestPool.length-1){S.wordTestIndex++;save();renderWordTest()}else showComplete('wordtest')};$('completeCloseBtn').onclick=closeComplete;$('completeRestartBtn').onclick=restartComplete;
 
 {
   const quizCard=$('quizCard');
