@@ -2033,7 +2033,7 @@ html[data-theme="dark"] .grammarMemoSection{
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v54_stable';
+const STORAGE='study_app_v55_stable';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -2116,7 +2116,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+      for(const k of ['study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -3263,7 +3263,7 @@ function downloadCurrentWorkbook(){
       ['사용법','다운로드한 파일에는 현재 앱에 들어있는 데이터가 그대로 포함됩니다. 마지막 데이터 아래 빈 행에 새 내용을 추가한 뒤 앱에서 다시 업로드하세요.'],
       ['과목','회계 / 세법 / 국어 / 영어'],
       ['유형','OX / 객관식 / 문법 / 단어 / 개념'],
-      ['영문법 핵심암기','영어 과목에서 유형을 문법으로 입력하면 '영문법 핵심암기' 전용 화면에서만 학습됩니다. 앞면=질문, 뒷면=핵심답, 핵심표현=추가 공식/암기포인트, 예문/예문해석=기출예문, 메모=문제풀이 팁으로 사용하세요.'],
+      ['영문법 핵심암기',"영어 과목에서 유형을 문법으로 입력하면 '영문법 핵심암기' 전용 화면에서만 학습됩니다. 앞면=질문, 뒷면=핵심답, 핵심표현=추가 공식/암기포인트, 예문/예문해석=기출예문, 메모=문제풀이 팁으로 사용하세요."],
       ['줄바꿈','셀 안 줄바꿈은 그대로 사용할 수 있습니다. 다운로드/재업로드 시 _x000D_ 문자열이 남지 않도록 정리됩니다.'],
       ['객관식','보기1~보기5까지 사용 가능. 정답은 A~E 또는 1~5 모두 인식합니다.'],
       ['품사 입력','n / v / a / ad / p 로 짧게 입력'],
