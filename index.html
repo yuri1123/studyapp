@@ -1530,19 +1530,19 @@ html[data-font="gamja"] body{
   color:#fff;
 }
 
-/* 글자 크기 6단계 */
-html[data-font-size="xs"] body{font-size:.88em}
-html[data-font-size="sm"] body{font-size:.94em}
-html[data-font-size="md"] body{font-size:1em}
-html[data-font-size="lg"] body{font-size:1.06em}
-html[data-font-size="xl"] body{font-size:1.12em}
-html[data-font-size="xxl"] body{font-size:1.20em}
+/* 글자 크기 6단계 - v66부터 실제 px 글자에도 적용 */
+html{--font-scale:1}
+html[data-font-size="xs"]{--font-scale:.84}
+html[data-font-size="sm"]{--font-scale:.92}
+html[data-font-size="md"]{--font-scale:1}
+html[data-font-size="lg"]{--font-scale:1.10}
+html[data-font-size="xl"]{--font-scale:1.20}
+html[data-font-size="xxl"]{--font-scale:1.32}
 
-/* 큰 글자에서도 핵심 고정영역이 과도하게 커지지 않도록 제한 */
-html[data-font-size="xl"] .bottomNav,
-html[data-font-size="xxl"] .bottomNav{font-size:.96em}
-html[data-font-size="xl"] .topbar,
-html[data-font-size="xxl"] .topbar{font-size:.96em}
+/* JS가 계산한 기본 글자 크기에 배율을 곱해 사용 */
+[data-base-font-size]{
+  font-size:calc(var(--base-font-size) * var(--font-scale)) !important;
+}
 
 /* 화면 밀도 */
 html[data-density="compact"] .content{padding-top:2px}
@@ -2418,6 +2418,79 @@ html[data-theme="dark"] .grammarPracticeOption.wrong{
 .grammarListItemState.confused{background:#fff5dd;color:#9a6800}
 .grammarListItemState.unknown{background:#fff0f0;color:#aa3030}
 
+
+/* v68: 영어(단어/문법/단어테스트) 보라 테마 통일 */
+html[data-subject="영어"]{
+  --subject-accent:#7a5ce5;
+  --subject-soft:#f0ecff;
+  --subject-soft-border:#ded5ff;
+}
+
+/* 영어 카드/영문법/단어테스트 주요 포인트를 모두 subject 색으로 */
+html[data-subject="영어"] #cardScreen .badge,
+html[data-subject="영어"] #grammarScreen .badge,
+html[data-subject="영어"] #wordTestScreen .badge,
+html[data-subject="영어"] #cardScreen .progress,
+html[data-subject="영어"] #grammarScreen .progress,
+html[data-subject="영어"] #wordTestScreen .progress{
+  color:var(--subject-accent)!important;
+}
+html[data-subject="영어"] #cardScreen .badge,
+html[data-subject="영어"] #grammarScreen .badge,
+html[data-subject="영어"] #wordTestScreen .badge{
+  background:var(--subject-soft)!important;
+  border-color:var(--subject-soft-border)!important;
+}
+html[data-subject="영어"] #cardScreen .primary,
+html[data-subject="영어"] #grammarScreen .primary,
+html[data-subject="영어"] #wordTestScreen .primary,
+html[data-subject="영어"] #cardScreen .smallControl.active,
+html[data-subject="영어"] #grammarScreen .smallControl.active,
+html[data-subject="영어"] #wordTestScreen .smallControl.active,
+html[data-subject="영어"] #wordTestScreen .wordScopeBtn.active,
+html[data-subject="영어"] #wordTestScreen .wordScopeValueBtn.active{
+  background:var(--subject-accent)!important;
+  border-color:var(--subject-accent)!important;
+  color:#fff!important;
+}
+html[data-subject="영어"] #cardScreen .face,
+html[data-subject="영어"] #grammarScreen .grammarFace,
+html[data-subject="영어"] #wordTestScreen .wordTestCard{
+  border-color:color-mix(in srgb,var(--subject-accent) 26%, var(--line))!important;
+}
+html[data-subject="영어"] #grammarScreen .grammarSectionTitle,
+html[data-subject="영어"] #grammarScreen .grammarPracticeType,
+html[data-subject="영어"] #wordTestScreen .wordTestPromptLabel{
+  color:var(--subject-accent)!important;
+}
+html[data-subject="영어"] #grammarScreen .grammarPracticeType,
+html[data-subject="영어"] #wordTestScreen .wordTestPromptLabel{
+  background:var(--subject-soft)!important;
+}
+html[data-subject="영어"] #grammarScreen .grammarExampleItem{
+  border-left-color:var(--subject-accent)!important;
+}
+html[data-subject="영어"] #grammarScreen .grammarListItem.active{
+  border-color:var(--subject-accent)!important;
+  background:var(--subject-soft)!important;
+}
+
+/* 영어 카드의 상태 버튼도 기존 초록/주황/빨강은 유지하되, 일반 컨트롤만 보라색 */
+html[data-subject="영어"] #cardScreen .smallControl,
+html[data-subject="영어"] #grammarScreen .smallControl,
+html[data-subject="영어"] #wordTestScreen .smallControl{
+  border-color:color-mix(in srgb,var(--subject-accent) 24%, var(--line))!important;
+}
+
+
+/* 자동 넘김 시간 선택 확장 */
+.delayGrid{
+  grid-template-columns:repeat(4,1fr)!important;
+}
+@media(max-width:430px){
+  .delayGrid{grid-template-columns:repeat(3,1fr)!important}
+}
+
 </style>
 </head>
 <body>
@@ -2723,12 +2796,13 @@ html[data-theme="dark"] .grammarPracticeOption.wrong{
           <div class="settingsDivider"></div>
           <div class="settingsLabel">다음으로 넘어가기까지</div>
           <div class="delayGrid">
-            <button data-delay="0.3">0.3초</button>
             <button data-delay="0.5">0.5초</button>
-            <button data-delay="0.7">0.7초</button>
             <button data-delay="1">1초</button>
             <button data-delay="1.5">1.5초</button>
             <button data-delay="2">2초</button>
+            <button data-delay="3">3초</button>
+            <button data-delay="4">4초</button>
+            <button data-delay="5">5초</button>
           </div>
         </div>
 
@@ -2868,7 +2942,7 @@ html[data-theme="dark"] .grammarPracticeOption.wrong{
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v65_stable';
+const STORAGE='study_app_v68_stable';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -2887,7 +2961,7 @@ const S={
   quizRandom:false,cardRandom:false,quizOrder:[],cardOrder:[],
   listKind:'quiz',listUnit:'전체',
   wordTestIndex:0,wordTestPool:[],wordTestAnswered:false,wordTestCorrect:0,wordTestTotal:0,wordTestScope:'small',wordTestScopeValue:'',wordTestOrder:[],
-  autoAdvance:false,theme:'light',autoDelay:0.7,autoQuiz:true,autoCard:true,autoWord:true,
+  autoAdvance:false,theme:'light',autoDelay:1.5,autoQuiz:true,autoCard:true,autoWord:true,
   fontChoice:'pretendard',fontSize:'md',density:'normal',
   defaultQuizRandom:false,defaultCardRandom:false,defaultWordRandom:true,
   studyLimit:'all',swipeSensitivity:'normal',resumeMode:'last',
@@ -2951,7 +3025,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v64_stable','study_app_v63_stable','study_app_v62_stable','study_app_v61_stable','study_app_v60_stable','study_app_v59_stable','study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact']){
+      for(const k of ['study_app_v67_stable','study_app_v66_stable','study_app_v65_stable','study_app_v64_stable','study_app_v63_stable','study_app_v62_stable','study_app_v61_stable','study_app_v60_stable','study_app_v59_stable','study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -3319,7 +3393,7 @@ function answerWordChoice(button,correct){
 
 
 function renderAutoAdvanceButtons(){
-  ['quizAutoBtn','cardAutoBtn','wordAutoBtn'].forEach(id=>{
+  ['quizAutoBtn','cardAutoBtn','wordAutoBtn','grammarAutoBtn'].forEach(id=>{
     const b=$(id);
     if(!b)return;
     b.classList.toggle('active',S.autoAdvance);
@@ -3342,7 +3416,7 @@ function autoAdvanceQuiz(){
     }else{
       showComplete('quiz');
     }
-  },Math.max(0,Number(S.autoDelay)||0.7)*1000);
+  },Math.max(0,Number(S.autoDelay)||1.5)*1000);
 }
 function autoAdvanceCardIfKnown(state){
   if(!S.autoAdvance||!S.autoCard||state!=='know')return;
@@ -3354,7 +3428,7 @@ function autoAdvanceCardIfKnown(state){
     }else{
       showComplete('card');
     }
-  },Math.max(0,Number(S.autoDelay)||0.7)*1000);
+  },Math.max(0,Number(S.autoDelay)||1.5)*1000);
 }
 function autoAdvanceWord(){
   if(!S.autoAdvance||!S.autoWord)return;
@@ -3371,7 +3445,46 @@ function autoAdvanceWord(){
 
 
 
+
+function applyFontScale(){
+  const root=document.documentElement;
+  const scaleMap={xs:.84,sm:.92,md:1,lg:1.10,xl:1.20,xxl:1.32};
+  const scale=scaleMap[S.fontSize]||1;
+  root.style.setProperty('--font-scale',scale);
+
+  const selectors=[
+    '.brandPrettyText','.subjectBadge','.topFilterBtn',
+    '.badge','.progress','.smallControl',
+    '.heroTitle','.hero h1','.hero p','.quickCard strong','.quickCard span',
+    '.stat strong','.stat span',
+    '.quizQuestion','.quizOption','.answerBox','.answerTitle','.answerText',
+    '.frontWord','.frontMeaning','.frontPos','.frontPronunciation',
+    '.backWord','.backMeaning','.sectionTitle','.pairRow','.pairWord','.pairMeaning',
+    '.exampleText','.exampleTranslation',
+    '.grammarQuestion','.grammarBackMiniTitle','.grammarAnswer','.grammarSectionTitle',
+    '.grammarPreline','.grammarExampleEn','.grammarExampleKo','.grammarPracticeQuestion',
+    '.grammarPracticeOption','.grammarPracticeFeedback',
+    '.wordTestPromptLabel','.wordTestMeaning','.wordTestTranslation','.wordChoice','.wordTestResult',
+    '.btn','.memoryBtn','.navBtn','.navBtn span','.navBtn b',
+    '.reviewItemTitle','.reviewItemMeta','.listItemTitle','.listItemMeta',
+    '.settingTitle','.settingDesc','.fontChoiceGrid button','.fontSizeGrid button',
+    '.grammarListTitle','.grammarListSub','.grammarListItemTitle','.grammarListItemMeta',
+    '.grammarListItemState','.grammarListFilters select'
+  ].join(',');
+
+  document.querySelectorAll(selectors).forEach(el=>{
+    if(!el.dataset.baseFontSize){
+      const px=parseFloat(getComputedStyle(el).fontSize);
+      if(px>0){
+        el.dataset.baseFontSize=String(px);
+        el.style.setProperty('--base-font-size',px+'px');
+      }
+    }
+  });
+}
+
 function applyVisualPrefs(){
+  requestAnimationFrame(applyFontScale);
   document.documentElement.setAttribute('data-font',S.fontChoice||'system');
   document.documentElement.setAttribute('data-font-size',S.fontSize||'normal');
   document.documentElement.setAttribute('data-density',S.density||'normal');
@@ -3522,7 +3635,7 @@ function resetSettings(){
   S.fontSize='md';
   S.density='normal';
   S.autoAdvance=false;
-  S.autoDelay=0.7;
+  S.autoDelay=1.5;
   S.autoQuiz=true;S.autoCard=true;S.autoWord=true;
   S.defaultQuizRandom=false;S.defaultCardRandom=false;S.defaultWordRandom=true;
   S.studyLimit='all';
@@ -3804,6 +3917,21 @@ function renderGrammarPractice(it){
         save();renderHome();renderReview();
       }
       runFeedbackEffect(ok,section);
+      if(S.autoAdvance&&S.autoCard){
+        setTimeout(()=>{
+          const currentIt=S.grammarPool&&S.grammarPool[S.grammarIndex];
+          const currentList=grammarPracticeList(currentIt);
+          if(S.grammarPracticeIndex<currentList.length-1){
+            S.grammarPracticeIndex++;
+            save();
+            renderGrammarPractice(currentIt);
+          }else{
+            // 마지막 연습문제에서는 자동으로 카드를 넘기지 않고,
+            // 사용자가 알아요/헷갈려요/모르겠어요로 기억 상태를 선택하면 다음 카드로 진행.
+            toast('연습문제를 모두 풀었어요');
+          }
+        },Math.max(0,Number(S.autoDelay)||1.5)*1000);
+      }
     });
   }
   $('prevGrammarPracticeBtn').disabled=S.grammarPracticeIndex===0;
@@ -3893,8 +4021,7 @@ function renderGrammar(){
   $('grammarMemoryBtns').style.visibility='visible';
   $('grammarBadge').textContent=S.reviewStudyMode==='grammar'?`복습 · ${subjectLocationLabel(it)}`:subjectLocationLabel(it);
   $('grammarProgress').textContent=`${S.grammarIndex+1} / ${list.length}${last?' · 마지막 카드':''}`;
-  $('grammarAutoBtn').classList.toggle('active',S.autoAdvance);
-  $('grammarAutoBtn').textContent=S.autoAdvance?'자동':'수동';
+  renderAutoAdvanceButtons();
 
   $('grammarQuestion').textContent=norm(it.front)||norm(it.question)||'질문 없음';
 
@@ -3932,16 +4059,23 @@ function setGrammarMemory(state){
   $$('[data-grammar-memory]').forEach(b=>b.classList.toggle('active',b.dataset.grammarMemory===state));
   toast(state==='know'?'알아요로 표시했어요':state==='confused'?'헷갈려요로 표시했어요':'모르겠어요로 표시했어요');
   runFeedbackEffect(state==='know',$('grammarFlipCard'));
-  if(S.autoAdvance&&S.autoCard&&state==='know'){
+
+  // 문법도 자동 넘김이 켜져 있으면 기억상태 선택 후 다음 카드로 이동.
+  if(S.autoAdvance&&S.autoCard){
     setTimeout(()=>{
       if(S.grammarIndex<S.grammarPool.length-1){
         S.grammarIndex++;
+        S.grammarPracticeIndex=0;
         save();
         renderGrammar();
+      }else if(S.reviewStudyMode==='grammar'){
+        toast('복습 문법카드의 마지막이에요');
+        clearReviewStudyMode();
+        setScreen('review');
       }else{
         showComplete('grammar');
       }
-    },Math.max(0,Number(S.autoDelay)||0.7)*1000);
+    },Math.max(0,Number(S.autoDelay)||1.5)*1000);
   }
 }
 
@@ -4103,7 +4237,7 @@ function grade(it,choice,clicked){
   if(ok){
     autoAdvanceQuiz();
   }else if(S.wrongRetry==='immediate'){
-    setTimeout(()=>renderQuiz(),Math.max(700,Math.max(0,Number(S.autoDelay)||0.7)*1000));
+    setTimeout(()=>renderQuiz(),Math.max(700,Math.max(0,Number(S.autoDelay)||1.5)*1000));
   }
 }
 
@@ -4129,7 +4263,7 @@ function setScreen(s){
   $$('.screen').forEach(x=>x.classList.toggle('active',x.id===s+'Screen'));
   $$('.navBtn').forEach(x=>x.classList.toggle('active',x.dataset.screen===s));
   toggleSelectors(false);
-  if(s==='home')renderHome();if(s==='quiz')renderQuiz();if(s==='card')renderCard();if(s==='grammar')renderGrammar();if(s==='review')renderReview();if(s==='list')renderProblemList();if(s==='wordTest')renderWordTest();if(s==='settings')renderSettings();save();
+  if(s==='home')renderHome();if(s==='quiz')renderQuiz();if(s==='card')renderCard();if(s==='grammar')renderGrammar();if(s==='review')renderReview();if(s==='list')renderProblemList();if(s==='wordTest')renderWordTest();if(s==='settings')renderSettings();save();requestAnimationFrame(applyFontScale);
 }
 
 function renderAll(){applySubjectIdentity();renderTabs();refreshPools();renderHome();renderQuiz();renderCard();renderGrammar();renderReview();setScreen(S.screen)}
@@ -4472,7 +4606,7 @@ $('grammarListClose').onclick=closeGrammarList;
 $('grammarListOverlay').onclick=e=>{if(e.target===$('grammarListOverlay'))closeGrammarList()};
 $('grammarListSubtitleFilter').onchange=renderGrammarList;
 $('grammarListUnitFilter').onchange=renderGrammarList;
-$('grammarAutoBtn').onclick=toggleAutoAdvance;
+$('grammarAutoBtn').onclick=()=>{toggleAutoAdvance();renderAutoAdvanceButtons();};
 $('prevGrammarPracticeBtn').onclick=e=>{e.stopPropagation();moveGrammarPractice(-1)};
 $('nextGrammarPracticeBtn').onclick=e=>{e.stopPropagation();moveGrammarPractice(1)};
 
@@ -4584,6 +4718,8 @@ document.addEventListener('click',e=>{
   if(S.selectorsOpen&&!$('selectorPanel').contains(e.target)&&e.target!==$('selectorToggle'))toggleSelectors(false);
 });
 
+const fontScaleObserver=new MutationObserver(()=>requestAnimationFrame(applyFontScale));
+fontScaleObserver.observe(document.body,{childList:true,subtree:true});
 load();
 S.cardMode='all';
 applyTheme();applyVisualPrefs();applySubjectIdentity();
