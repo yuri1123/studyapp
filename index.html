@@ -1375,6 +1375,7 @@ html[data-theme="dark"] .wordChoice,
 html[data-theme="dark"] .settingsCard,
 html[data-theme="dark"] .settingsResetBtn,
 html[data-theme="dark"] .segmented button,
+html[data-theme="dark"] .fontChoiceGrid button,
 html[data-theme="dark"] .delayGrid button,
 html[data-theme="dark"] .checkBtn{
   background:#182231 !important;
@@ -1429,11 +1430,40 @@ html[data-theme="dark"] .wordTestInput{background:#111b28;color:#fff;border-colo
 .cardFlipControl{display:none}
 
 /* 글꼴 */
+html[data-font="system"] body{
+  font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+}
+html[data-font="clean"] body{
+  font-family:"Inter","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+html[data-font="soft"] body{
+  font-family:"Pretendard","SUIT","Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif;
+}
 html[data-font="rounded"] body{
-  font-family:"Arial Rounded MT Bold","Trebuchet MS","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif
+  font-family:"Pretendard","SUIT","Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif;
 }
 html[data-font="serif"] body{
-  font-family:"Nanum Myeongjo","Batang","AppleMyungjo",serif
+  font-family:"Nanum Myeongjo","AppleMyungjo","Batang",serif;
+}
+.fontChoiceGrid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:6px;
+  margin-top:11px;
+}
+.fontChoiceGrid button{
+  min-height:38px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:var(--card);
+  color:var(--muted);
+  font-size:11px;
+  font-weight:900;
+}
+.fontChoiceGrid button.active{
+  background:var(--blue);
+  border-color:var(--blue);
+  color:#fff;
 }
 html[data-font-size="small"]{font-size:14px}
 html[data-font-size="normal"]{font-size:16px}
@@ -1627,6 +1657,183 @@ html[data-theme="dark"] .grammarMemoSection{
   background:#30291b !important;
 }
 
+
+/* v56: 과목 식별 UI */
+:root{
+  --subject-accent:#2f6ee5;
+  --subject-soft:#eaf2ff;
+  --subject-soft-border:#d5e3ff;
+}
+.subjectBadge{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:28px;margin-left:10px;padding:4px 10px;border-radius:999px;
+  background:var(--subject-soft);border:1px solid var(--subject-soft-border);
+  color:var(--subject-accent);font-size:12px;font-weight:950;line-height:1;white-space:nowrap;
+}
+html[data-subject="회계"]{--subject-accent:#2f6ee5;--subject-soft:#eaf2ff;--subject-soft-border:#d5e3ff}
+html[data-subject="세법"]{--subject-accent:#0f9f8f;--subject-soft:#e8f8f5;--subject-soft-border:#c9ece6}
+html[data-subject="영어"]{--subject-accent:#7a5ce5;--subject-soft:#f0ecff;--subject-soft-border:#ded5ff}
+html[data-subject="국어"]{--subject-accent:#e07a2d;--subject-soft:#fff1e6;--subject-soft-border:#f4d8c2}
+.badge,.progress{color:var(--subject-accent)!important}
+.subjectTab.active,.sectionTab.active,.wordScopeBtn.active,.wordScopeValueBtn.active{
+  background:var(--subject-soft)!important;
+  border-color:var(--subject-soft-border)!important;
+  color:var(--subject-accent)!important;
+}
+#homeScreen .hero{
+  background:linear-gradient(135deg,var(--subject-accent),color-mix(in srgb,var(--subject-accent) 78%, #173a9e))!important;
+  box-shadow:0 10px 30px color-mix(in srgb,var(--subject-accent) 18%, transparent)!important;
+}
+#quizScreen .quizCard,#cardScreen .face,#grammarScreen .grammarFace,#wordTestScreen .wordTestCard{
+  border-color:color-mix(in srgb,var(--subject-accent) 22%, var(--line))!important;
+}
+#quizScreen .primary,#cardScreen .primary,#grammarScreen .primary,#wordTestScreen .primary{
+  background:var(--subject-accent)!important;border-color:var(--subject-accent)!important;
+}
+#quizScreen .badge,#cardScreen .badge,#grammarScreen .badge,#wordTestScreen .badge{
+  background:var(--subject-soft)!important;border-color:var(--subject-soft-border)!important;color:var(--subject-accent)!important;
+}
+html[data-theme="dark"][data-subject="회계"]{--subject-soft:#1c3158;--subject-soft-border:#284676}
+html[data-theme="dark"][data-subject="세법"]{--subject-soft:#173d39;--subject-soft-border:#24554f}
+html[data-theme="dark"][data-subject="영어"]{--subject-soft:#302750;--subject-soft-border:#4b3e76}
+html[data-theme="dark"][data-subject="국어"]{--subject-soft:#4a3020;--subject-soft-border:#66452d}
+@media(max-width:480px){
+  .subjectBadge{min-height:24px;padding:3px 8px;font-size:10.5px;margin-left:7px}
+}
+
+
+/* v57: 영문법 화면 타이포 개선 */
+#grammarScreen .grammarFace{
+  background:linear-gradient(180deg,#fcfdff 0%,#f6f9fd 100%) !important;
+  padding:24px 20px 46px !important;
+}
+#grammarScreen .grammarFront{
+  justify-content:center !important;
+}
+#grammarScreen .grammarUnit{
+  left:18px !important;
+  top:17px !important;
+  font-size:10.5px !important;
+  line-height:1.35 !important;
+  font-weight:800 !important;
+  letter-spacing:0 !important;
+  padding:5px 9px !important;
+}
+#grammarScreen .grammarQuestion{
+  max-width:640px !important;
+  font-size:21px !important;
+  line-height:1.58 !important;
+  letter-spacing:-.008em !important;
+  font-weight:780 !important;
+  word-break:keep-all !important;
+  overflow-wrap:break-word !important;
+}
+#grammarScreen .grammarBackMiniTitle{
+  max-width:700px !important;
+  font-size:10.5px !important;
+  line-height:1.55 !important;
+  letter-spacing:0 !important;
+  font-weight:650 !important;
+  margin-bottom:12px !important;
+  opacity:.82 !important;
+}
+#grammarScreen .grammarAnswer{
+  max-width:720px !important;
+  font-size:15.5px !important;
+  line-height:1.78 !important;
+  letter-spacing:0 !important;
+  font-weight:560 !important;
+  word-break:keep-all !important;
+  overflow-wrap:break-word !important;
+}
+#grammarScreen .grammarSection{
+  margin-top:20px !important;
+  padding-top:17px !important;
+}
+#grammarScreen .grammarSectionTitle{
+  font-size:11.5px !important;
+  line-height:1.4 !important;
+  letter-spacing:.01em !important;
+  font-weight:850 !important;
+  margin-bottom:10px !important;
+}
+#grammarScreen .grammarPreline{
+  font-size:14px !important;
+  line-height:1.72 !important;
+  letter-spacing:0 !important;
+  font-weight:520 !important;
+  word-break:keep-all !important;
+  overflow-wrap:break-word !important;
+}
+#grammarScreen .grammarExampleItem{
+  padding:13px 14px !important;
+  margin-bottom:10px !important;
+  border-left-width:2px !important;
+  border-radius:0 14px 14px 0 !important;
+  box-shadow:0 2px 8px rgba(30,55,90,.035) !important;
+}
+#grammarScreen .grammarExampleEn{
+  font-size:14px !important;
+  line-height:1.68 !important;
+  letter-spacing:.002em !important;
+  font-weight:540 !important;
+}
+#grammarScreen .grammarExampleKo{
+  margin-top:7px !important;
+  font-size:13px !important;
+  line-height:1.68 !important;
+  letter-spacing:0 !important;
+}
+#grammarScreen .grammarMemoSection{
+  margin-top:20px !important;
+  padding:14px 15px !important;
+  border-radius:15px !important;
+}
+#grammarScreen .grammarFlipTip{
+  bottom:14px !important;
+  font-size:9px !important;
+  font-weight:650 !important;
+  letter-spacing:0 !important;
+}
+#grammarScreen .memoryBtns{
+  gap:6px !important;
+}
+#grammarScreen .memoryBtn{
+  font-size:13.5px !important;
+  font-weight:850 !important;
+}
+#grammarScreen .btn{
+  font-size:14px !important;
+  font-weight:900 !important;
+}
+@media(max-width:480px){
+  #grammarScreen .grammarFace{padding:21px 16px 44px !important}
+  #grammarScreen .grammarQuestion{
+    font-size:20px !important;
+    line-height:1.58 !important;
+  }
+  #grammarScreen .grammarAnswer{
+    font-size:15px !important;
+    line-height:1.76 !important;
+  }
+}
+
+/* 글꼴별 영문법 미세 조정 */
+html[data-font="soft"] #grammarScreen .grammarQuestion,
+html[data-font="soft"] #grammarScreen .grammarAnswer,
+html[data-font="soft"] #grammarScreen .grammarPreline{
+  letter-spacing:-.002em !important;
+}
+html[data-font="serif"] #grammarScreen .grammarQuestion{
+  font-weight:700 !important;
+  letter-spacing:0 !important;
+}
+html[data-font="serif"] #grammarScreen .grammarAnswer,
+html[data-font="serif"] #grammarScreen .grammarPreline{
+  font-weight:500 !important;
+  line-height:1.82 !important;
+}
+
 </style>
 </head>
 <body>
@@ -1634,7 +1841,7 @@ html[data-theme="dark"] .grammarMemoSection{
   <header class="topbar">
     <div class="subjectHeaderRow">
       <div class="appBrand appBrandTextPretty" id="appBrand">
-        <div class="brandPrettyText">슬세생</div>
+        <div class="brandPrettyText">슬세생</div><span class="subjectBadge" id="subjectBadge">회계</span>
       </div>
       <button class="selectorToggle filterToggle" id="selectorToggle" aria-expanded="false">회계 · 전체 ▾</button>
     </div>
@@ -1853,9 +2060,10 @@ html[data-theme="dark"] .grammarMemoSection{
 
           <div class="settingsDivider"></div>
           <div class="settingsLabel">글꼴</div>
-          <div class="segmented">
+          <div class="fontChoiceGrid">
             <button data-font-choice="system">기본</button>
-            <button data-font-choice="rounded">둥근 글꼴</button>
+            <button data-font-choice="clean">깔끔 고딕</button>
+            <button data-font-choice="soft">부드러운 고딕</button>
             <button data-font-choice="serif">명조</button>
           </div>
 
@@ -2033,7 +2241,7 @@ html[data-theme="dark"] .grammarMemoSection{
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v55_stable';
+const STORAGE='study_app_v57_stable';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -2116,7 +2324,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+      for(const k of ['study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -2147,7 +2355,7 @@ function load(){
       if(typeof o.autoQuiz==='boolean')S.autoQuiz=o.autoQuiz;
       if(typeof o.autoCard==='boolean')S.autoCard=o.autoCard;
       if(typeof o.autoWord==='boolean')S.autoWord=o.autoWord;
-      if(o.fontChoice)S.fontChoice=o.fontChoice;
+      if(o.fontChoice)S.fontChoice=(o.fontChoice==='rounded'?'soft':o.fontChoice);
       if(o.fontSize)S.fontSize=o.fontSize;
       if(o.density)S.density=o.density;
       if(typeof o.defaultQuizRandom==='boolean')S.defaultQuizRandom=o.defaultQuizRandom;
@@ -2215,7 +2423,7 @@ function getUnits(kind){
 }
 function renderProblemList(){
   refreshPools();const kind=S.listKind;const all=kind==='card'?S.cardPool:S.quizPool;const units=['전체',...getUnits(kind)];if(!units.includes(S.listUnit))S.listUnit='전체';
-  $('listBadge').textContent=kind==='card'?'카드 목록':'문제 목록';$$('[data-list-kind]').forEach(b=>b.classList.toggle('active',b.dataset.listKind===kind));
+  $('listBadge').textContent=`${S.subject} · ${kind==='card'?'카드 목록':'문제 목록'}`;$$('[data-list-kind]').forEach(b=>b.classList.toggle('active',b.dataset.listKind===kind));
   $('unitFilterRow').innerHTML=units.map(u=>`<button class="unitChip ${u===S.listUnit?'active':''}" data-unit="${esc(u)}">${esc(u)}</button>`).join('');
   $$('[data-unit]').forEach(b=>b.onclick=()=>{S.listUnit=b.dataset.unit;save();renderProblemList()});
   const list=S.listUnit==='전체'?all:all.filter(x=>(norm(x.unit)||'단원 없음')===S.listUnit);
@@ -2370,7 +2578,7 @@ function renderWordTest(){
   const it=list[S.wordTestIndex],q=getWordTestQuestion(it,S.wordTestIndex),card=document.querySelector('.wordTestCard');
   card.classList.remove('exampleMode','meaningMode','wordMode');card.classList.add(q.mode==='example'?'exampleMode':q.mode==='wordToMeaning'?'wordMode':'meaningMode');
   const scopeLabel=S.wordTestScope==='all'?'전체':S.wordTestScope==='large'?`대단원 · ${S.wordTestScopeValue}`:`소단원 · ${S.wordTestScopeValue}`;
-  $('wordTestBadge').textContent=scopeLabel;$('wordTestProgress').textContent=`${S.wordTestIndex+1} / ${list.length}`;
+  $('wordTestBadge').textContent=`${S.subject} · ${scopeLabel}`;$('wordTestProgress').textContent=`${S.wordTestIndex+1} / ${list.length}`;
   $('wordTestPromptLabel').textContent=q.promptLabel;$('wordTestMeaning').textContent=q.prompt||'내용 없음';$('wordTestTranslation').textContent=q.translation||'';
   $('wordTestChoices').innerHTML=q.options.map((opt,i)=>`<button class="wordChoice" data-word-choice="${esc(opt)}">${i+1}. ${esc(opt)}</button>`).join('');
   $$('[data-word-choice]').forEach(b=>b.onclick=()=>answerWordChoice(b,q.correct));
@@ -2632,10 +2840,25 @@ function resetSettings(){
   toast('설정을 기본값으로 되돌렸어요');
 }
 
+
+function applySubjectIdentity(){
+  document.documentElement.setAttribute('data-subject',S.subject||'회계');
+  const b=$('subjectBadge');
+  if(b)b.textContent=S.subject||'회계';
+}
+function subjectLocationLabel(it){
+  const parts=[S.subject];
+  const sub=norm(it&&it.subtitle);
+  const unit=norm(it&&it.unit);
+  if(sub)parts.push(sub);
+  if(unit)parts.push(unit);
+  return parts.join(' · ');
+}
+
 function renderTabs(){
   $('subjectTabs').innerHTML=SUBJECTS.map(s=>`<button class="subjectTab ${s===S.subject?'active':''}" data-sub="${s}">${s}</button>`).join('');
   $$('[data-sub]').forEach(b=>b.onclick=()=>{
-    S.subject=b.dataset.sub;S.section='전체';S.qIndex=0;S.cIndex=0;S.cardMode='all';S.wordTestIndex=0;S.wordTestScopeValue='';S.wordTestOrder=[];S.quizOrder=[];S.cardOrder=[];save();renderAll();
+    S.subject=b.dataset.sub;applySubjectIdentity();S.section='전체';S.qIndex=0;S.cIndex=0;S.cardMode='all';S.wordTestIndex=0;S.wordTestScopeValue='';S.wordTestOrder=[];S.quizOrder=[];S.cardOrder=[];save();renderAll();
 if(window.matchMedia){window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',()=>{if(S.theme==='system')applyTheme()});}toggleSelectors(true)
   });
   const sections=[...new Set(S.items.filter(x=>x.subject===S.subject).map(sectionOf).filter(Boolean))];
@@ -2659,6 +2882,7 @@ function currentScopeAttempts(){
 }
 
 function renderHome(){
+  const heroTitleEl=$('heroTitle');if(heroTitleEl)heroTitleEl.textContent=`${S.subject} 학습`;
   const items=currentScopeItems();
   const review=items.filter(x=>(S.reviewWrong&&S.wrong.has(itemId(x)))||(S.reviewConfused&&S.memory[itemId(x)]==='confused')||(S.reviewUnknown&&S.memory[itemId(x)]==='unknown')).length;
   const a=currentScopeAttempts();
@@ -2838,12 +3062,12 @@ function renderGrammar(){
   const last=S.grammarIndex===list.length-1;
 
   $('grammarMemoryBtns').style.visibility='visible';
-  $('grammarBadge').textContent=locationLabel(it);
+  $('grammarBadge').textContent=subjectLocationLabel(it);
   $('grammarProgress').textContent=`${S.grammarIndex+1} / ${list.length}${last?' · 마지막 카드':''}`;
   $('grammarAutoBtn').classList.toggle('active',S.autoAdvance);
   $('grammarAutoBtn').textContent=S.autoAdvance?'자동':'수동';
 
-  $('grammarFrontUnit').textContent=locationLabel(it);
+  $('grammarFrontUnit').textContent=subjectLocationLabel(it);
   $('grammarQuestion').textContent=norm(it.front)||norm(it.question)||'질문 없음';
 
   // 뒤에는 답을 딱 한 번만 표시
@@ -2916,7 +3140,7 @@ function renderCard(){
   const last=S.cIndex===list.length-1,first=S.cIndex===0;
   const isWord=it.subject==='영어'&&it.kind==='단어';
 
-  $('cardBadge').textContent=locationLabel(it);
+  $('cardBadge').textContent=subjectLocationLabel(it);
   $('cardProgress').textContent=`${S.cIndex+1} / ${list.length}${last?' · 마지막 카드':''}`;
   $('cardRandomBtn').classList.toggle('active',S.cardRandom);$('cardRandomBtn').textContent=S.cardRandom?'랜덤':'순서';$('cardFlipBtn').style.display=S.flipMode==='button'?'inline-flex':'none';renderAutoAdvanceButtons();
   $('frontUnit').textContent=`${sectionOf(it)} · ${it.unit||'단원 없음'}`;
@@ -2984,7 +3208,7 @@ function renderQuiz(){
   S.answered=false;
 
   card.classList.add(isOx?'oxMode':'mcMode');
-  $('quizBadge').textContent=locationLabel(it);
+  $('quizBadge').textContent=subjectLocationLabel(it);
   $('quizProgress').textContent=`${S.qIndex+1} / ${list.length}`;
   $('quizRandomBtn').classList.toggle('active',S.quizRandom);$('quizRandomBtn').textContent=S.quizRandom?'랜덤':'순서';renderAutoAdvanceButtons();
   $('quizMeta').innerHTML='';
@@ -3093,7 +3317,7 @@ function setScreen(s){
   if(s==='home')renderHome();if(s==='quiz')renderQuiz();if(s==='card')renderCard();if(s==='grammar')renderGrammar();if(s==='review')renderReview();if(s==='list')renderProblemList();if(s==='wordTest')renderWordTest();if(s==='settings')renderSettings();save();
 }
 
-function renderAll(){renderTabs();refreshPools();renderHome();renderQuiz();renderCard();renderGrammar();renderReview();setScreen(S.screen)}
+function renderAll(){applySubjectIdentity();renderTabs();refreshPools();renderHome();renderQuiz();renderCard();renderGrammar();renderReview();setScreen(S.screen)}
 function launch(mode){
   if(mode==='card'){
     S.cardMode='all';
@@ -3478,7 +3702,7 @@ document.addEventListener('click',e=>{
 
 load();
 S.cardMode='all';
-applyTheme();applyVisualPrefs();
+applyTheme();applyVisualPrefs();applySubjectIdentity();
 if(!S.items.length)S.items=SAMPLE;
 if(!['home','quiz','card','grammar','review','list','wordTest','settings'].includes(S.screen))S.screen='home';if(S.resumeMode==='home')S.screen='home';
 renderAll();
