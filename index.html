@@ -1834,6 +1834,73 @@ html[data-font="serif"] #grammarScreen .grammarPreline{
   line-height:1.82 !important;
 }
 
+
+/* v58: 상단 브랜드/과목 배지 정렬 + 영문법 중복 태그 제거 */
+.appBrandTextPretty{
+  display:flex !important;
+  align-items:center !important;
+  flex-wrap:nowrap !important;
+  min-width:max-content !important;
+}
+.brandIdentityGroup{
+  display:inline-flex !important;
+  align-items:center !important;
+  flex-direction:row !important;
+  flex-wrap:nowrap !important;
+  gap:10px !important;
+  white-space:nowrap !important;
+  min-width:max-content !important;
+}
+.brandIdentityGroup .brandPrettyText{
+  flex:0 0 auto !important;
+}
+.subjectBadge{
+  flex:0 0 auto !important;
+  min-width:46px !important;
+  min-height:32px !important;
+  margin-left:0 !important;
+  padding:6px 12px !important;
+  border-radius:11px !important;
+  background:var(--subject-accent) !important;
+  border:1px solid var(--subject-accent) !important;
+  color:#fff !important;
+  font-size:13px !important;
+  font-weight:950 !important;
+  letter-spacing:-.01em !important;
+  box-shadow:0 3px 10px color-mix(in srgb,var(--subject-accent) 22%, transparent) !important;
+}
+
+/* 아래쪽 소단원/위치 배지는 기존의 연한 pill 스타일 유지 */
+#quizScreen .badge,
+#cardScreen .badge,
+#grammarScreen .badge,
+#wordTestScreen .badge{
+  border-radius:999px !important;
+  background:var(--subject-soft) !important;
+  border-color:var(--subject-soft-border) !important;
+  color:var(--subject-accent) !important;
+  box-shadow:none !important;
+}
+
+/* 영문법 앞면 안쪽 중복 태그 삭제 후 중앙 여백 재조정 */
+#grammarScreen .grammarFront{
+  padding-top:24px !important;
+}
+#grammarScreen .grammarQuestion{
+  margin-top:0 !important;
+}
+
+@media(max-width:480px){
+  .brandIdentityGroup{gap:7px !important}
+  .subjectBadge{
+    min-width:42px !important;
+    min-height:29px !important;
+    padding:5px 10px !important;
+    font-size:12px !important;
+    border-radius:10px !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1841,7 +1908,7 @@ html[data-font="serif"] #grammarScreen .grammarPreline{
   <header class="topbar">
     <div class="subjectHeaderRow">
       <div class="appBrand appBrandTextPretty" id="appBrand">
-        <div class="brandPrettyText">슬세생</div><span class="subjectBadge" id="subjectBadge">회계</span>
+        <div class="brandIdentityGroup"><div class="brandPrettyText">슬세생</div><span class="subjectBadge" id="subjectBadge">회계</span></div>
       </div>
       <button class="selectorToggle filterToggle" id="selectorToggle" aria-expanded="false">회계 · 전체 ▾</button>
     </div>
@@ -1957,8 +2024,7 @@ html[data-font="serif"] #grammarScreen .grammarPreline{
         <div class="grammarFlipWrap">
           <div class="grammarFlipCard" id="grammarFlipCard">
             <div class="grammarFace grammarFront">
-              <div class="grammarUnit" id="grammarFrontUnit"></div>
-              <div class="grammarQuestion" id="grammarQuestion"></div>
+                            <div class="grammarQuestion" id="grammarQuestion"></div>
               <div class="grammarFlipTip">카드를 눌러 핵심내용 보기</div>
             </div>
 
@@ -2241,7 +2307,7 @@ html[data-font="serif"] #grammarScreen .grammarPreline{
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v57_stable';
+const STORAGE='study_app_v58_stable';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -2324,7 +2390,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+      for(const k of ['study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -3041,7 +3107,6 @@ function renderGrammar(){
   if(!list.length){
     $('grammarBadge').textContent='영문법 핵심암기';
     $('grammarProgress').textContent='0 / 0';
-    $('grammarFrontUnit').textContent='';
     $('grammarQuestion').textContent='이 범위에는 문법 카드가 없어요';
     $('grammarBackMiniTitle').textContent='';
     $('grammarAnswer').textContent='엑셀에서 과목을 영어, 유형을 문법으로 입력해 주세요.';
@@ -3067,7 +3132,6 @@ function renderGrammar(){
   $('grammarAutoBtn').classList.toggle('active',S.autoAdvance);
   $('grammarAutoBtn').textContent=S.autoAdvance?'자동':'수동';
 
-  $('grammarFrontUnit').textContent=subjectLocationLabel(it);
   $('grammarQuestion').textContent=norm(it.front)||norm(it.question)||'질문 없음';
 
   // 뒤에는 답을 딱 한 번만 표시
