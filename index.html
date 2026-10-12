@@ -2398,6 +2398,26 @@ html[data-theme="dark"] .grammarPracticeOption.wrong{
   bottom:14px !important;
 }
 
+
+.grammarListOverlay{position:fixed;inset:0;z-index:140;display:none;align-items:flex-end;justify-content:center;padding:12px;background:rgba(15,23,42,.34);backdrop-filter:blur(4px)}
+.grammarListOverlay.show{display:flex}
+.grammarListPanel{width:min(520px,100%);max-height:86vh;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:24px 24px 16px 16px;box-shadow:0 24px 70px rgba(15,23,42,.24);overflow:hidden}
+.grammarListTop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:17px 17px 11px}
+.grammarListTitle{font-size:18px;font-weight:950;color:var(--text)}
+.grammarListSub{margin-top:3px;font-size:10.5px;color:var(--muted)}
+.grammarListClose{width:32px;height:32px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--muted);font-size:20px}
+.grammarListFilters{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 17px 11px}
+.grammarListFilters select{min-height:38px;padding:0 10px;border:1px solid var(--line);border-radius:11px;background:var(--card);color:var(--text);font-size:11px;font-weight:800}
+.grammarListItems{flex:1;overflow-y:auto;padding:0 12px 14px}
+.grammarListItem{width:100%;padding:12px 13px;margin-bottom:7px;text-align:left;border:1px solid var(--line);border-radius:13px;background:var(--card);color:var(--text)}
+.grammarListItem.active{border-color:var(--subject-accent);background:var(--subject-soft)}
+.grammarListItemTitle{font-size:13px;line-height:1.45;font-weight:850;word-break:keep-all}
+.grammarListItemMeta{margin-top:5px;font-size:10px;line-height:1.4;color:var(--muted)}
+.grammarListItemState{display:inline-flex;align-items:center;margin-top:7px;padding:3px 7px;border-radius:999px;background:#f3f5f8;color:#718096;font-size:9.5px;font-weight:800}
+.grammarListItemState.know{background:#e9f7ee;color:#237443}
+.grammarListItemState.confused{background:#fff5dd;color:#9a6800}
+.grammarListItemState.unknown{background:#fff0f0;color:#aa3030}
+
 </style>
 </head>
 <body>
@@ -2513,6 +2533,7 @@ html[data-theme="dark"] .grammarPracticeOption.wrong{
         <div class="headRow">
           <div class="badge" id="grammarBadge">영문법 핵심암기</div>
           <div class="headTools">
+            <button class="smallControl" id="grammarListBtn">목록</button>
             <button class="smallControl" id="grammarAutoBtn">수동</button>
             <div class="progress" id="grammarProgress">1 / 1</div>
           </div>
@@ -2615,7 +2636,24 @@ html[data-theme="dark"] .grammarPracticeOption.wrong{
       </div>
     </section>
 
-    <div class="completeOverlay" id="completeOverlay">
+    
+    <div class="grammarListOverlay" id="grammarListOverlay">
+      <div class="grammarListPanel">
+        <div class="grammarListTop">
+          <div>
+            <div class="grammarListTitle">영문법 목록</div>
+            <div class="grammarListSub">원하는 항목을 눌러 바로 이동하세요.</div>
+          </div>
+          <button class="grammarListClose" id="grammarListClose">×</button>
+        </div>
+        <div class="grammarListFilters">
+          <select id="grammarListSubtitleFilter"></select>
+          <select id="grammarListUnitFilter"></select>
+        </div>
+        <div class="grammarListItems" id="grammarListItems"></div>
+      </div>
+    </div>
+<div class="completeOverlay" id="completeOverlay">
       <div class="completeCard"><div class="completeIcon">✓</div><div class="completeTitle" id="completeTitle">학습 완료!</div><div class="completeText" id="completeText"></div><div class="completeActions"><button class="btn" id="completeCloseBtn">닫기</button><button class="btn primary" id="completeRestartBtn">처음부터</button></div></div>
     </div>
 
@@ -2830,7 +2868,7 @@ html[data-theme="dark"] .grammarPracticeOption.wrong{
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v63_stable';
+const STORAGE='study_app_v64_stable';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -2913,7 +2951,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v62_stable','study_app_v61_stable','study_app_v60_stable','study_app_v59_stable','study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+      for(const k of ['study_app_v63_stable','study_app_v62_stable','study_app_v61_stable','study_app_v60_stable','study_app_v59_stable','study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -3713,6 +3751,49 @@ function moveGrammarPractice(delta){
   renderGrammarPractice(it);
 }
 
+
+function openGrammarList(){ renderGrammarList(); $('grammarListOverlay').classList.add('show'); }
+function closeGrammarList(){ $('grammarListOverlay').classList.remove('show'); }
+function grammarListBase(){ return S.items.filter(x=>isGrammarCard(x)); }
+function renderGrammarListFilters(){
+  const all=grammarListBase();
+  const subSel=$('grammarListSubtitleFilter'), unitSel=$('grammarListUnitFilter');
+  const subs=[...new Set(all.map(x=>norm(x.subtitle)).filter(Boolean))];
+  const prevSub=subSel.value||'전체';
+  subSel.innerHTML=['전체',...subs].map(v=>`<option value="${esc(v)}">${esc(v==='전체'?'대단원 전체':v)}</option>`).join('');
+  if([...subSel.options].some(o=>o.value===prevSub))subSel.value=prevSub;
+  const filtered=subSel.value==='전체'?all:all.filter(x=>norm(x.subtitle)===subSel.value);
+  const units=[...new Set(filtered.map(x=>norm(x.unit)).filter(Boolean))];
+  const prevUnit=unitSel.value||'전체';
+  unitSel.innerHTML=['전체',...units].map(v=>`<option value="${esc(v)}">${esc(v==='전체'?'소단원 전체':v)}</option>`).join('');
+  if([...unitSel.options].some(o=>o.value===prevUnit))unitSel.value=prevUnit;
+}
+function renderGrammarList(){
+  renderGrammarListFilters();
+  const all=grammarListBase();
+  const sub=$('grammarListSubtitleFilter').value||'전체';
+  const unit=$('grammarListUnitFilter').value||'전체';
+  const filtered=all.filter(x=>(sub==='전체'||norm(x.subtitle)===sub)&&(unit==='전체'||norm(x.unit)===unit));
+  const current=S.grammarPool&&S.grammarPool[S.grammarIndex]?itemId(S.grammarPool[S.grammarIndex]):'';
+  $('grammarListItems').innerHTML=filtered.length?filtered.map(it=>{
+    const id=itemId(it), state=S.memory[id]||'';
+    const stateLabel=state==='know'?'알아요':state==='confused'?'헷갈려요':state==='unknown'?'모르겠어요':'미학습';
+    const title=norm(it.front)||norm(it.question)||norm(it.back)||'문법 항목';
+    const meta=[norm(it.subtitle),norm(it.unit)].filter(Boolean).join(' · ');
+    return `<button class="grammarListItem ${id===current?'active':''}" data-grammar-list-id="${esc(id)}"><div class="grammarListItemTitle">${esc(title)}</div><div class="grammarListItemMeta">${esc(meta)}</div><span class="grammarListItemState ${state}">${esc(stateLabel)}</span></button>`;
+  }).join(''):'<div class="empty">해당 범위에 문법 카드가 없어요.</div>';
+  $$('[data-grammar-list-id]').forEach(b=>b.onclick=()=>{
+    const id=b.dataset.grammarListId;
+    const it=S.items.find(x=>itemId(x)===id);
+    if(!it)return;
+    S.section=sectionOf(it);
+    S.grammarPool=grammarCards();
+    const idx=S.grammarPool.findIndex(x=>itemId(x)===id);
+    S.grammarIndex=idx>=0?idx:0;
+    S.grammarPracticeIndex=0;
+    save(); closeGrammarList(); setScreen('grammar');
+  });
+}
 function renderGrammar(){
   S.grammarPool=grammarCards();
   const list=S.grammarPool;
@@ -4325,6 +4406,11 @@ $$('[data-memory]').forEach(b=>b.onclick=e=>{e.stopPropagation();setMemory(b.dat
 $$('[data-grammar-memory]').forEach(b=>b.onclick=e=>{e.stopPropagation();setGrammarMemory(b.dataset.grammarMemory)});
 $('prevGrammarBtn').onclick=()=>{if(S.grammarIndex>0){S.grammarIndex--;S.grammarPracticeIndex=0;save();renderGrammar()}};
 $('nextGrammarBtn').onclick=()=>{if(S.grammarIndex<S.grammarPool.length-1){S.grammarIndex++;S.grammarPracticeIndex=0;save();renderGrammar()}else showComplete('grammar')};
+$('grammarListBtn').onclick=openGrammarList;
+$('grammarListClose').onclick=closeGrammarList;
+$('grammarListOverlay').onclick=e=>{if(e.target===$('grammarListOverlay'))closeGrammarList()};
+$('grammarListSubtitleFilter').onchange=renderGrammarList;
+$('grammarListUnitFilter').onchange=renderGrammarList;
 $('grammarAutoBtn').onclick=toggleAutoAdvance;
 $('prevGrammarPracticeBtn').onclick=e=>{e.stopPropagation();moveGrammarPractice(-1)};
 $('nextGrammarPracticeBtn').onclick=e=>{e.stopPropagation();moveGrammarPractice(1)};
