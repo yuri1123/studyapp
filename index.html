@@ -2868,7 +2868,7 @@ html[data-theme="dark"] .grammarPracticeOption.wrong{
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v64_stable';
+const STORAGE='study_app_v65_stable';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -2881,7 +2881,7 @@ const SAMPLE=[
 ].map((x,i)=>({...x,uid:'sample_'+i}));
 
 const S={
-  items:[],subject:'회계',section:'전체',screen:'home',quizMode:'all',cardMode:'all',
+  items:[],subject:'회계',section:'전체',screen:'home',quizMode:'all',cardMode:'all',reviewStudyMode:'',reviewStudyIds:[],
   qIndex:0,cIndex:0,grammarIndex:0,grammarPracticeIndex:0,answered:false,quizPool:[],cardPool:[],grammarPool:[],
   wrong:new Set(),memory:{},attempts:{},reviewFilter:'all',selectorsOpen:false,filename:'',
   quizRandom:false,cardRandom:false,quizOrder:[],cardOrder:[],
@@ -2932,7 +2932,7 @@ function save(){
   try{
     localStorage.setItem(STORAGE,JSON.stringify({
       items:S.items,wrong:[...S.wrong],memory:S.memory,attempts:S.attempts,filename:S.filename,
-      subject:S.subject,section:S.section,screen:S.screen,quizMode:S.quizMode,cardMode:S.cardMode,
+      subject:S.subject,section:S.section,screen:S.screen,quizMode:S.quizMode,cardMode:S.cardMode,reviewStudyMode:S.reviewStudyMode,reviewStudyIds:S.reviewStudyIds,
       qIndex:S.qIndex,cIndex:S.cIndex,grammarIndex:S.grammarIndex,grammarPracticeIndex:S.grammarPracticeIndex,quizRandom:S.quizRandom,cardRandom:S.cardRandom,
       quizOrder:S.quizOrder,cardOrder:S.cardOrder,listKind:S.listKind,listUnit:S.listUnit,
       wordTestIndex:S.wordTestIndex,wordTestCorrect:S.wordTestCorrect,wordTestTotal:S.wordTestTotal,wordTestScope:S.wordTestScope,wordTestScopeValue:S.wordTestScopeValue,wordTestOrder:S.wordTestOrder,autoAdvance:S.autoAdvance,theme:S.theme,autoDelay:S.autoDelay,autoQuiz:S.autoQuiz,autoCard:S.autoCard,autoWord:S.autoWord,
@@ -2951,7 +2951,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v63_stable','study_app_v62_stable','study_app_v61_stable','study_app_v60_stable','study_app_v59_stable','study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact']){
+      for(const k of ['study_app_v64_stable','study_app_v63_stable','study_app_v62_stable','study_app_v61_stable','study_app_v60_stable','study_app_v59_stable','study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -2965,7 +2965,7 @@ function load(){
       if(o.subject)S.subject=o.subject;
       if(o.section)S.section=o.section;
       if(o.screen)S.screen=o.screen;
-      if(o.quizMode)S.quizMode=o.quizMode;if(o.cardMode)S.cardMode=o.cardMode;
+      if(o.quizMode)S.quizMode=o.quizMode;if(o.cardMode)S.cardMode=o.cardMode;if(o.reviewStudyMode)S.reviewStudyMode=o.reviewStudyMode;if(Array.isArray(o.reviewStudyIds))S.reviewStudyIds=o.reviewStudyIds;
       if(Number.isInteger(o.qIndex))S.qIndex=o.qIndex;
       if(Number.isInteger(o.cIndex))S.cIndex=o.cIndex;
       if(typeof o.quizRandom==='boolean')S.quizRandom=o.quizRandom;
@@ -3020,11 +3020,77 @@ function makeRandomOrder(list){
   for(let i=ids.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ids[i],ids[j]]=[ids[j],ids[i]]}
   return ids;
 }
+
+function clearReviewStudyMode(){
+  S.reviewStudyMode='';
+  S.reviewStudyIds=[];
+}
+function currentReviewEntries(){
+  let list=[];
+  S.items.filter(x=>{
+    if(x.subject!==S.subject)return false;
+    const id=itemId(x),mem=S.memory[id];
+    return (S.reviewWrong&&S.wrong.has(id))||(S.reviewConfused&&mem==='confused')||(S.reviewUnknown&&mem==='unknown');
+  }).forEach(it=>{
+    const id=itemId(it),mem=S.memory[id];
+    if(S.reviewWrong&&S.wrong.has(id))list.push({it,type:'wrong'});
+    if(S.reviewConfused&&mem==='confused')list.push({it,type:'confused'});
+    if(S.reviewUnknown&&mem==='unknown')list.push({it,type:'unknown'});
+  });
+  if(S.reviewFilter!=='all')list=list.filter(x=>x.type===S.reviewFilter);
+  // 같은 항목이 오답+헷갈림 등으로 중복될 수 있으니 한 번만
+  const seen=new Set();
+  return list.filter(x=>{
+    const id=itemId(x.it);
+    if(seen.has(id))return false;
+    seen.add(id);
+    return true;
+  });
+}
+function startReviewStudy(it){
+  const entries=currentReviewEntries();
+  let mode='quiz';
+  if(isGrammarCard(it))mode='grammar';
+  else if(isCard(it)||isWordTestEligible(it))mode='card';
+
+  const ids=entries
+    .map(x=>x.it)
+    .filter(x=>mode==='grammar'?isGrammarCard(x):mode==='card'?(isCard(x)||isWordTestEligible(x)):isQuiz(x))
+    .map(itemId);
+
+  S.reviewStudyMode=mode;
+  S.reviewStudyIds=ids;
+  S.section=sectionOf(it);
+
+  if(mode==='grammar'){
+    S.grammarPool=grammarCards();
+    const idx=S.grammarPool.findIndex(x=>itemId(x)===itemId(it));
+    S.grammarIndex=idx>=0?idx:0;
+    S.grammarPracticeIndex=0;
+    setScreen('grammar');
+  }else if(mode==='card'){
+    refreshPools();
+    const idx=S.cardPool.findIndex(x=>itemId(x)===itemId(it));
+    S.cIndex=idx>=0?idx:0;
+    setScreen('card');
+  }else{
+    S.quizMode='all';
+    refreshPools();
+    const idx=S.quizPool.findIndex(x=>itemId(x)===itemId(it));
+    S.qIndex=idx>=0?idx:0;
+    setScreen('quiz');
+  }
+}
+
 function refreshPools(){
+  const reviewIds=new Set(Array.isArray(S.reviewStudyIds)?S.reviewStudyIds:[]);
   let q=S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isQuiz(x));
+  if(S.reviewStudyMode==='quiz')q=q.filter(x=>reviewIds.has(itemId(x)));
   if(S.quizMode==='ox')q=q.filter(x=>x.kind==='OX');
   if(S.quizMode==='mc')q=q.filter(x=>x.kind!=='OX');
+
   let cards=S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isCard(x));
+  if(S.reviewStudyMode==='card')cards=cards.filter(x=>reviewIds.has(itemId(x)));
 
   if(S.quizRandom){
     const ids=new Set(q.map(itemId));
@@ -3635,9 +3701,10 @@ function detailGroup(title,icon,value,comma=true,mode='normal'){
 
 
 function grammarCards(){
-  return applyStudyLimit(
-    S.items.filter(x=>isGrammarCard(x)&&sectionMatch(x))
-  );
+  const reviewIds=new Set(Array.isArray(S.reviewStudyIds)?S.reviewStudyIds:[]);
+  let list=S.items.filter(x=>isGrammarCard(x)&&sectionMatch(x));
+  if(S.reviewStudyMode==='grammar')list=list.filter(x=>reviewIds.has(itemId(x)));
+  return applyStudyLimit(list);
 }
 function splitGrammarLines(v){
   const text=norm(v);
@@ -3824,7 +3891,7 @@ function renderGrammar(){
   const last=S.grammarIndex===list.length-1;
 
   $('grammarMemoryBtns').style.visibility='visible';
-  $('grammarBadge').textContent=subjectLocationLabel(it);
+  $('grammarBadge').textContent=S.reviewStudyMode==='grammar'?`복습 · ${subjectLocationLabel(it)}`:subjectLocationLabel(it);
   $('grammarProgress').textContent=`${S.grammarIndex+1} / ${list.length}${last?' · 마지막 카드':''}`;
   $('grammarAutoBtn').classList.toggle('active',S.autoAdvance);
   $('grammarAutoBtn').textContent=S.autoAdvance?'자동':'수동';
@@ -3903,7 +3970,7 @@ function renderCard(){
   const last=S.cIndex===list.length-1,first=S.cIndex===0;
   const isWord=it.subject==='영어'&&it.kind==='단어';
 
-  $('cardBadge').textContent=subjectLocationLabel(it);
+  $('cardBadge').textContent=S.reviewStudyMode==='card'?`복습 · ${subjectLocationLabel(it)}`:subjectLocationLabel(it);
   $('cardProgress').textContent=`${S.cIndex+1} / ${list.length}${last?' · 마지막 카드':''}`;
   $('cardRandomBtn').classList.toggle('active',S.cardRandom);$('cardRandomBtn').textContent=S.cardRandom?'랜덤':'순서';$('cardFlipBtn').style.display=S.flipMode==='button'?'inline-flex':'none';renderAutoAdvanceButtons();
   $('frontUnit').textContent=`${sectionOf(it)} · ${it.unit||'단원 없음'}`;
@@ -3971,7 +4038,7 @@ function renderQuiz(){
   S.answered=false;
 
   card.classList.add(isOx?'oxMode':'mcMode');
-  $('quizBadge').textContent=subjectLocationLabel(it);
+  $('quizBadge').textContent=S.reviewStudyMode==='quiz'?`복습 · ${subjectLocationLabel(it)}`:subjectLocationLabel(it);
   $('quizProgress').textContent=`${S.qIndex+1} / ${list.length}`;
   $('quizRandomBtn').classList.toggle('active',S.quizRandom);$('quizRandomBtn').textContent=S.quizRandom?'랜덤':'순서';renderAutoAdvanceButtons();
   $('quizMeta').innerHTML='';
@@ -4043,18 +4110,7 @@ function grade(it,choice,clicked){
 function renderReview(){
   const area=$('reviewList');
   $$('[data-review]').forEach(b=>b.classList.toggle('active',b.dataset.review===S.reviewFilter));
-  let list=[];
-  S.items.filter(x=>{
-    if(x.subject!==S.subject)return false;
-    const id=itemId(x);
-    return sectionMatch(x) || ((isWordTestEligible(x)||isGrammarCard(x))&&S.wrong.has(id));
-  }).forEach(it=>{
-    const id=itemId(it),mem=S.memory[id];
-    if(S.reviewWrong&&S.wrong.has(id))list.push({it,type:'wrong'});
-    if(S.reviewConfused&&mem==='confused')list.push({it,type:'confused'});
-    if(S.reviewUnknown&&mem==='unknown')list.push({it,type:'unknown'});
-  });
-  if(S.reviewFilter!=='all')list=list.filter(x=>x.type===S.reviewFilter);
+  let list=currentReviewEntries();
   if(!list.length){area.innerHTML='<div class="empty"><strong>복습할 항목이 없어요</strong>틀린 문제나 헷갈리는 단어가 생기면 여기에 모입니다.</div>';return}
   area.innerHTML='';
   list.forEach(({it,type})=>{
@@ -4062,10 +4118,7 @@ function renderReview(){
     const label=type==='wrong'?(isGrammarCard(it)?'문법 연습문제 오답':isWordTestEligible(it)?'단어테스트 오답':'문제 오답'):type==='confused'?'헷갈리는 단어':'모르는 단어';
     b.innerHTML=`<strong>${esc(it.question||it.front||'(항목)')}</strong><span>${esc(sectionOf(it))} · ${esc(excelExportText(it.unit||''))} · ${esc(it.kind)}</span><span class="stateLabel ${type}">${label}</span>`;
     b.onclick=()=>{
-      S.section=sectionOf(it);refreshPools();
-      if(isGrammarCard(it)){S.grammarIndex=Math.max(0,grammarCards().findIndex(x=>itemId(x)===itemId(it)));S.grammarPracticeIndex=0;setScreen('grammar')}
-      else if(isCard(it)||isWordTestEligible(it)){S.cIndex=Math.max(0,S.cardPool.findIndex(x=>itemId(x)===itemId(it)));setScreen('card')}
-      else{S.quizMode='all';refreshPools();S.qIndex=Math.max(0,S.quizPool.findIndex(x=>itemId(x)===itemId(it)));setScreen('quiz')}
+      startReviewStudy(it);
     };
     area.appendChild(b);
   })
@@ -4081,6 +4134,7 @@ function setScreen(s){
 
 function renderAll(){applySubjectIdentity();renderTabs();refreshPools();renderHome();renderQuiz();renderCard();renderGrammar();renderReview();setScreen(S.screen)}
 function launch(mode){
+  clearReviewStudyMode();
   if(mode==='card'){
     S.cardMode='all';
     S.cardRandom=S.defaultCardRandom;
@@ -4311,7 +4365,10 @@ function downloadCurrentWorkbook(){
 $('templateBtn').onclick=downloadCurrentWorkbook;
 $('resetBtn').onclick=resetCurrentScope;
 $$('[data-launch]').forEach(b=>b.onclick=()=>launch(b.dataset.launch));
-$$('.navBtn').forEach(b=>b.onclick=()=>setScreen(b.dataset.screen));
+$$('.navBtn').forEach(b=>b.onclick=()=>{
+  clearReviewStudyMode();
+  setScreen(b.dataset.screen);
+});
 
 $$('[data-theme-choice]').forEach(b=>b.onclick=()=>setThemeChoice(b.dataset.themeChoice));
 
@@ -4405,7 +4462,11 @@ $$('[data-memory]').forEach(b=>b.onclick=e=>{e.stopPropagation();setMemory(b.dat
 }
 $$('[data-grammar-memory]').forEach(b=>b.onclick=e=>{e.stopPropagation();setGrammarMemory(b.dataset.grammarMemory)});
 $('prevGrammarBtn').onclick=()=>{if(S.grammarIndex>0){S.grammarIndex--;S.grammarPracticeIndex=0;save();renderGrammar()}};
-$('nextGrammarBtn').onclick=()=>{if(S.grammarIndex<S.grammarPool.length-1){S.grammarIndex++;S.grammarPracticeIndex=0;save();renderGrammar()}else showComplete('grammar')};
+$('nextGrammarBtn').onclick=()=>{
+  if(S.grammarIndex<S.grammarPool.length-1){S.grammarIndex++;S.grammarPracticeIndex=0;save();renderGrammar()}
+  else if(S.reviewStudyMode==='grammar'){toast('복습 문법카드의 마지막이에요');clearReviewStudyMode();setScreen('review')}
+  else showComplete('grammar')
+};
 $('grammarListBtn').onclick=openGrammarList;
 $('grammarListClose').onclick=closeGrammarList;
 $('grammarListOverlay').onclick=e=>{if(e.target===$('grammarListOverlay'))closeGrammarList()};
@@ -4416,7 +4477,11 @@ $('prevGrammarPracticeBtn').onclick=e=>{e.stopPropagation();moveGrammarPractice(
 $('nextGrammarPracticeBtn').onclick=e=>{e.stopPropagation();moveGrammarPractice(1)};
 
 $('prevCardBtn').onclick=()=>{if(S.cIndex>0){S.cIndex--;save();renderCard()}};
-$('nextCardBtn').onclick=()=>{if(S.cIndex<S.cardPool.length-1){S.cIndex++;save();renderCard()}else showComplete('card')};
+$('nextCardBtn').onclick=()=>{
+  if(S.cIndex<S.cardPool.length-1){S.cIndex++;save();renderCard()}
+  else if(S.reviewStudyMode==='card'){toast('복습 카드의 마지막이에요');clearReviewStudyMode();setScreen('review')}
+  else showComplete('card')
+};
 $('prevQuizBtn').onclick=()=>{if(S.qIndex>0){S.qIndex--;save();renderQuiz()}};
 $('nextQuizBtn').onclick=()=>{
   if(!S.answered){
@@ -4428,7 +4493,8 @@ $('nextQuizBtn').onclick=()=>{
     save();
     renderQuiz();
   }else{
-    showComplete('quiz');
+    if(S.reviewStudyMode==='quiz'){toast('복습 문제의 마지막이에요');clearReviewStudyMode();setScreen('review')}
+    else showComplete('quiz');
   }
 };
 $('quizRandomBtn').onclick=()=>toggleRandom('quiz');$('cardRandomBtn').onclick=()=>toggleRandom('card');$('quizListBtn').onclick=()=>openList('quiz');$('cardListBtn').onclick=()=>openList('card');$('listCloseBtn').onclick=()=>setScreen(S.listKind==='card'?'card':'quiz');$$('[data-list-kind]').forEach(b=>b.onclick=()=>setListKind(b.dataset.listKind));
