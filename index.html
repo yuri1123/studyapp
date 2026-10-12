@@ -2266,6 +2266,113 @@ html[data-theme="dark"] .fontSizeGrid button.active{
   border-color:var(--blue)!important;
   color:#fff!important
 }
+
+/* v62: 영문법 연습문제 */
+#grammarScreen .grammarPracticeSection{
+  margin-top:20px !important;
+  padding-top:17px !important;
+}
+.grammarPracticeHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.grammarPracticeCount{
+  font-size:10px;
+  font-weight:850;
+  color:var(--muted);
+}
+.grammarPracticeType{
+  display:inline-flex;
+  align-items:center;
+  min-height:25px;
+  margin:1px 0 9px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:var(--subject-soft);
+  color:var(--subject-accent);
+  font-size:10px;
+  font-weight:900;
+}
+.grammarPracticeQuestion{
+  font-size:14.5px;
+  line-height:1.62;
+  font-weight:650;
+  color:var(--text);
+  white-space:pre-line;
+  word-break:keep-all;
+  overflow-wrap:break-word;
+}
+.grammarPracticeOptions{
+  display:grid;
+  gap:7px;
+  margin-top:11px;
+}
+.grammarPracticeOption{
+  width:100%;
+  min-height:42px;
+  padding:9px 11px;
+  text-align:left;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--card);
+  color:var(--text);
+  font:inherit;
+  font-size:13px;
+  line-height:1.35;
+  font-weight:650;
+}
+.grammarPracticeOption.correct{
+  border-color:#79c99a;
+  background:#eaf8ef;
+  color:#17753b;
+}
+.grammarPracticeOption.wrong{
+  border-color:#ef9b9b;
+  background:#fff0f0;
+  color:#b22d2d;
+}
+.grammarPracticeOption:disabled{opacity:1}
+.grammarPracticeFeedback{
+  min-height:18px;
+  margin-top:8px;
+  font-size:11.5px;
+  line-height:1.55;
+  font-weight:650;
+  white-space:pre-line;
+}
+.grammarPracticeFeedback.ok{color:#17753b}
+.grammarPracticeFeedback.bad{color:#b22d2d}
+.grammarPracticeNav{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-top:10px;
+}
+.grammarPracticeNav button{
+  min-height:34px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--card);
+  color:var(--text);
+  font-size:11px;
+  font-weight:850;
+}
+.grammarPracticeNav button:disabled{
+  opacity:.42;
+}
+html[data-theme="dark"] .grammarPracticeOption.correct{
+  background:#173524 !important;color:#9ee2b5 !important;border-color:#35694a !important
+}
+html[data-theme="dark"] .grammarPracticeOption.wrong{
+  background:#3b2020 !important;color:#ffb4b4 !important;border-color:#704040 !important
+}
+@media(max-width:480px){
+  .grammarPracticeQuestion{font-size:14px}
+  .grammarPracticeOption{min-height:40px;font-size:12.5px}
+}
+
 </style>
 </head>
 <body>
@@ -2410,6 +2517,21 @@ html[data-theme="dark"] .fontSizeGrid button.active{
               <div class="grammarSection grammarMemoSection" id="grammarMemoSection">
                 <div class="grammarSectionTitle">문제풀이 팁 · 메모</div>
                 <div class="grammarPreline" id="grammarMemo"></div>
+              </div>
+
+              <div class="grammarSection grammarPracticeSection" id="grammarPracticeSection">
+                <div class="grammarPracticeHeader">
+                  <div class="grammarSectionTitle">연습문제</div>
+                  <div class="grammarPracticeCount" id="grammarPracticeCount"></div>
+                </div>
+                <div class="grammarPracticeType" id="grammarPracticeType"></div>
+                <div class="grammarPracticeQuestion" id="grammarPracticeQuestion"></div>
+                <div class="grammarPracticeOptions" id="grammarPracticeOptions"></div>
+                <div class="grammarPracticeFeedback" id="grammarPracticeFeedback"></div>
+                <div class="grammarPracticeNav">
+                  <button type="button" id="prevGrammarPracticeBtn">이전 문제</button>
+                  <button type="button" id="nextGrammarPracticeBtn">다음 문제</button>
+                </div>
               </div>
 
               <div class="grammarFlipTip">다시 누르면 질문으로 돌아가요</div>
@@ -2683,7 +2805,7 @@ html[data-theme="dark"] .fontSizeGrid button.active{
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v61_stable';
+const STORAGE='study_app_v62_stable';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -2697,7 +2819,7 @@ const SAMPLE=[
 
 const S={
   items:[],subject:'회계',section:'전체',screen:'home',quizMode:'all',cardMode:'all',
-  qIndex:0,cIndex:0,grammarIndex:0,answered:false,quizPool:[],cardPool:[],grammarPool:[],
+  qIndex:0,cIndex:0,grammarIndex:0,grammarPracticeIndex:0,answered:false,quizPool:[],cardPool:[],grammarPool:[],
   wrong:new Set(),memory:{},attempts:{},reviewFilter:'all',selectorsOpen:false,filename:'',
   quizRandom:false,cardRandom:false,quizOrder:[],cardOrder:[],
   listKind:'quiz',listUnit:'전체',
@@ -2748,7 +2870,7 @@ function save(){
     localStorage.setItem(STORAGE,JSON.stringify({
       items:S.items,wrong:[...S.wrong],memory:S.memory,attempts:S.attempts,filename:S.filename,
       subject:S.subject,section:S.section,screen:S.screen,quizMode:S.quizMode,cardMode:S.cardMode,
-      qIndex:S.qIndex,cIndex:S.cIndex,grammarIndex:S.grammarIndex,quizRandom:S.quizRandom,cardRandom:S.cardRandom,
+      qIndex:S.qIndex,cIndex:S.cIndex,grammarIndex:S.grammarIndex,grammarPracticeIndex:S.grammarPracticeIndex,quizRandom:S.quizRandom,cardRandom:S.cardRandom,
       quizOrder:S.quizOrder,cardOrder:S.cardOrder,listKind:S.listKind,listUnit:S.listUnit,
       wordTestIndex:S.wordTestIndex,wordTestCorrect:S.wordTestCorrect,wordTestTotal:S.wordTestTotal,wordTestScope:S.wordTestScope,wordTestScopeValue:S.wordTestScopeValue,wordTestOrder:S.wordTestOrder,autoAdvance:S.autoAdvance,theme:S.theme,autoDelay:S.autoDelay,autoQuiz:S.autoQuiz,autoCard:S.autoCard,autoWord:S.autoWord,
       fontChoice:S.fontChoice,fontSize:S.fontSize,density:S.density,
@@ -2766,7 +2888,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v60_stable','study_app_v59_stable','study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+      for(const k of ['study_app_v61_stable','study_app_v60_stable','study_app_v59_stable','study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -3480,6 +3602,92 @@ function renderGrammarExamples(example,translation){
     ${norm(translation)?`<div class="grammarExampleKo">${esc(norm(translation))}</div>`:''}
   </div>`;
 }
+
+function normalizePracticeType(v){
+  const t=norm(v).toLowerCase().replace(/\s/g,'');
+  if(['ox','o/x','참거짓','진위'].includes(t))return'OX';
+  if(['빈칸','빈칸넣기','blank'].includes(t))return'빈칸';
+  return'객관식';
+}
+function grammarPracticeList(it){
+  return Array.isArray(it&&it.grammarPractice)?it.grammarPractice.filter(p=>norm(p.question)):[];
+}
+function practiceAnswerKey(v){
+  return norm(v).toLowerCase().replace(/^[①②③④1-4a-dA-D][\.\)\s]*/,'').replace(/\s+/g,' ').trim();
+}
+function practiceOptionIsCorrect(p,opt,index){
+  const ans=norm(p.answer);
+  if(!ans)return false;
+  const type=normalizePracticeType(p.type);
+  if(type==='OX'){
+    const a=ans.toUpperCase().replace(/\s/g,'');
+    const o=norm(opt).toUpperCase().replace(/\s/g,'');
+    const aTrue=['O','TRUE','T','맞음','참','○'].includes(a);
+    const aFalse=['X','FALSE','F','틀림','거짓','×'].includes(a);
+    const oTrue=['O','TRUE','T','맞음','참','○'].includes(o);
+    const oFalse=['X','FALSE','F','틀림','거짓','×'].includes(o);
+    return (aTrue&&oTrue)||(aFalse&&oFalse);
+  }
+  if(/^[1-4]$/.test(ans))return Number(ans)===index+1;
+  if(/^[A-Da-d]$/.test(ans))return ans.toUpperCase().charCodeAt(0)-65===index;
+  return practiceAnswerKey(ans)===practiceAnswerKey(opt);
+}
+function renderGrammarPractice(it){
+  const section=$('grammarPracticeSection');
+  const list=grammarPracticeList(it);
+  if(!list.length){
+    section.style.display='none';
+    return;
+  }
+  section.style.display='block';
+  S.grammarPracticeIndex=Math.min(Math.max(0,S.grammarPracticeIndex||0),list.length-1);
+  const p=list[S.grammarPracticeIndex];
+  const type=normalizePracticeType(p.type);
+  $('grammarPracticeCount').textContent=`${S.grammarPracticeIndex+1} / ${list.length}`;
+  $('grammarPracticeType').textContent=type;
+  $('grammarPracticeQuestion').textContent=norm(p.question);
+  $('grammarPracticeFeedback').textContent='';
+  $('grammarPracticeFeedback').className='grammarPracticeFeedback';
+
+  let options=type==='OX'?['O','X']:(Array.isArray(p.options)?p.options.filter(Boolean):[]);
+  if(!options.length){
+    $('grammarPracticeOptions').innerHTML='<div class="grammarPracticeFeedback">선택지를 엑셀에 입력해 주세요.</div>';
+  }else{
+    $('grammarPracticeOptions').innerHTML=options.map((o,i)=>`<button type="button" class="grammarPracticeOption" data-practice-index="${i}">${esc((type==='OX'?'':(i+1)+'. ')+o)}</button>`).join('');
+    $$('[data-practice-index]').forEach(b=>b.onclick=e=>{
+      e.stopPropagation();
+      const idx=Number(b.dataset.practiceIndex);
+      const ok=practiceOptionIsCorrect(p,options[idx],idx);
+      $$('[data-practice-index]').forEach((x,j)=>{
+        x.disabled=true;
+        if(practiceOptionIsCorrect(p,options[j],j))x.classList.add('correct');
+      });
+      if(!ok)b.classList.add('wrong');
+      const feedback=$('grammarPracticeFeedback');
+      const base=ok?'정답이에요!':'틀렸어요.';
+      const exp=norm(p.explanation);
+      feedback.textContent=exp?`${base}\n${exp}`:base;
+      feedback.className='grammarPracticeFeedback '+(ok?'ok':'bad');
+      if(!ok){
+        const id=itemId(it);
+        if(id)S.wrong.add(id);
+        save();renderHome();renderReview();
+      }
+      runFeedbackEffect(ok,section);
+    });
+  }
+  $('prevGrammarPracticeBtn').disabled=S.grammarPracticeIndex===0;
+  $('nextGrammarPracticeBtn').disabled=S.grammarPracticeIndex===list.length-1;
+}
+function moveGrammarPractice(delta){
+  const it=S.grammarPool&&S.grammarPool[S.grammarIndex];
+  const list=grammarPracticeList(it);
+  if(!list.length)return;
+  S.grammarPracticeIndex=Math.max(0,Math.min(list.length-1,(S.grammarPracticeIndex||0)+delta));
+  save();
+  renderGrammarPractice(it);
+}
+
 function renderGrammar(){
   S.grammarPool=grammarCards();
   const list=S.grammarPool;
@@ -3495,6 +3703,7 @@ function renderGrammar(){
     $('grammarKeySection').style.display='none';
     $('grammarExampleSection').style.display='none';
     $('grammarMemoSection').style.display='none';
+    $('grammarPracticeSection').style.display='none';
     $('grammarMemoryBtns').style.visibility='hidden';
     $('prevGrammarBtn').disabled=true;
     $('nextGrammarBtn').disabled=true;
@@ -3531,6 +3740,8 @@ function renderGrammar(){
   const memo=norm(it.memo);
   $('grammarMemoSection').style.display=memo?'block':'none';
   $('grammarMemo').textContent=memo;
+
+  renderGrammarPractice(it);
 
   $$('[data-grammar-memory]').forEach(b=>b.classList.toggle('active',b.dataset.grammarMemory===state));
   $('prevGrammarBtn').disabled=first;
@@ -3730,7 +3941,7 @@ function renderReview(){
   S.items.filter(x=>{
     if(x.subject!==S.subject)return false;
     const id=itemId(x);
-    return sectionMatch(x) || (isWordTestEligible(x)&&S.wrong.has(id));
+    return sectionMatch(x) || ((isWordTestEligible(x)||isGrammarCard(x))&&S.wrong.has(id));
   }).forEach(it=>{
     const id=itemId(it),mem=S.memory[id];
     if(S.reviewWrong&&S.wrong.has(id))list.push({it,type:'wrong'});
@@ -3742,11 +3953,12 @@ function renderReview(){
   area.innerHTML='';
   list.forEach(({it,type})=>{
     const b=document.createElement('button');b.className='reviewItem';
-    const label=type==='wrong'?(isWordTestEligible(it)?'단어테스트 오답':'문제 오답'):type==='confused'?'헷갈리는 단어':'모르는 단어';
+    const label=type==='wrong'?(isGrammarCard(it)?'문법 연습문제 오답':isWordTestEligible(it)?'단어테스트 오답':'문제 오답'):type==='confused'?'헷갈리는 단어':'모르는 단어';
     b.innerHTML=`<strong>${esc(it.question||it.front||'(항목)')}</strong><span>${esc(sectionOf(it))} · ${esc(excelExportText(it.unit||''))} · ${esc(it.kind)}</span><span class="stateLabel ${type}">${label}</span>`;
     b.onclick=()=>{
       S.section=sectionOf(it);refreshPools();
-      if(isCard(it)||isWordTestEligible(it)){S.cIndex=Math.max(0,S.cardPool.findIndex(x=>itemId(x)===itemId(it)));setScreen('card')}
+      if(isGrammarCard(it)){S.grammarIndex=Math.max(0,grammarCards().findIndex(x=>itemId(x)===itemId(it)));S.grammarPracticeIndex=0;setScreen('grammar')}
+      else if(isCard(it)||isWordTestEligible(it)){S.cIndex=Math.max(0,S.cardPool.findIndex(x=>itemId(x)===itemId(it)));setScreen('card')}
       else{S.quizMode='all';refreshPools();S.qIndex=Math.max(0,S.quizPool.findIndex(x=>itemId(x)===itemId(it)));setScreen('quiz')}
     };
     area.appendChild(b);
@@ -3842,6 +4054,14 @@ function parseRows(rows,sheetName=''){
       source:pickN(r,['출처','기출','출제','source']),
       memo:pickN(r,['메모','memo','note']),
       tags:pickN(r,['태그','tags','tag']),
+      grammarPractice:[1,2,3].map(n=>{
+        const type=pickN(r,[`샘플문제${n}유형`,`연습문제${n}유형`,`practice${n}type`]);
+        const question=pickN(r,[`샘플문제${n}`,`연습문제${n}`,`practice${n}`]);
+        const answer=pickN(r,[`샘플문제${n}정답`,`연습문제${n}정답`,`practice${n}answer`]);
+        const explanation=pickN(r,[`샘플문제${n}해설`,`연습문제${n}해설`,`practice${n}explanation`]);
+        const options=[1,2,3,4].map(k=>pickN(r,[`샘플문제${n}보기${k}`,`연습문제${n}보기${k}`,`practice${n}option${k}`])).filter(Boolean);
+        return{type,question,answer,explanation,options};
+      }).filter(p=>p.question),
       uid:'u_'+Date.now()+'_'+sheetName+'_'+i
     }
   }).filter(x=>x.subject&&(x.question||x.front||x.back));
@@ -3878,7 +4098,10 @@ function downloadCurrentWorkbook(){
       '과목','유형','소제목','단원','문제','정답',
       '보기1','보기2','보기3','보기4','보기5','해설',
       '앞면','뒷면','품사','발음','유의어','반의어','파생어',
-      '숙어/표현','핵심표현','어원','예문','예문해석','출처','메모','태그'
+      '숙어/표현','핵심표현','어원','예문','예문해석','출처','메모','태그',
+      '샘플문제1유형','샘플문제1','샘플문제1보기1','샘플문제1보기2','샘플문제1보기3','샘플문제1보기4','샘플문제1정답','샘플문제1해설',
+      '샘플문제2유형','샘플문제2','샘플문제2보기1','샘플문제2보기2','샘플문제2보기3','샘플문제2보기4','샘플문제2정답','샘플문제2해설',
+      '샘플문제3유형','샘플문제3','샘플문제3보기1','샘플문제3보기2','샘플문제3보기3','샘플문제3보기4','샘플문제3정답','샘플문제3해설'
     ];
 
     const rows=S.items.map(it=>{
@@ -3910,7 +4133,21 @@ function downloadCurrentWorkbook(){
         excelExportText(it.exampleTranslation||''),
         excelExportText(it.source||''),
         excelExportText(it.memo||''),
-        excelExportText(it.tags||'')
+        excelExportText(it.tags||''),
+        ...[0,1,2].flatMap(n=>{
+          const p=(Array.isArray(it.grammarPractice)&&it.grammarPractice[n])||{};
+          const o=Array.isArray(p.options)?p.options:[];
+          return[
+            excelExportText(p.type||''),
+            excelExportText(p.question||''),
+            excelExportText(o[0]||''),
+            excelExportText(o[1]||''),
+            excelExportText(o[2]||''),
+            excelExportText(o[3]||''),
+            excelExportText(p.answer||''),
+            excelExportText(p.explanation||'')
+          ];
+        })
       ];
     });
 
@@ -3918,13 +4155,17 @@ function downloadCurrentWorkbook(){
     const blankRows=Array.from({length:30},()=>Array(headers.length).fill(''));
     const ws=XLSX.utils.aoa_to_sheet([headers,...rows,...blankRows]);
 
-    ws['!cols']=[
-      {wch:10},{wch:10},{wch:18},{wch:16},{wch:38},{wch:10},
-      {wch:28},{wch:28},{wch:28},{wch:28},{wch:28},{wch:36},
-      {wch:18},{wch:28},{wch:10},{wch:16},{wch:28},{wch:28},{wch:38},
-      {wch:38},{wch:38},{wch:24},{wch:42},{wch:42},{wch:20},{wch:26},{wch:18}
-    ];
-    ws['!autofilter']={ref:`A1:AA${Math.max(2,rows.length+1)}`};
+    ws['!cols']=headers.map((h,i)=>{
+      if(h.includes('샘플문제')&&h.includes('보기'))return{wch:24};
+      if(h.includes('샘플문제')&&h.includes('해설'))return{wch:34};
+      if(h.includes('샘플문제')&&!h.includes('유형')&&!h.includes('정답'))return{wch:38};
+      if(h==='문제'||h==='해설')return{wch:38};
+      if(['예문','예문해석'].includes(h))return{wch:42};
+      if(['뒷면','유의어','반의어','파생어','숙어/표현','핵심표현'].includes(h))return{wch:30};
+      return{wch:16};
+    });
+    const lastCol=XLSX.utils.encode_col(headers.length-1);
+    ws['!autofilter']={ref:`A1:${lastCol}${Math.max(2,rows.length+1)}`};
 
     const guideRows=[
       ['최신 학습앱 작성가이드',''],
@@ -3933,6 +4174,10 @@ function downloadCurrentWorkbook(){
       ['유형','OX / 객관식 / 문법 / 단어 / 개념'],
       ['영문법 핵심암기',"영어 과목에서 유형을 문법으로 입력하면 '영문법 핵심암기' 전용 화면에서만 학습됩니다. 앞면=질문, 뒷면=핵심답, 핵심표현=추가 공식/암기포인트, 예문/예문해석=기출예문, 메모=문제풀이 팁으로 사용하세요."],
       ['줄바꿈','셀 안 줄바꿈은 그대로 사용할 수 있습니다. 다운로드/재업로드 시 _x000D_ 문자열이 남지 않도록 정리됩니다.'],
+      ['문법 연습문제','영어+문법 행에서 샘플문제1~3을 사용할 수 있습니다. 유형은 빈칸 / OX / 객관식 중 하나를 입력하세요.'],
+      ['빈칸/객관식','샘플문제N보기1~4에 선택지를 넣고, 정답에는 보기 번호(1~4), 알파벳(A~D), 또는 정답 문구를 입력할 수 있습니다.'],
+      ['OX','유형을 OX로 입력하면 보기는 입력하지 않아도 됩니다. 정답에는 O 또는 X를 입력하세요.'],
+      ['문법 문제 해설','샘플문제N해설에 문제를 푼 뒤 보여줄 해설을 입력하세요. 틀린 문제는 복습함에 문법 연습문제 오답으로 저장됩니다.'],
       ['객관식','보기1~보기5까지 사용 가능. 정답은 A~E 또는 1~5 모두 인식합니다.'],
       ['품사 입력','n / v / a / ad / p 로 짧게 입력'],
       ['품사 표시','앞면: 명/동/형/부/전 · 뒷면: 명사/동사/형용사/부사/전치사'],
@@ -4028,7 +4273,7 @@ $$('[data-memory]').forEach(b=>b.onclick=e=>{e.stopPropagation();setMemory(b.dat
   card.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;moved=false});
   card.addEventListener('pointermove',e=>{if(Math.abs(e.clientX-sx)>8||Math.abs(e.clientY-sy)>8)moved=true});
   card.addEventListener('pointerup',e=>{
-    if(moved)return;
+    if(moved||e.target.closest('.grammarPracticeSection'))return;
     card.classList.toggle('flipped');
     if(card.classList.contains('flipped')){
       const back=card.querySelector('.grammarBack');
@@ -4045,17 +4290,19 @@ $$('[data-memory]').forEach(b=>b.onclick=e=>{e.stopPropagation();setMemory(b.dat
     const t=e.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty;
     if(Math.abs(dx)<swipeThreshold()||Math.abs(dx)<Math.abs(dy)*1.25)return;
     if(dx<0){
-      if(S.grammarIndex<S.grammarPool.length-1){S.grammarIndex++;save();renderGrammar()}
+      if(S.grammarIndex<S.grammarPool.length-1){S.grammarIndex++;S.grammarPracticeIndex=0;save();renderGrammar()}
       else showComplete('grammar');
     }else{
-      if(S.grammarIndex>0){S.grammarIndex--;save();renderGrammar()}
+      if(S.grammarIndex>0){S.grammarIndex--;S.grammarPracticeIndex=0;save();renderGrammar()}
     }
   },{passive:true});
 }
 $$('[data-grammar-memory]').forEach(b=>b.onclick=e=>{e.stopPropagation();setGrammarMemory(b.dataset.grammarMemory)});
-$('prevGrammarBtn').onclick=()=>{if(S.grammarIndex>0){S.grammarIndex--;save();renderGrammar()}};
-$('nextGrammarBtn').onclick=()=>{if(S.grammarIndex<S.grammarPool.length-1){S.grammarIndex++;save();renderGrammar()}else showComplete('grammar')};
+$('prevGrammarBtn').onclick=()=>{if(S.grammarIndex>0){S.grammarIndex--;S.grammarPracticeIndex=0;save();renderGrammar()}};
+$('nextGrammarBtn').onclick=()=>{if(S.grammarIndex<S.grammarPool.length-1){S.grammarIndex++;S.grammarPracticeIndex=0;save();renderGrammar()}else showComplete('grammar')};
 $('grammarAutoBtn').onclick=toggleAutoAdvance;
+$('prevGrammarPracticeBtn').onclick=e=>{e.stopPropagation();moveGrammarPractice(-1)};
+$('nextGrammarPracticeBtn').onclick=e=>{e.stopPropagation();moveGrammarPractice(1)};
 
 $('prevCardBtn').onclick=()=>{if(S.cIndex>0){S.cIndex--;save();renderCard()}};
 $('nextCardBtn').onclick=()=>{if(S.cIndex<S.cardPool.length-1){S.cIndex++;save();renderCard()}else showComplete('card')};
