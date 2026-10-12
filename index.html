@@ -8,6 +8,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Gamja+Flower&family=Gowun+Dodum&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Jua&family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&family=Song+Myung&family=Sunflower:wght@300;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css">
 <title>세무직 9급 합격 메이트</title>
 <!-- v33: stronger left alignment for 슬세생 header -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -1430,21 +1436,43 @@ html[data-theme="dark"] .wordTestInput{background:#111b28;color:#fff;border-colo
 .cardFlipControl{display:none}
 
 /* 글꼴 */
-html[data-font="system"] body{
-  font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+html[data-font="pretendard"] body{
+  font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif;
 }
-html[data-font="clean"] body{
-  font-family:"Inter","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+html[data-font="suit"] body{
+  font-family:"SUIT","Pretendard","Noto Sans KR",system-ui,sans-serif;
 }
-html[data-font="soft"] body{
-  font-family:"Pretendard","SUIT","Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif;
+html[data-font="noto"] body{
+  font-family:"Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif;
 }
-html[data-font="rounded"] body{
-  font-family:"Pretendard","SUIT","Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif;
+html[data-font="ibm"] body{
+  font-family:"IBM Plex Sans KR","Noto Sans KR",system-ui,sans-serif;
 }
-html[data-font="serif"] body{
+html[data-font="nanumgothic"] body{
+  font-family:"Nanum Gothic","Noto Sans KR",system-ui,sans-serif;
+}
+html[data-font="gowun"] body{
+  font-family:"Gowun Dodum","Noto Sans KR",system-ui,sans-serif;
+}
+html[data-font="sunflower"] body{
+  font-family:"Sunflower","Noto Sans KR",system-ui,sans-serif;
+}
+html[data-font="myeongjo"] body{
   font-family:"Nanum Myeongjo","AppleMyungjo","Batang",serif;
 }
+html[data-font="song"] body{
+  font-family:"Song Myung","Nanum Myeongjo","Batang",serif;
+}
+html[data-font="jua"] body{
+  font-family:"Jua","Noto Sans KR",system-ui,sans-serif;
+}
+html[data-font="dohyeon"] body{
+  font-family:"Do Hyeon","Noto Sans KR",system-ui,sans-serif;
+}
+html[data-font="gamja"] body{
+  font-family:"Gamja Flower","Noto Sans KR",system-ui,sans-serif;
+}
+
 .fontChoiceGrid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -1452,24 +1480,69 @@ html[data-font="serif"] body{
   margin-top:11px;
 }
 .fontChoiceGrid button{
-  min-height:38px;
+  min-height:42px;
   border:1px solid var(--line);
   border-radius:11px;
   background:var(--card);
   color:var(--muted);
   font-size:11px;
-  font-weight:900;
+  font-weight:850;
+  line-height:1.2;
+  padding:7px 8px;
 }
+.fontChoiceGrid button:nth-child(1){font-family:"Pretendard",sans-serif}
+.fontChoiceGrid button:nth-child(2){font-family:"SUIT",sans-serif}
+.fontChoiceGrid button:nth-child(3){font-family:"Noto Sans KR",sans-serif}
+.fontChoiceGrid button:nth-child(4){font-family:"IBM Plex Sans KR",sans-serif}
+.fontChoiceGrid button:nth-child(5){font-family:"Nanum Gothic",sans-serif}
+.fontChoiceGrid button:nth-child(6){font-family:"Gowun Dodum",sans-serif}
+.fontChoiceGrid button:nth-child(7){font-family:"Sunflower",sans-serif}
+.fontChoiceGrid button:nth-child(8){font-family:"Nanum Myeongjo",serif}
+.fontChoiceGrid button:nth-child(9){font-family:"Song Myung",serif}
+.fontChoiceGrid button:nth-child(10){font-family:"Jua",sans-serif}
+.fontChoiceGrid button:nth-child(11){font-family:"Do Hyeon",sans-serif}
+.fontChoiceGrid button:nth-child(12){font-family:"Gamja Flower",sans-serif}
 .fontChoiceGrid button.active{
   background:var(--blue);
   border-color:var(--blue);
   color:#fff;
 }
-html[data-font-size="small"]{font-size:14px}
-html[data-font-size="normal"]{font-size:16px}
-html[data-font-size="large"]{font-size:18px}
-html[data-font-size="small"] body{font-size:.94em}
-html[data-font-size="large"] body{font-size:1.06em}
+
+.fontSizeGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  margin-top:11px;
+}
+.fontSizeGrid button{
+  min-height:38px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:var(--card);
+  color:var(--muted);
+  font-size:10.5px;
+  font-weight:900;
+  padding:6px 4px;
+}
+.fontSizeGrid button.active{
+  background:var(--blue);
+  border-color:var(--blue);
+  color:#fff;
+}
+
+/* 글자 크기 6단계 */
+html[data-font-size="xs"] body{font-size:.88em}
+html[data-font-size="sm"] body{font-size:.94em}
+html[data-font-size="md"] body{font-size:1em}
+html[data-font-size="lg"] body{font-size:1.06em}
+html[data-font-size="xl"] body{font-size:1.12em}
+html[data-font-size="xxl"] body{font-size:1.20em}
+
+/* 큰 글자에서도 핵심 고정영역이 과도하게 커지지 않도록 제한 */
+html[data-font-size="xl"] .bottomNav,
+html[data-font-size="xxl"] .bottomNav{font-size:.96em}
+html[data-font-size="xl"] .topbar,
+html[data-font-size="xxl"] .topbar{font-size:.96em}
 
 /* 화면 밀도 */
 html[data-density="compact"] .content{padding-top:2px}
@@ -2040,6 +2113,159 @@ html[data-font="serif"] #grammarScreen .grammarPreline{
   }
 }
 
+
+/* v60: 단어테스트 가독성 복원 - 글자는 키우고 불필요한 여백만 줄임 */
+#wordTestScreen .wordTestShell{
+  grid-template-rows:26px auto minmax(0,1fr) 42px !important;
+  gap:4px !important;
+}
+#wordTestScreen .wordScopeBtn{
+  min-height:34px !important;
+  height:34px !important;
+  font-size:12px !important;
+  padding:5px 8px !important;
+}
+#wordTestScreen .wordTestScopeValues{
+  min-height:32px !important;
+}
+#wordTestScreen .wordScopeValueBtn{
+  min-height:31px !important;
+  height:31px !important;
+  padding:4px 9px !important;
+  font-size:11px !important;
+}
+#wordTestScreen .wordTestCard{
+  padding:14px 14px 10px !important;
+  justify-content:flex-start !important;
+  overflow-y:auto !important;
+}
+#wordTestScreen .wordTestPromptLabel{
+  min-height:29px !important;
+  padding:5px 11px !important;
+  font-size:11.5px !important;
+  line-height:1.2 !important;
+  margin-top:2px !important;
+}
+#wordTestScreen .wordTestMeaning{
+  margin-top:12px !important;
+}
+#wordTestScreen .wordTestCard.exampleMode .wordTestMeaning{
+  font-size:19px !important;
+  line-height:1.46 !important;
+  font-weight:760 !important;
+}
+#wordTestScreen .wordTestCard.meaningMode .wordTestMeaning{
+  font-size:23px !important;
+  line-height:1.35 !important;
+}
+#wordTestScreen .wordTestCard.wordMode .wordTestMeaning{
+  font-size:31px !important;
+  line-height:1.22 !important;
+}
+#wordTestScreen .wordTestTranslation{
+  margin-top:7px !important;
+  min-height:18px !important;
+  font-size:12px !important;
+  line-height:1.4 !important;
+}
+#wordTestScreen .wordTestChoices{
+  width:100% !important;
+  margin-top:12px !important;
+  gap:7px !important;
+}
+#wordTestScreen .wordChoice{
+  min-height:45px !important;
+  padding:9px 12px !important;
+  border-radius:12px !important;
+  font-size:14px !important;
+  line-height:1.32 !important;
+}
+#wordTestScreen .wordTestResult{
+  min-height:18px !important;
+  margin-top:6px !important;
+  font-size:11.5px !important;
+}
+#wordTestScreen .actions,
+#wordTestScreen .actions .btn{
+  min-height:42px !important;
+  height:42px !important;
+}
+#wordTestScreen .actions .btn{
+  font-size:15px !important;
+}
+
+/* 화면이 특히 작은 기기에서만 살짝 압축 */
+@media(max-height:730px){
+  #wordTestScreen .wordScopeBtn{
+    min-height:31px !important;
+    height:31px !important;
+    font-size:11px !important;
+  }
+  #wordTestScreen .wordScopeValueBtn{
+    min-height:29px !important;
+    height:29px !important;
+    font-size:10.5px !important;
+  }
+  #wordTestScreen .wordTestCard{
+    padding:10px 12px 8px !important;
+  }
+  #wordTestScreen .wordTestCard.exampleMode .wordTestMeaning{
+    font-size:17px !important;
+  }
+  #wordTestScreen .wordTestCard.meaningMode .wordTestMeaning{
+    font-size:21px !important;
+  }
+  #wordTestScreen .wordTestCard.wordMode .wordTestMeaning{
+    font-size:28px !important;
+  }
+  #wordTestScreen .wordTestTranslation{
+    font-size:11px !important;
+  }
+  #wordTestScreen .wordChoice{
+    min-height:40px !important;
+    padding:7px 10px !important;
+    font-size:13px !important;
+  }
+}
+
+
+/* 폰트별 미세 조정 */
+html[data-font="gowun"] body{letter-spacing:.006em}
+html[data-font="gowun"] button{font-weight:700}
+html[data-font="ibm"] body{letter-spacing:-.003em}
+html[data-font="nanumgothic"] body{letter-spacing:-.002em}
+html[data-font="sunflower"] body{letter-spacing:.002em}
+html[data-font="myeongjo"] body,
+html[data-font="song"] body{letter-spacing:0}
+html[data-font="myeongjo"] .brandPrettyText,
+html[data-font="song"] .brandPrettyText,
+html[data-font="myeongjo"] .subjectBadge,
+html[data-font="song"] .subjectBadge,
+html[data-font="myeongjo"] button,
+html[data-font="song"] button{
+  font-family:"Pretendard","Noto Sans KR",sans-serif
+}
+html[data-font="jua"] .wordTestMeaning,
+html[data-font="jua"] .grammarQuestion,
+html[data-font="jua"] .quizQuestion,
+html[data-font="dohyeon"] .wordTestMeaning,
+html[data-font="dohyeon"] .grammarQuestion,
+html[data-font="dohyeon"] .quizQuestion{font-weight:400!important}
+html[data-font="gamja"] body{letter-spacing:.01em}
+html[data-font="gamja"] .grammarQuestion,
+html[data-font="gamja"] .quizQuestion{font-weight:600!important}
+
+/* 야간모드의 새 설정 버튼 */
+html[data-theme="dark"] .fontSizeGrid button{
+  background:#182231!important;
+  color:var(--text)!important;
+  border-color:#2d3a4d!important
+}
+html[data-theme="dark"] .fontSizeGrid button.active{
+  background:var(--blue)!important;
+  border-color:var(--blue)!important;
+  color:#fff!important
+}
 </style>
 </head>
 <body>
@@ -2266,18 +2492,29 @@ html[data-font="serif"] #grammarScreen .grammarPreline{
           <div class="settingsDivider"></div>
           <div class="settingsLabel">글꼴</div>
           <div class="fontChoiceGrid">
-            <button data-font-choice="system">기본</button>
-            <button data-font-choice="clean">깔끔 고딕</button>
-            <button data-font-choice="soft">부드러운 고딕</button>
-            <button data-font-choice="serif">명조</button>
+            <button data-font-choice="pretendard">Pretendard</button>
+            <button data-font-choice="suit">SUIT</button>
+            <button data-font-choice="noto">Noto Sans KR</button>
+            <button data-font-choice="ibm">IBM Plex Sans KR</button>
+            <button data-font-choice="nanumgothic">Nanum Gothic</button>
+            <button data-font-choice="gowun">Gowun Dodum</button>
+            <button data-font-choice="sunflower">Sunflower</button>
+            <button data-font-choice="myeongjo">Nanum Myeongjo</button>
+            <button data-font-choice="song">Song Myung</button>
+            <button data-font-choice="jua">Jua</button>
+            <button data-font-choice="dohyeon">Do Hyeon</button>
+            <button data-font-choice="gamja">Gamja Flower</button>
           </div>
 
           <div class="settingsDivider"></div>
           <div class="settingsLabel">글자 크기</div>
-          <div class="segmented">
-            <button data-font-size="small">작게</button>
-            <button data-font-size="normal">보통</button>
-            <button data-font-size="large">크게</button>
+          <div class="fontSizeGrid">
+            <button data-font-size="xs">아주 작게</button>
+            <button data-font-size="sm">작게</button>
+            <button data-font-size="md">보통</button>
+            <button data-font-size="lg">크게</button>
+            <button data-font-size="xl">더 크게</button>
+            <button data-font-size="xxl">아주 크게</button>
           </div>
         </div>
 
@@ -2446,7 +2683,7 @@ html[data-font="serif"] #grammarScreen .grammarPreline{
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v59_stable';
+const STORAGE='study_app_v61_stable';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -2466,7 +2703,7 @@ const S={
   listKind:'quiz',listUnit:'전체',
   wordTestIndex:0,wordTestPool:[],wordTestAnswered:false,wordTestCorrect:0,wordTestTotal:0,wordTestScope:'small',wordTestScopeValue:'',wordTestOrder:[],
   autoAdvance:false,theme:'light',autoDelay:0.7,autoQuiz:true,autoCard:true,autoWord:true,
-  fontChoice:'system',fontSize:'normal',density:'normal',
+  fontChoice:'pretendard',fontSize:'md',density:'normal',
   defaultQuizRandom:false,defaultCardRandom:false,defaultWordRandom:true,
   studyLimit:'all',swipeSensitivity:'normal',resumeMode:'last',
   flipMode:'any',answerDisplay:'explain',
@@ -2529,7 +2766,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
+      for(const k of ['study_app_v60_stable','study_app_v59_stable','study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact','study_app_v45_compact','study_app_v44_compact','study_app_v43_compact','study_app_v42_compact','study_app_v41_compact','study_app_v40_compact','study_app_v39_compact','study_app_v38_compact','study_app_v37_compact','study_app_v36_compact','study_app_v35_compact','study_app_v34_compact','study_app_v33_compact','study_app_v32_compact','study_app_v31_compact','study_app_v30_compact','study_app_v29_compact','study_app_v28_compact','study_app_v27_compact','study_app_v26_compact','study_app_v25_compact','study_app_v24_compact','study_app_v23_compact','study_app_v22_compact','study_app_v21_compact','study_app_v20_compact','study_app_v19_compact','study_app_v18_compact','study_app_v17_compact','study_app_v16_compact','study_app_v15_compact','study_app_v14_compact','study_app_v13_compact','study_app_v12_compact','study_app_v11_compact','study_app_v10_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -2560,8 +2797,14 @@ function load(){
       if(typeof o.autoQuiz==='boolean')S.autoQuiz=o.autoQuiz;
       if(typeof o.autoCard==='boolean')S.autoCard=o.autoCard;
       if(typeof o.autoWord==='boolean')S.autoWord=o.autoWord;
-      if(o.fontChoice)S.fontChoice=(o.fontChoice==='rounded'?'soft':o.fontChoice);
-      if(o.fontSize)S.fontSize=o.fontSize;
+      if(o.fontChoice){
+        const fm={system:'pretendard',clean:'noto',soft:'pretendard',rounded:'pretendard',serif:'myeongjo'};
+        S.fontChoice=fm[o.fontChoice]||o.fontChoice;
+      }
+      if(o.fontSize){
+        const smap={small:'sm',normal:'md',large:'lg'};
+        S.fontSize=smap[o.fontSize]||o.fontSize;
+      }
       if(o.density)S.density=o.density;
       if(typeof o.defaultQuizRandom==='boolean')S.defaultQuizRandom=o.defaultQuizRandom;
       if(typeof o.defaultCardRandom==='boolean')S.defaultCardRandom=o.defaultCardRandom;
@@ -3024,8 +3267,8 @@ function setAutoDelay(seconds){
 }
 function resetSettings(){
   S.theme='light';
-  S.fontChoice='system';
-  S.fontSize='normal';
+  S.fontChoice='pretendard';
+  S.fontSize='md';
   S.density='normal';
   S.autoAdvance=false;
   S.autoDelay=0.7;
