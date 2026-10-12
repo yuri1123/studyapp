@@ -2588,6 +2588,53 @@ html[data-subject="국어"] #grammarScreen .grammarExampleItem{
   border-left-color:var(--subject-accent) !important;
 }
 
+
+/* v71: 문제 목록/카드 목록도 과목별 테마 적용 */
+#listScreen .badge{
+  background:var(--subject-soft) !important;
+  color:var(--subject-accent) !important;
+  border-color:var(--subject-soft-border) !important;
+}
+#listScreen .listModeBtn.active,
+#listScreen .unitChip.active{
+  background:var(--subject-accent) !important;
+  border-color:var(--subject-accent) !important;
+  color:#fff !important;
+}
+#listScreen .problemItem{
+  border-color:color-mix(in srgb,var(--subject-accent) 16%, var(--line)) !important;
+}
+#listScreen .problemItem strong{
+  color:var(--text) !important;
+}
+#listScreen .problemItem::before{
+  content:"";
+  display:block;
+  width:4px;
+  height:100%;
+  position:absolute;
+  left:0;
+  top:0;
+  border-radius:14px 0 0 14px;
+  background:var(--subject-accent);
+  opacity:.75;
+}
+#listScreen .problemItem{
+  position:relative;
+  overflow:hidden;
+  padding-left:16px !important;
+}
+#listScreen .problemItem:active{
+  background:var(--subject-soft) !important;
+  border-color:var(--subject-accent) !important;
+}
+
+/* 과목별 목록 색상 보강 */
+html[data-subject="회계"] #listScreen{--subject-accent:#2f6ee5}
+html[data-subject="세법"] #listScreen{--subject-accent:#1f9d68}
+html[data-subject="영어"] #listScreen{--subject-accent:#7a5ce5}
+html[data-subject="국어"] #listScreen{--subject-accent:#e07a2d}
+
 </style>
 </head>
 <body>
@@ -3039,7 +3086,7 @@ html[data-subject="국어"] #grammarScreen .grammarExampleItem{
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v70_stable';
+const STORAGE='study_app_v71_stable';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -3122,7 +3169,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v69_stable','study_app_v68_stable','study_app_v67_stable','study_app_v66_stable','study_app_v65_stable','study_app_v64_stable','study_app_v63_stable','study_app_v62_stable','study_app_v61_stable','study_app_v60_stable','study_app_v59_stable','study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact']){
+      for(const k of ['study_app_v70_stable','study_app_v69_stable','study_app_v68_stable','study_app_v67_stable','study_app_v66_stable','study_app_v65_stable','study_app_v64_stable','study_app_v63_stable','study_app_v62_stable','study_app_v61_stable','study_app_v60_stable','study_app_v59_stable','study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
