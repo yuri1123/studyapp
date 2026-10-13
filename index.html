@@ -2643,6 +2643,15 @@ html[data-subject="국어"] #listScreen{--subject-accent:#e07a2d}
 .pronounceBtn:active{transform:scale(.96)}
 .wordPron.autoPron{color:var(--subject-accent)!important;opacity:.9}
 
+
+/* v73: 발음 즉시 재생 + 발음기호 자동 저장 */
+.wordPron.loadingPron{
+  opacity:.55;
+}
+.pronounceBtn.speaking{
+  transform:scale(.96);
+}
+
 </style>
 </head>
 <body>
@@ -3121,7 +3130,7 @@ html[data-subject="국어"] #listScreen{--subject-accent:#e07a2d}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v72_stable';
+const STORAGE='study_app_v73_stable';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -3206,7 +3215,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v71_stable','study_app_v70_stable','study_app_v69_stable','study_app_v68_stable','study_app_v67_stable','study_app_v66_stable','study_app_v65_stable','study_app_v64_stable','study_app_v63_stable','study_app_v62_stable','study_app_v61_stable','study_app_v60_stable','study_app_v59_stable','study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact']){
+      for(const k of ['study_app_v72_stable','study_app_v71_stable','study_app_v70_stable','study_app_v69_stable','study_app_v68_stable','study_app_v67_stable','study_app_v66_stable','study_app_v65_stable','study_app_v64_stable','study_app_v63_stable','study_app_v62_stable','study_app_v61_stable','study_app_v60_stable','study_app_v59_stable','study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -4271,69 +4280,163 @@ function setGrammarMemory(state){
 }
 
 
-const PRON_CACHE_KEY='slse_pron_cache_v1';
+
+const PRON_CACHE_KEY='slse_pron_cache_v2';
 let lastAutoPronouncedId='';
-function loadPronCache(){try{return JSON.parse(localStorage.getItem(PRON_CACHE_KEY)||'{}')||{}}catch(e){return{}}}
-function savePronCache(c){try{localStorage.setItem(PRON_CACHE_KEY,JSON.stringify(c))}catch(e){}}
-function cleanPronWord(v){return norm(v).replace(/[^A-Za-zÀ-ÖØ-öø-ÿ' -]/g,'').trim()}
-function formatIpa(v){const t=norm(v).replace(/^\/|\/$/g,'');return t?`/${t}/`:''}
-async function getDictionaryPronunciation(word){
+function loadPronCache(){
+  try{return JSON.parse(localStorage.getItem(PRON_CACHE_KEY)||'{}')||{}}catch(e){return{}}
+}
+function savePronCache(c){
+  try{localStorage.setItem(PRON_CACHE_KEY,JSON.stringify(c))}catch(e){}
+}
+function cleanPronWord(v){
+  return norm(v).replace(/[^A-Za-zÀ-ÖØ-öø-ÿ' -]/g,'').trim()
+}
+function formatIpa(v){
+  const t=norm(v).replace(/^\/|\/$/g,'');
+  return t?`/${t}/`:''
+}
+function cachedPronunciation(word){
+  const w=cleanPronWord(word).toLowerCase();
+  if(!w)return null;
+  const c=loadPronCache();
+  return c[w]||null;
+}
+async function getDictionaryPronunciation(word,force=false){
   const w=cleanPronWord(word).toLowerCase();
   if(!w)return null;
   const cache=loadPronCache();
-  if(cache[w])return cache[w];
+  if(!force && cache[w] && (cache[w].ipa||cache[w].audio||cache[w].checked))return cache[w];
   try{
-    const res=await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(w)}`);
+    const res=await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(w)}`,{cache:'force-cache'});
     if(!res.ok)throw new Error('not found');
-    const data=await res.json(),entry=Array.isArray(data)?data[0]:null;
-    if(!entry)return null;
-    const ps=Array.isArray(entry.phonetics)?entry.phonetics:[];
-    const pa=ps.find(x=>norm(x.audio)),pt=ps.find(x=>norm(x.text));
-    let audio=norm(pa&&pa.audio);
-    if(audio.startsWith('//'))audio='https:'+audio;
-    const result={ipa:formatIpa((pa&&pa.text)||(pt&&pt.text)||entry.phonetic||''),audio};
-    cache[w]=result;savePronCache(cache);return result;
-  }catch(e){cache[w]={ipa:'',audio:''};savePronCache(cache);return null}
+    const data=await res.json();
+    const entries=Array.isArray(data)?data:[];
+    let bestIpa='',bestAudio='';
+    for(const entry of entries){
+      const ps=Array.isArray(entry.phonetics)?entry.phonetics:[];
+      for(const p of ps){
+        if(!bestIpa && norm(p.text))bestIpa=formatIpa(p.text);
+        if(!bestAudio && norm(p.audio)){
+          bestAudio=norm(p.audio);
+          if(bestAudio.startsWith('//'))bestAudio='https:'+bestAudio;
+        }
+        if(bestIpa&&bestAudio)break;
+      }
+      if(!bestIpa && norm(entry.phonetic))bestIpa=formatIpa(entry.phonetic);
+      if(bestIpa&&bestAudio)break;
+    }
+    const result={ipa:bestIpa,audio:bestAudio,checked:true};
+    cache[w]=result;savePronCache(cache);
+    return result;
+  }catch(e){
+    const result={ipa:'',audio:'',checked:true};
+    cache[w]=result;savePronCache(cache);
+    return result;
+  }
 }
 function findVoice(locale){
   if(!('speechSynthesis' in window))return null;
   const vs=speechSynthesis.getVoices();
-  return vs.find(v=>v.lang===locale)||vs.find(v=>v.lang&&v.lang.toLowerCase().startsWith(locale.slice(0,2).toLowerCase()))||null;
+  return vs.find(v=>v.lang===locale)
+    ||vs.find(v=>v.lang&&v.lang.toLowerCase().startsWith(locale.slice(0,2).toLowerCase()))
+    ||null;
 }
-async function speakEnglishWord(word,preferLookup=true){
-  const w=cleanPronWord(word);if(!w)return;
-  if(preferLookup){
-    const info=await getDictionaryPronunciation(w);
-    if(info&&info.audio){
-      try{
-        if(window.__slseAudio)window.__slseAudio.pause();
-        const a=new Audio(info.audio);window.__slseAudio=a;await a.play();return;
-      }catch(e){}
-    }
-  }
-  if('speechSynthesis' in window){
+function speakByTTS(word){
+  const w=cleanPronWord(word);
+  if(!w)return false;
+  if(!('speechSynthesis' in window))return false;
+  try{
     speechSynthesis.cancel();
     const u=new SpeechSynthesisUtterance(w);
     u.lang=S.pronunciationAccent||'en-US';
     u.rate=Number(S.pronunciationRate)||0.95;
-    const voice=findVoice(u.lang);if(voice)u.voice=voice;
+    const voice=findVoice(u.lang);
+    if(voice)u.voice=voice;
     speechSynthesis.speak(u);
-  }else toast('이 기기에서는 음성 재생을 지원하지 않아요');
+    return true;
+  }catch(e){return false}
+}
+async function playCachedDictionaryAudio(word){
+  const info=cachedPronunciation(word);
+  if(!info||!info.audio)return false;
+  try{
+    if(window.__slseAudio)window.__slseAudio.pause();
+    const a=new Audio(info.audio);
+    window.__slseAudio=a;
+    await a.play();
+    return true;
+  }catch(e){return false}
+}
+async function speakEnglishWord(word){
+  const w=cleanPronWord(word);
+  if(!w)return;
+
+  // 1. 이미 받아 둔 사전 음원이 있으면 즉시 재생.
+  const cached=cachedPronunciation(w);
+  if(cached&&cached.audio){
+    const ok=await playCachedDictionaryAudio(w);
+    if(ok)return;
+  }
+
+  // 2. 네트워크 응답을 기다리지 않고 기기 TTS를 바로 실행.
+  const ttsStarted=speakByTTS(w);
+  if(!ttsStarted)toast('이 기기에서는 음성 재생을 지원하지 않아요');
+
+  // 3. 다음 번을 위해 사전 발음/IPA는 뒤에서 받아 둠.
+  getDictionaryPronunciation(w).then(()=>{}).catch(()=>{});
 }
 async function hydrateWordPronunciation(it){
   if(!it||it.subject!=='영어'||norm(it.kind)!=='단어')return;
-  const word=norm(it.front);if(!word)return;
-  const pronEl=$('frontPronunciation'),btn=$('pronounceFrontBtn');
+  const word=norm(it.front);
+  if(!word)return;
+  const pronEl=$('frontPronunciation');
+  const btn=$('pronounceFrontBtn');
   btn.classList.add('show');
-  if(!norm(it.pronunciation)){
-    const info=await getDictionaryPronunciation(word);
-    if(info&&info.ipa&&S.cardPool[S.cIndex]&&itemId(S.cardPool[S.cIndex])===itemId(it)){
-      pronEl.textContent=info.ipa;pronEl.style.display='block';pronEl.classList.add('autoPron');
+
+  // 엑셀에 발음기호가 있으면 그대로 사용.
+  if(norm(it.pronunciation)){
+    pronEl.textContent=norm(it.pronunciation);
+    pronEl.style.display='block';
+    pronEl.classList.remove('autoPron','loadingPron');
+  }else{
+    // 캐시에 IPA가 있으면 즉시 표시.
+    const cached=cachedPronunciation(word);
+    if(cached&&cached.ipa){
+      it.pronunciation=cached.ipa;
+      pronEl.textContent=cached.ipa;
+      pronEl.style.display='block';
+      pronEl.classList.add('autoPron');
+      pronEl.classList.remove('loadingPron');
+      save();
+    }else{
+      pronEl.textContent='발음기호 불러오는 중…';
+      pronEl.style.display='block';
+      pronEl.classList.add('loadingPron');
+      const info=await getDictionaryPronunciation(word);
+      const current=S.cardPool[S.cIndex];
+      if(!current||itemId(current)!==itemId(it))return;
+      pronEl.classList.remove('loadingPron');
+      if(info&&info.ipa){
+        // 앱 데이터에도 실제로 채워 넣어서 이후 엑셀 다운로드에도 포함되게 함.
+        it.pronunciation=info.ipa;
+        pronEl.textContent=info.ipa;
+        pronEl.style.display='block';
+        pronEl.classList.add('autoPron');
+        save();
+      }else{
+        pronEl.textContent='';
+        pronEl.style.display='none';
+      }
     }
-  }else pronEl.classList.remove('autoPron');
+  }
+
   if(S.pronunciationAuto){
     const id=itemId(it);
-    if(lastAutoPronouncedId!==id){lastAutoPronouncedId=id;setTimeout(()=>speakEnglishWord(word,true),180)}
+    if(lastAutoPronouncedId!==id){
+      lastAutoPronouncedId=id;
+      setTimeout(()=>speakEnglishWord(word),80);
+    }
   }
 }
 
@@ -4800,7 +4903,15 @@ $$('[data-delay]').forEach(b=>b.onclick=()=>setAutoDelay(b.dataset.delay));
 $('settingsPronAuto').onclick=()=>toggleSettingFlag('pronunciationAuto');
 $$('[data-pron-accent]').forEach(b=>b.onclick=()=>setSimpleSetting('pronunciationAccent',b.dataset.pronAccent));
 $$('[data-pron-rate]').forEach(b=>b.onclick=()=>setSimpleSetting('pronunciationRate',Number(b.dataset.pronRate)));
-$('pronounceFrontBtn').onclick=e=>{e.stopPropagation();const it=S.cardPool[S.cIndex];if(it)speakEnglishWord(it.front,true)};
+$('pronounceFrontBtn').onclick=e=>{
+  e.stopPropagation();
+  const it=S.cardPool[S.cIndex];
+  if(!it)return;
+  const b=$('pronounceFrontBtn');
+  b.classList.add('speaking');
+  setTimeout(()=>b.classList.remove('speaking'),180);
+  speakEnglishWord(it.front);
+};
 $('settingsResetBtn').onclick=resetSettings;
 
 {
