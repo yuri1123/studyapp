@@ -2652,6 +2652,78 @@ html[data-subject="국어"] #listScreen{--subject-accent:#e07a2d}
   transform:scale(.96);
 }
 
+
+/* v74: 목록 카드 찌그러짐/글자 잘림 수정 */
+#listScreen .problemList{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
+  gap:7px !important;
+  overflow-y:auto !important;
+  min-height:0 !important;
+  padding-bottom:10px !important;
+}
+#listScreen .problemItem{
+  flex:0 0 auto !important;
+  height:auto !important;
+  min-height:64px !important;
+  overflow:visible !important;
+  padding:12px 14px 11px 17px !important;
+  box-sizing:border-box !important;
+}
+#listScreen .problemItem::before{
+  border-radius:14px 0 0 14px !important;
+}
+#listScreen .problemItem strong{
+  display:block !important;
+  margin:0 !important;
+  font-size:13px !important;
+  line-height:1.45 !important;
+  white-space:normal !important;
+  overflow:visible !important;
+}
+#listScreen .problemItem span{
+  display:block !important;
+  margin-top:4px !important;
+  font-size:10px !important;
+  line-height:1.35 !important;
+  white-space:normal !important;
+  overflow:visible !important;
+}
+
+
+/* v75: 카드 학습 범위 바로 선택 */
+#cardScreen .cardShell{
+  grid-template-rows:26px auto minmax(0,1fr) 34px 34px !important;
+}
+.cardScopeRow{
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  padding:1px 0 2px;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+.cardScopeRow::-webkit-scrollbar{display:none}
+.cardScopeChip{
+  flex:0 0 auto;
+  min-height:30px;
+  padding:5px 11px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:var(--card);
+  color:var(--text);
+  font-size:10.5px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.cardScopeChip.active{
+  background:var(--subject-accent);
+  border-color:var(--subject-accent);
+  color:#fff;
+}
+.cardScopeRow.single{display:none}
+
 </style>
 </head>
 <body>
@@ -2728,6 +2800,8 @@ html[data-subject="국어"] #listScreen{--subject-accent:#e07a2d}
     <section class="screen" id="cardScreen">
       <div class="cardShell">
         <div class="headRow"><div class="badge" id="cardBadge">영어 · 카드</div><div class="headTools"><button class="smallControl" id="cardListBtn">목록</button><button class="smallControl" id="cardRandomBtn">순서</button><button class="smallControl" id="cardAutoBtn">수동</button><button class="smallControl cardFlipControl" id="cardFlipBtn">뒤집기</button><div class="progress" id="cardProgress">1 / 1</div></div></div>
+
+        <div class="cardScopeRow" id="cardScopeRow"></div>
 
         <div class="flipWrap">
           <div class="flipCard" id="flipCard">
@@ -3130,7 +3204,7 @@ html[data-subject="국어"] #listScreen{--subject-accent:#e07a2d}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v73_stable';
+const STORAGE='study_app_v75_stable';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -3147,7 +3221,7 @@ const S={
   qIndex:0,cIndex:0,grammarIndex:0,grammarPracticeIndex:0,answered:false,quizPool:[],cardPool:[],grammarPool:[],
   wrong:new Set(),memory:{},attempts:{},reviewFilter:'all',selectorsOpen:false,filename:'',
   quizRandom:false,cardRandom:false,quizOrder:[],cardOrder:[],
-  listKind:'quiz',listUnit:'전체',
+  listKind:'quiz',listUnit:'전체',cardUnitScope:'전체',
   wordTestIndex:0,wordTestPool:[],wordTestAnswered:false,wordTestCorrect:0,wordTestTotal:0,wordTestScope:'small',wordTestScopeValue:'',wordTestOrder:[],
   autoAdvance:false,theme:'light',autoDelay:1.5,autoQuiz:true,autoCard:true,autoWord:true,
   fontChoice:'pretendard',fontSize:'md',density:'normal',
@@ -3197,7 +3271,7 @@ function save(){
       items:S.items,wrong:[...S.wrong],memory:S.memory,attempts:S.attempts,filename:S.filename,
       subject:S.subject,section:S.section,screen:S.screen,quizMode:S.quizMode,cardMode:S.cardMode,reviewStudyMode:S.reviewStudyMode,reviewStudyIds:S.reviewStudyIds,
       qIndex:S.qIndex,cIndex:S.cIndex,grammarIndex:S.grammarIndex,grammarPracticeIndex:S.grammarPracticeIndex,quizRandom:S.quizRandom,cardRandom:S.cardRandom,
-      quizOrder:S.quizOrder,cardOrder:S.cardOrder,listKind:S.listKind,listUnit:S.listUnit,
+      quizOrder:S.quizOrder,cardOrder:S.cardOrder,listKind:S.listKind,listUnit:S.listUnit,cardUnitScope:S.cardUnitScope,
       wordTestIndex:S.wordTestIndex,wordTestCorrect:S.wordTestCorrect,wordTestTotal:S.wordTestTotal,wordTestScope:S.wordTestScope,wordTestScopeValue:S.wordTestScopeValue,wordTestOrder:S.wordTestOrder,autoAdvance:S.autoAdvance,theme:S.theme,autoDelay:S.autoDelay,autoQuiz:S.autoQuiz,autoCard:S.autoCard,autoWord:S.autoWord,
       fontChoice:S.fontChoice,fontSize:S.fontSize,density:S.density,
       defaultQuizRandom:S.defaultQuizRandom,defaultCardRandom:S.defaultCardRandom,defaultWordRandom:S.defaultWordRandom,
@@ -3215,7 +3289,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v72_stable','study_app_v71_stable','study_app_v70_stable','study_app_v69_stable','study_app_v68_stable','study_app_v67_stable','study_app_v66_stable','study_app_v65_stable','study_app_v64_stable','study_app_v63_stable','study_app_v62_stable','study_app_v61_stable','study_app_v60_stable','study_app_v59_stable','study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact']){
+      for(const k of ['study_app_v74_stable','study_app_v73_stable','study_app_v72_stable','study_app_v71_stable','study_app_v70_stable','study_app_v69_stable','study_app_v68_stable','study_app_v67_stable','study_app_v66_stable','study_app_v65_stable','study_app_v64_stable','study_app_v63_stable','study_app_v62_stable','study_app_v61_stable','study_app_v60_stable','study_app_v59_stable','study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -3238,6 +3312,7 @@ function load(){
       if(Array.isArray(o.cardOrder))S.cardOrder=o.cardOrder;
       if(o.listKind)S.listKind=o.listKind;
       if(o.listUnit)S.listUnit=o.listUnit;
+      if(typeof o.cardUnitScope==='string')S.cardUnitScope=o.cardUnitScope;
       if(Number.isInteger(o.wordTestIndex))S.wordTestIndex=o.wordTestIndex;
       if(Number.isInteger(o.wordTestCorrect))S.wordTestCorrect=o.wordTestCorrect;
       if(Number.isInteger(o.wordTestTotal))S.wordTestTotal=o.wordTestTotal;if(o.wordTestScope)S.wordTestScope=o.wordTestScope;if(typeof o.wordTestScopeValue==='string')S.wordTestScopeValue=o.wordTestScopeValue;if(Array.isArray(o.wordTestOrder))S.wordTestOrder=o.wordTestOrder;if(typeof o.autoAdvance==='boolean')S.autoAdvance=o.autoAdvance;
@@ -3349,6 +3424,38 @@ function startReviewStudy(it){
   }
 }
 
+
+function getCardStudyUnits(){
+  return [...new Set(
+    S.items
+      .filter(x=>x.subject===S.subject&&sectionMatch(x)&&isCard(x))
+      .map(x=>norm(x.unit)||'단원 없음')
+  )];
+}
+function renderCardScope(){
+  const row=$('cardScopeRow');
+  if(!row)return;
+  if(S.reviewStudyMode==='card'){
+    row.classList.add('single');
+    row.innerHTML='';
+    return;
+  }
+  const units=getCardStudyUnits();
+  const choices=['전체',...units];
+  if(!choices.includes(S.cardUnitScope))S.cardUnitScope='전체';
+  row.classList.toggle('single',choices.length<=2 && units.length<=1);
+  row.innerHTML=choices.map(u=>`<button type="button" class="cardScopeChip ${u===S.cardUnitScope?'active':''}" data-card-scope="${esc(u)}">${esc(u)}</button>`).join('');
+  $$('[data-card-scope]').forEach(b=>b.onclick=()=>{
+    const next=b.dataset.cardScope;
+    if(next===S.cardUnitScope)return;
+    S.cardUnitScope=next;
+    S.cIndex=0;
+    S.cardOrder=[];
+    save();
+    renderCard();
+  });
+}
+
 function refreshPools(){
   const reviewIds=new Set(Array.isArray(S.reviewStudyIds)?S.reviewStudyIds:[]);
   let q=S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isQuiz(x));
@@ -3357,7 +3464,11 @@ function refreshPools(){
   if(S.quizMode==='mc')q=q.filter(x=>x.kind!=='OX');
 
   let cards=S.items.filter(x=>x.subject===S.subject&&sectionMatch(x)&&isCard(x));
-  if(S.reviewStudyMode==='card')cards=cards.filter(x=>reviewIds.has(itemId(x)));
+  if(S.reviewStudyMode==='card'){
+    cards=cards.filter(x=>reviewIds.has(itemId(x)));
+  }else if(S.cardUnitScope!=='전체'){
+    cards=cards.filter(x=>(norm(x.unit)||'단원 없음')===S.cardUnitScope);
+  }
 
   if(S.quizRandom){
     const ids=new Set(q.map(itemId));
@@ -3395,7 +3506,7 @@ function renderProblemList(){
   const list=S.listUnit==='전체'?all:all.filter(x=>(norm(x.unit)||'단원 없음')===S.listUnit);
   if(!list.length){$('problemList').innerHTML='<div class="empty"><strong>항목이 없어요</strong>이 소단원에는 아직 학습 항목이 없습니다.</div>';return}
   $('problemList').innerHTML=list.map((it,i)=>{const title=kind==='card'?(it.front||it.back||'(카드)'):(it.question||'(문제)');const meta=[sectionOf(it),norm(it.unit),norm(it.kind)].filter(Boolean).join(' · ');return `<button class="problemItem" data-list-id="${esc(itemId(it))}"><strong>${i+1}. ${esc(title)}</strong><span>${esc(meta)}</span></button>`}).join('');
-  $$('[data-list-id]').forEach(b=>b.onclick=()=>{const id=b.dataset.listId;if(kind==='card'){refreshPools();const idx=S.cardPool.findIndex(x=>itemId(x)===id);if(idx>=0)S.cIndex=idx;save();setScreen('card')}else{refreshPools();const idx=S.quizPool.findIndex(x=>itemId(x)===id);if(idx>=0)S.qIndex=idx;save();setScreen('quiz')}})
+  $$('[data-list-id]').forEach(b=>b.onclick=()=>{const id=b.dataset.listId;if(kind==='card'){const target=S.items.find(x=>itemId(x)===id);if(target)S.cardUnitScope=norm(target.unit)||'단원 없음';refreshPools();const idx=S.cardPool.findIndex(x=>itemId(x)===id);if(idx>=0)S.cIndex=idx;save();setScreen('card')}else{refreshPools();const idx=S.quizPool.findIndex(x=>itemId(x)===id);if(idx>=0)S.qIndex=idx;save();setScreen('quiz')}})
 }
 function setListKind(kind){S.listKind=kind;S.listUnit='전체';save();renderProblemList()}
 function openList(kind){S.listKind=kind;S.listUnit='전체';save();setScreen('list')}
@@ -4441,6 +4552,7 @@ async function hydrateWordPronunciation(it){
 }
 
 function renderCard(){
+  renderCardScope();
   refreshPools();
   const list=S.cardPool;
   $('flipCard').classList.remove('flipped');
@@ -4635,6 +4747,7 @@ function launch(mode){
   clearReviewStudyMode();
   if(mode==='card'){
     S.cardMode='all';
+    S.cardUnitScope='전체';
     S.cardRandom=S.defaultCardRandom;
     S.cardOrder=[];
     S.cIndex=0;
