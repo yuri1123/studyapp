@@ -2635,6 +2635,14 @@ html[data-subject="세법"] #listScreen{--subject-accent:#1f9d68}
 html[data-subject="영어"] #listScreen{--subject-accent:#7a5ce5}
 html[data-subject="국어"] #listScreen{--subject-accent:#e07a2d}
 
+
+.frontWordRow{display:flex;align-items:center;justify-content:center;gap:10px;width:100%}
+.frontWordRow .frontText{width:auto}
+.pronounceBtn{display:none;flex:0 0 auto;width:38px;height:38px;border:1px solid var(--subject-soft-border);border-radius:12px;background:var(--subject-soft);color:var(--subject-accent);font-size:18px;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(30,55,90,.06)}
+.pronounceBtn.show{display:inline-flex;align-items:center;justify-content:center}
+.pronounceBtn:active{transform:scale(.96)}
+.wordPron.autoPron{color:var(--subject-accent)!important;opacity:.9}
+
 </style>
 </head>
 <body>
@@ -2716,7 +2724,10 @@ html[data-subject="국어"] #listScreen{--subject-accent:#e07a2d}
           <div class="flipCard" id="flipCard">
             <div class="face front">
               <div class="unitTag" id="frontUnit">단원</div>
-              <div class="frontText" id="frontText">앞면</div>
+              <div class="frontWordRow">
+                <div class="frontText" id="frontText">앞면</div>
+                <button class="pronounceBtn" id="pronounceFrontBtn" type="button" aria-label="발음 듣기" title="발음 듣기">🔊</button>
+              </div>
               <div class="wordPron" id="frontPronunciation"></div>
               <div class="frontMeaning" id="frontMeaning"></div>
               <div class="flipTip">카드를 눌러 뒤집기</div>
@@ -2951,6 +2962,30 @@ html[data-subject="국어"] #listScreen{--subject-accent:#e07a2d}
         </div>
 
         <div class="settingsCard">
+          <div class="settingsRow">
+            <div>
+              <div class="settingsCardTitle">영어 발음</div>
+              <div class="settingsCardSub">발음기호를 자동으로 찾고 스피커로 들을 수 있어요.</div>
+            </div>
+            <button class="switchBtn" id="settingsPronAuto" aria-pressed="false"><span></span></button>
+          </div>
+          <div class="settingsDivider"></div>
+          <div class="settingsLabel">음성</div>
+          <div class="segmented two">
+            <button data-pron-accent="en-US">미국식</button>
+            <button data-pron-accent="en-GB">영국식</button>
+          </div>
+          <div class="settingsDivider"></div>
+          <div class="settingsLabel">발음 속도</div>
+          <div class="segmented">
+            <button data-pron-rate="0.8">천천히</button>
+            <button data-pron-rate="0.95">보통</button>
+            <button data-pron-rate="1.1">빠르게</button>
+          </div>
+          <div class="settingsCardSub" style="margin-top:8px">자동 재생을 켜면 새 영단어 카드가 나올 때 한 번 읽어줘요.</div>
+        </div>
+
+        <div class="settingsCard">
           <div class="settingsCardTitle">기본 학습 방식</div>
           <div class="settingsCardSub">새 학습을 시작할 때 적용할 기본값이에요.</div>
 
@@ -3086,7 +3121,7 @@ html[data-subject="국어"] #listScreen{--subject-accent:#e07a2d}
 
 <script>
 const SUBJECTS=['회계','세법','국어','영어'];
-const STORAGE='study_app_v71_stable';
+const STORAGE='study_app_v72_stable';
 
 const SAMPLE=[
 {subject:'회계',kind:'OX',subtitle:'기초개념',unit:'재무회계',question:'자산은 과거 사건의 결과로 기업이 통제하는 현재의 경제적 자원이다.',answer:'O',options:[],explanation:'자산의 기본 정의를 확인하는 문항입니다.'},
@@ -3112,6 +3147,7 @@ const S={
   flipMode:'any',answerDisplay:'explain',
   reviewWrong:true,reviewConfused:true,reviewUnknown:true,
   effectVibrate:false,effectSound:false,effectAnimation:true,
+  pronunciationAuto:false,pronunciationAccent:'en-US',pronunciationRate:0.95,
   wrongRetry:'review'
 };
 
@@ -3160,6 +3196,7 @@ function save(){
       flipMode:S.flipMode,answerDisplay:S.answerDisplay,
       reviewWrong:S.reviewWrong,reviewConfused:S.reviewConfused,reviewUnknown:S.reviewUnknown,
       effectVibrate:S.effectVibrate,effectSound:S.effectSound,effectAnimation:S.effectAnimation,
+      pronunciationAuto:S.pronunciationAuto,pronunciationAccent:S.pronunciationAccent,pronunciationRate:S.pronunciationRate,
       wrongRetry:S.wrongRetry
     }))
   }catch(e){}
@@ -3169,7 +3206,7 @@ function load(){
   try{
     let o=JSON.parse(localStorage.getItem(STORAGE)||'null');
     if(!o){
-      for(const k of ['study_app_v70_stable','study_app_v69_stable','study_app_v68_stable','study_app_v67_stable','study_app_v66_stable','study_app_v65_stable','study_app_v64_stable','study_app_v63_stable','study_app_v62_stable','study_app_v61_stable','study_app_v60_stable','study_app_v59_stable','study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact']){
+      for(const k of ['study_app_v71_stable','study_app_v70_stable','study_app_v69_stable','study_app_v68_stable','study_app_v67_stable','study_app_v66_stable','study_app_v65_stable','study_app_v64_stable','study_app_v63_stable','study_app_v62_stable','study_app_v61_stable','study_app_v60_stable','study_app_v59_stable','study_app_v58_stable','study_app_v57_stable','study_app_v56_stable','study_app_v55_stable','study_app_v54_stable','study_app_v53_stable','study_app_v52_stable','study_app_v51_stable','study_app_v50_stable','study_app_v46_compact']){
         const cand=JSON.parse(localStorage.getItem(k)||'null');
         if(cand){o=cand;break}
       }
@@ -3223,6 +3260,9 @@ function load(){
       if(typeof o.effectVibrate==='boolean')S.effectVibrate=o.effectVibrate;
       if(typeof o.effectSound==='boolean')S.effectSound=o.effectSound;
       if(typeof o.effectAnimation==='boolean')S.effectAnimation=o.effectAnimation;
+      if(typeof o.pronunciationAuto==='boolean')S.pronunciationAuto=o.pronunciationAuto;
+      if(o.pronunciationAccent)S.pronunciationAccent=o.pronunciationAccent;
+      if(Number.isFinite(Number(o.pronunciationRate)))S.pronunciationRate=Number(o.pronunciationRate);
       if(o.wrongRetry)S.wrongRetry=o.wrongRetry;
     }
   }catch(e){}
@@ -3734,6 +3774,12 @@ function renderSettings(){
   $('effectSoundBtn').classList.toggle('active',S.effectSound);
   $('effectAnimationBtn').classList.toggle('active',S.effectAnimation);
 
+  const pronSw=$('settingsPronAuto');
+  pronSw.classList.toggle('on',S.pronunciationAuto);
+  pronSw.setAttribute('aria-pressed',String(S.pronunciationAuto));
+  $$('[data-pron-accent]').forEach(b=>b.classList.toggle('active',b.dataset.pronAccent===S.pronunciationAccent));
+  $$('[data-pron-rate]').forEach(b=>b.classList.toggle('active',Math.abs(Number(b.dataset.pronRate)-Number(S.pronunciationRate))<0.001));
+
   $$('[data-delay]').forEach(b=>b.classList.toggle('active',Math.abs(Number(b.dataset.delay)-Number(S.autoDelay))<0.001));
 }
 function setThemeChoice(theme){
@@ -3789,6 +3835,7 @@ function resetSettings(){
   S.answerDisplay='explain';
   S.reviewWrong=true;S.reviewConfused=true;S.reviewUnknown=true;
   S.effectVibrate=false;S.effectSound=false;S.effectAnimation=true;
+  S.pronunciationAuto=false;S.pronunciationAccent='en-US';S.pronunciationRate=0.95;
   S.wrongRetry='review';
   save();
   applyTheme();applyVisualPrefs();
@@ -4223,6 +4270,73 @@ function setGrammarMemory(state){
   }
 }
 
+
+const PRON_CACHE_KEY='slse_pron_cache_v1';
+let lastAutoPronouncedId='';
+function loadPronCache(){try{return JSON.parse(localStorage.getItem(PRON_CACHE_KEY)||'{}')||{}}catch(e){return{}}}
+function savePronCache(c){try{localStorage.setItem(PRON_CACHE_KEY,JSON.stringify(c))}catch(e){}}
+function cleanPronWord(v){return norm(v).replace(/[^A-Za-zÀ-ÖØ-öø-ÿ' -]/g,'').trim()}
+function formatIpa(v){const t=norm(v).replace(/^\/|\/$/g,'');return t?`/${t}/`:''}
+async function getDictionaryPronunciation(word){
+  const w=cleanPronWord(word).toLowerCase();
+  if(!w)return null;
+  const cache=loadPronCache();
+  if(cache[w])return cache[w];
+  try{
+    const res=await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(w)}`);
+    if(!res.ok)throw new Error('not found');
+    const data=await res.json(),entry=Array.isArray(data)?data[0]:null;
+    if(!entry)return null;
+    const ps=Array.isArray(entry.phonetics)?entry.phonetics:[];
+    const pa=ps.find(x=>norm(x.audio)),pt=ps.find(x=>norm(x.text));
+    let audio=norm(pa&&pa.audio);
+    if(audio.startsWith('//'))audio='https:'+audio;
+    const result={ipa:formatIpa((pa&&pa.text)||(pt&&pt.text)||entry.phonetic||''),audio};
+    cache[w]=result;savePronCache(cache);return result;
+  }catch(e){cache[w]={ipa:'',audio:''};savePronCache(cache);return null}
+}
+function findVoice(locale){
+  if(!('speechSynthesis' in window))return null;
+  const vs=speechSynthesis.getVoices();
+  return vs.find(v=>v.lang===locale)||vs.find(v=>v.lang&&v.lang.toLowerCase().startsWith(locale.slice(0,2).toLowerCase()))||null;
+}
+async function speakEnglishWord(word,preferLookup=true){
+  const w=cleanPronWord(word);if(!w)return;
+  if(preferLookup){
+    const info=await getDictionaryPronunciation(w);
+    if(info&&info.audio){
+      try{
+        if(window.__slseAudio)window.__slseAudio.pause();
+        const a=new Audio(info.audio);window.__slseAudio=a;await a.play();return;
+      }catch(e){}
+    }
+  }
+  if('speechSynthesis' in window){
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(w);
+    u.lang=S.pronunciationAccent||'en-US';
+    u.rate=Number(S.pronunciationRate)||0.95;
+    const voice=findVoice(u.lang);if(voice)u.voice=voice;
+    speechSynthesis.speak(u);
+  }else toast('이 기기에서는 음성 재생을 지원하지 않아요');
+}
+async function hydrateWordPronunciation(it){
+  if(!it||it.subject!=='영어'||norm(it.kind)!=='단어')return;
+  const word=norm(it.front);if(!word)return;
+  const pronEl=$('frontPronunciation'),btn=$('pronounceFrontBtn');
+  btn.classList.add('show');
+  if(!norm(it.pronunciation)){
+    const info=await getDictionaryPronunciation(word);
+    if(info&&info.ipa&&S.cardPool[S.cIndex]&&itemId(S.cardPool[S.cIndex])===itemId(it)){
+      pronEl.textContent=info.ipa;pronEl.style.display='block';pronEl.classList.add('autoPron');
+    }
+  }else pronEl.classList.remove('autoPron');
+  if(S.pronunciationAuto){
+    const id=itemId(it);
+    if(lastAutoPronouncedId!==id){lastAutoPronouncedId=id;setTimeout(()=>speakEnglishWord(word,true),180)}
+  }
+}
+
 function renderCard(){
   refreshPools();
   const list=S.cardPool;
@@ -4256,6 +4370,9 @@ function renderCard(){
   $('frontText').textContent=it.front||it.question||'앞면 없음';
   $('frontPronunciation').textContent=isWord?(excelExportText(it.pronunciation||'')):'';
   $('frontPronunciation').style.display=isWord&&it.pronunciation?'block':'none';
+  $('frontPronunciation').classList.remove('autoPron');
+  $('pronounceFrontBtn').classList.toggle('show',isWord);
+  if(isWord)hydrateWordPronunciation(it);
 
   const meanings=meaningRows(it);
   $('frontMeaning').innerHTML=meanings.map(x=>{
@@ -4680,6 +4797,10 @@ $('settingsQuizAuto').onclick=()=>toggleSettingFlag('autoQuiz');
 $('settingsCardAuto').onclick=()=>toggleSettingFlag('autoCard');
 $('settingsWordAuto').onclick=()=>toggleSettingFlag('autoWord');
 $$('[data-delay]').forEach(b=>b.onclick=()=>setAutoDelay(b.dataset.delay));
+$('settingsPronAuto').onclick=()=>toggleSettingFlag('pronunciationAuto');
+$$('[data-pron-accent]').forEach(b=>b.onclick=()=>setSimpleSetting('pronunciationAccent',b.dataset.pronAccent));
+$$('[data-pron-rate]').forEach(b=>b.onclick=()=>setSimpleSetting('pronunciationRate',Number(b.dataset.pronRate)));
+$('pronounceFrontBtn').onclick=e=>{e.stopPropagation();const it=S.cardPool[S.cIndex];if(it)speakEnglishWord(it.front,true)};
 $('settingsResetBtn').onclick=resetSettings;
 
 {
@@ -4693,6 +4814,7 @@ $('settingsResetBtn').onclick=resetSettings;
   });
   card.addEventListener('pointerup',e=>{
     if(moved||S.flipMode==='button')return;
+    if(e.target.closest('.pronounceBtn'))return;
     if(S.flipMode==='word'&&!e.target.closest('.frontText,.wordPron,.frontMeaning,.backWordTitle,.backText'))return;
     card.classList.toggle('flipped');
     if(card.classList.contains('flipped')){
